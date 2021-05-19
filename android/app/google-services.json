@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "265418984293",
+    "project_id": "ecoapp-f4145",
+    "storage_bucket": "ecoapp-f4145.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265418984293:android:90d415372017e32aa22f8c",
+        "android_client_info": {
+          "package_name": "com.tran.firebase.firebasesetup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265418984293-s8i0r0faf8uelqqvserc1n0jf8a65sh6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfdJ_iqGazj_rEcZJZv8s7K-tjHp1p32U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265418984293-s8i0r0faf8uelqqvserc1n0jf8a65sh6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
