@@ -78,7 +78,7 @@ class _MapPageState extends State<MapPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Maps Sample App'),
+          title: Text('Marine Protected Areas'),
           backgroundColor: Colors.green[700],
         ),
         body: GoogleMap(
