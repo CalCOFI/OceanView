@@ -3,6 +3,11 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as pPath;
+import 'package:provider/provider.dart';
+import '../models/picture.dart';
+import '../providers/pictures.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({Key key}) : super(key: key);
@@ -21,8 +26,15 @@ class _UploadPageState extends State<UploadPage>{
       _imageFile = selected;
 
     });
+    final appDir = await pPath.getApplicationDocumentsDirectory();
+    final fileName = path.basename(_imageFile.path);
+    final savedImage = await _imageFile.copy('${appDir.path}/$fileName');
+    var _imageToStore = Picture(picName: savedImage);
+    _storeImage() {
+      Provider.of<Pictures>(context, listen: false).storeImage(_imageToStore);
+    }
+    _storeImage();
   }
-
 
   void _clear(){
     setState(()=> _imageFile = null);
