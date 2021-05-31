@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../widgets/images_grid.dart';
 class MePage extends StatefulWidget {
   const MePage({Key key}) : super(key: key);
 
@@ -10,17 +10,15 @@ class MePage extends StatefulWidget {
 class _MePageState extends State<MePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Me Page'),
-      ),
-      body: Center(
-        child: Text('This is Me Page.'),
-      ),
+    return Container(
+      child: ImagesGrid(),
+
     );
   }
 }
 
+<<<<<<< HEAD
+=======
 class FirstRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -76,3 +74,4 @@ class SecondRoute extends StatelessWidget {
     ],
   );
 }
+>>>>>>> 68977d2055e1bfa1fedad386e27784c39fc884a6

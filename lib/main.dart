@@ -4,6 +4,8 @@ import 'package:ocean_view/MapPage.dart';
 import 'package:ocean_view/UploadPage.dart';
 import 'package:ocean_view/ActivityPage.dart';
 import 'package:ocean_view/MePage.dart';
+import 'package:provider/provider.dart';
+import './providers/pictures.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,12 +13,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'OceanView',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: MyHomePage(title: 'OceanView Home Page'),
+    return  MultiProvider(
+      providers: [
+        ChangeNotifierProvider<Pictures>(create: (_) => Pictures()),
+      ],
+      child: Container(
+        child:MaterialApp(
+          title: 'OceanView',
+          theme: ThemeData(
+            primarySwatch: Colors.blueGrey,
+          ),
+          home: MyHomePage(title: 'OceanView Home Page'),
+        )
+      )
     );
   }
 }
