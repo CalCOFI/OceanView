@@ -43,9 +43,9 @@ Geometry _$GeometryFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$GeometryToJson(Geometry instance) => <String, dynamic>{
-      'type': instance.type,
-      'coordinates': instance.coordinates,
-    };
+  'type': instance.type,
+  'coordinates': instance.coordinates,
+};
 
 Properties _$PropertiesFromJson(Map<String, dynamic> json) {
   return Properties(
@@ -64,29 +64,24 @@ Map<String, dynamic> _$PropertiesToJson(Properties instance) =>
 
 Features _$FeaturesFromJson(Map<String, dynamic> json) {
   return Features(
-    properties: json['properties'] == null
-        ? null
-        : Properties.fromJson(json['properties'] as Map<String, dynamic>),
-    geometry: json['geometry'] == null
-        ? null
-        : Geometry.fromJson(json['geometry'] as Map<String, dynamic>),
+    properties: Properties.fromJson(json['properties'] as Map<String, dynamic>),
+    geometry: Geometry.fromJson(json['geometry'] as Map<String, dynamic>),
   );
 }
 
 Map<String, dynamic> _$FeaturesToJson(Features instance) => <String, dynamic>{
-      'properties': instance.properties,
-      'geometry': instance.geometry,
-    };
+  'properties': instance.properties,
+  'geometry': instance.geometry,
+};
 
 MPAs _$MPAsFromJson(Map<String, dynamic> json) {
   return MPAs(
-    (json['features'] as List)
-        ?.map((e) =>
-            e == null ? null : Features.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    (json['features'] as List<dynamic>)
+        .map((e) => Features.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
 Map<String, dynamic> _$MPAsToJson(MPAs instance) => <String, dynamic>{
-      'features': instance.features,
-    };
+  'features': instance.features,
+};

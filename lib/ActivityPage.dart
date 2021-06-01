@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ActivityPage extends StatefulWidget {
-  const ActivityPage({Key key}) : super(key: key);
+  const ActivityPage({required Key key}) : super(key: key);
 
   @override
   _ActivityPageState createState() => _ActivityPageState();

@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:ocean_view/MapPage.dart';
 import 'package:ocean_view/UploadPage.dart';
 import 'package:ocean_view/ActivityPage.dart';
 import 'package:ocean_view/MePage.dart';
-import 'package:provider/provider.dart';
-import './providers/pictures.dart';
 
-void main() => runApp(MyApp());
+import './providers/pictures.dart';
+import 'notification_library.dart' as notification;
+
+Future<void> main() async{
+  notification.initializeNotification();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -23,7 +28,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blueGrey,
           ),
-          home: MyHomePage(title: 'OceanView Home Page'),
+          home: MyHomePage(title: 'OceanView Home Page', key: UniqueKey()),
         )
       )
     );
@@ -31,7 +36,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({required Key key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -42,11 +47,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    MapPage(),
-    UploadPage(),
-    ActivityPage(),
-    MePage(),
+  List<Widget> _widgetOptions = <Widget>[
+    MapPage(key:UniqueKey()),
+    UploadPage(key:UniqueKey()),
+    ActivityPage(key:UniqueKey()),
+    MePage(key:UniqueKey()),
   ];
 
   void _onNavBarTapped(int index) {
@@ -85,4 +90,5 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
 }

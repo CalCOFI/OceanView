@@ -4,6 +4,6 @@ class Picture with ChangeNotifier{
   final File picName;
 
   Picture({
-    @required this.picName,
+    required this.picName,
   });
 }

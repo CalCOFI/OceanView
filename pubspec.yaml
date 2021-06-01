@@ -18,11 +18,11 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   path: ^1.6.4
-  path_provider: ^1.5.1
+  path_provider: ^2.0.0
   provider: ^4.0.1
   camera:
   image_picker: 0.6.0+17
@@ -35,8 +35,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-
   google_maps_flutter: ^2.0.1
+  flutter_native_timezone: ^1.0.10
+  http: ^0.13.0
+  rxdart: ^0.26.0-nullsafety.1
+  shared_preferences: ^2.0.1
 
   # Location for moving camera
   location: ^4.1.1
@@ -47,6 +50,9 @@ dependencies:
   # Geolocator for current location
   geolocator: ^7.0.3
 
+  # Local notifications
+  flutter_local_notifications: ^6.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -54,7 +60,13 @@ dev_dependencies:
   # Json serialization
   pedantic: ^1.11.0
   build_runner: ^1.0.0
+  build_resolvers: ^1.3.10
   json_serializable: ^3.3.0
+
+  # Geofencing
+  geofencing:
+    path: ./FlutterGeofencing-master/
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

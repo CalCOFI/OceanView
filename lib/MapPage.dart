@@ -1,42 +1,168 @@
+// @ dart=2.9
 import 'dart:math';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ocean_view/src/mpa.dart' as mpa;
+import 'dart:isolate';
+import 'dart:ui';
 
-class MapPage extends StatefulWidget {
-  const MapPage({Key key}) : super(key: key);
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'package:ocean_view/src/mpa.dart' as mpa;
+import 'package:geofencing/geofencing.dart';
+import 'notification_library.dart' as notification;
+
+class MapPage extends StatelessWidget{
+
+  const MapPage({required Key key}) : super(key: key);
 
   @override
-  _MapPageState createState() => _MapPageState();
+  Widget build(BuildContext context){
+    return MaterialApp(
+      initialRoute: notification.initialRoute,
+      routes: <String, WidgetBuilder>{
+        HomePage.routeName: (_) => HomePage(notification.notificationAppLaunchDetails),
+        SecondPage.routeName: (_) => SecondPage(notification.selectedNotificationPayload)
+      },
+    );
+  }
 }
 
-class _MapPageState extends State<MapPage> {
-  GoogleMapController mapController;
+class HomePage extends StatefulWidget {
+  const HomePage(
+      this.notificationAppLaunchDetails, {
+        Key? key,
+      }) : super(key: key);
 
-  LatLng _center = LatLng(32.832809, -117.271271);
-  Location _location = Location();
+  static const String routeName = '/';
+
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails;
+
+  bool get didNotificationLaunchApp =>
+      notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  // Permission handler
+  // late PermissionStatus _status;
+
+  // Geofencing members
+  String geofenceState = 'N/A';
+  List<String> registeredGeofences = [];
+  ReceivePort port = ReceivePort();
+  final List<GeofenceEvent> triggers = <GeofenceEvent>[
+    GeofenceEvent.enter,
+    GeofenceEvent.dwell,
+    GeofenceEvent.exit
+  ];
+  final AndroidGeofencingSettings androidSettings = AndroidGeofencingSettings(
+      initialTrigger: <GeofenceEvent>[
+        GeofenceEvent.enter,
+        GeofenceEvent.exit,
+        GeofenceEvent.dwell
+      ],
+      loiteringDelay: 1000 * 60);
+
+  // Google map members
+  late GoogleMapController mapController;
+
+  final LatLng _center = LatLng(32.832809, -117.271271);
+  LatLng _location = LatLng(0.0,0.0);
+
   final Map<String, Marker> _markers = {};
   final Map<String, Polygon> _polygons = {};
   final Map<String, Circle> _circles = {};
 
-  Future<void> getCurrentLocation() async {
-    setState(() async {
-      final position = await Geolocator.getCurrentPosition();
-      _center = LatLng(position.latitude,position.longitude);
-      print(position);
+  // MPA members
+  final List<String> _names = <String>[];
+  final Map<String, LatLng> _centers = {};
+  final Map<String, double> _radiuses = {};
+  final Map<String, double> _distances = {};
+
+  @override
+  void initState(){
+    super.initState();
+
+    notification.requestPermissions();
+    notification.configureDidReceiveLocalNotificationSubject(context);
+    notification.configureSelectNotificationSubject(context);
+
+    IsolateNameServer.registerPortWithName(
+        port.sendPort, 'geofencing_send_port');
+    port.listen((dynamic data) {
+      print('Event: $data');
+      setState(() {
+        geofenceState = data;
+      });
     });
+    initPlatformState();
+  }
+
+  // Callback for entering or leaving geofence
+  static void callback(List<String> ids, Location l, GeofenceEvent e) async {
+    print('Fences: $ids Location $l Event: $e');
+    final send =
+    IsolateNameServer.lookupPortByName('geofencing_send_port');
+    send!.send(e.toString());
+
+    if (e==GeofenceEvent.enter) {
+      print('Enter $ids');
+      await notification.showNotification('enter', ids);
+    }
+    /*
+    else {
+      print('Leave $ids');
+      await _showNotification('leave', ids);
+    }
+     */
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+
+    //_status = await Permission.location.request();
+    //print('Location permission status: $_status');
+    print('Initializing...');
+    await GeofencingManager.initialize();
+    print('Initialization done');
+  }
+
+  /*
+  Future<void> _requestLocationPermission() async {
+    _status = await Permission.location.request();
+  }
+   */
+
+  Future<void> getCurrentLocation() async {
+    final position = await Geolocator.getCurrentPosition();
+    print(position);
+    _location = LatLng(position.latitude,position.longitude);
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
 
-    // Get current location
+    // Controller moves with current location
     mapController = controller;
-    // getCurrentLocation();
+    await getCurrentLocation();
+    /*
+    _location.onLocationChanged.listen((l) {
+      controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(l.latitude!, l.longitude!),zoom: 15),
+        ),
+      );
+      getCurrentLocation();
+    });
+     */
 
     // Load MPAs
     final MPAs = await mpa.getMPAs();
+
     setState(() {
 
       _markers.clear();
@@ -92,17 +218,6 @@ class _MapPageState extends State<MapPage> {
         );
         _polygons[name] = polygon;
 
-        // Add circles
-        final circle = Circle(
-            circleId: CircleId(name),
-            center: center,
-            radius: radius,
-            fillColor: Colors.red.withOpacity(0.5),
-            strokeWidth: 1,
-            strokeColor: Colors.red.withOpacity(0.5)
-        );
-        _circles[name] = circle;
-
         // Add markers
         _markers[name] = Marker(
             markerId: MarkerId(name),
@@ -114,6 +229,13 @@ class _MapPageState extends State<MapPage> {
             )
         );
 
+        // Store names, centers, radius and distances from current location
+        _names.add(name);
+        _centers[name] = center;
+        _radiuses[name] = radius;
+        _distances[name] = sqrt(pow(_location.latitude - center.latitude, 2) +
+            pow(_location.longitude - center.longitude, 2))*111000;
+
         var type = MPA.properties.Type;
         print('$num. Add $name, Type: $type, Radius: $radius');
         num++;
@@ -121,26 +243,118 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  Future<void> _registerGeofences() async {
+    // Build geofences for 5 near MPAs
+    _names.sort((a,b) => _distances[a]!.toDouble().compareTo(_distances[b]!));
+    // print('Permission status: $_status');
+
+    for (var i = 0; i < 3; i++) {
+      var name = _names[i];
+      var center = _centers[name];
+      var radius = _radiuses[name];
+
+      await GeofencingManager.registerGeofence(
+          GeofenceRegion(
+              name, center!.latitude, center.longitude, radius, triggers,
+              androidSettings: androidSettings),
+          callback).then((_) {
+        GeofencingManager.getRegisteredGeofenceIds().then((value) {
+          setState(() {
+            registeredGeofences = value;
+          });
+        });
+      });
+
+      // Add circles
+      final circle = Circle(
+          circleId: CircleId(name),
+          center: center,
+          radius: radius!,
+          fillColor: Colors.red.withOpacity(0.5),
+          strokeWidth: 1,
+          strokeColor: Colors.red.withOpacity(0.5)
+      );
+      _circles[name] = circle;
+
+      print('Add Geofence of $name, '
+          '(${center.latitude},${center.longitude}), radius: $radius');
+    }
+
+    setState(() {
+      print('Add circles to google map.');
+    });
+  }
+
+  @override
+  void dispose() {
+    notification.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('Maps Sample App'),
-          backgroundColor: Colors.green[700],
-        ),
-        body: GoogleMap(
-          onMapCreated: _onMapCreated,
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: _center,
+          appBar: AppBar(
+            title: Text('Maps Sample App'),
+            backgroundColor: Colors.green[700],
           ),
-          polygons: _polygons.values.toSet(),
-          circles: _circles.values.toSet(),
-          markers: _markers.values.toSet(),
-          myLocationEnabled: true,
-        ),
+          body: GoogleMap(
+            onMapCreated: _onMapCreated,
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: _center,
+            ),
+            polygons: _polygons.values.toSet(),
+            circles: _circles.values.toSet(),
+            markers: _markers.values.toSet(),
+            myLocationEnabled: true,
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _registerGeofences(),
+            tooltip: 'Register geofences',
+            child: const Icon(Icons.add),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop
       ),
     );
   }
+}
+
+class SecondPage extends StatefulWidget {
+  const SecondPage(
+      this.payload, {
+        Key? key,
+      }) : super(key: key);
+
+  static const String routeName = '/secondPage';
+
+  final String? payload;
+
+  @override
+  State<StatefulWidget> createState() => SecondPageState();
+}
+
+class SecondPageState extends State<SecondPage> {
+  String? _payload;
+  @override
+  void initState() {
+    super.initState();
+    _payload = widget.payload;
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text('Second Screen with payload: ${_payload ?? ''}'),
+    ),
+    body: Center(
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: const Text('Go back!'),
+      ),
+    ),
+  );
 }
