@@ -1,77 +1,162 @@
 import 'package:flutter/material.dart';
-import '../widgets/images_grid.dart';
-class MePage extends StatefulWidget {
-  const MePage({required Key key}) : super(key: key);
 
-  @override
-  _MePageState createState() => _MePageState();
-}
+void main() => runApp(MaterialApp(
+  home:MyGallery(),
+));
 
-class _MePageState extends State<MePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: ImagesGrid(),
+class MyGallery extends StatelessWidget {
+  const MyGallery({Key key}) : super(key: key);
 
-    );
-  }
-}
-
-//<<<<<<< HEAD
-//=======
-class FirstRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar:AppBar(
         title: Text('My Gallery'),
+        centerTitle: true,
+        backgroundColor: Colors.lightBlueAccent,
+        elevation: 0.0,
       ),
-      body: Center(
-        child: ElevatedButton(
-          child: Image.asset('images/sea-slug.jpg'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SecondRoute()),
-            );
-          },
+      body:Padding(
+        padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0,0.0),
+        child:Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              margin:EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+              child: Center(
+                child:Image.asset('assets/trout.png',
+                height: 250,
+                width: 180,
+                ),
+              ),
+            ),
+            Divider(
+
+              color:Colors.black,
+            ),
+            Text(
+              'Species Name:',
+              style: TextStyle(
+                color:Colors.grey,
+                letterSpacing: 2.0,
+              )
+            ),
+            Text(
+                'Rainbow Trout',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Length(feet):',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '1.2',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Weight(lb):',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '  ',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Quantity: ',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '3',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Time:',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '11:08 AM, Sun 05/02/2021',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Location: ',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                'Wentang, Jiangxi, China',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Released/Kept:',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                'Kept',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class SecondRoute extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("My Observation"),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!!'),
-          ),
-        ),
-    );
-  }
-  ListTile _tile(String title, String subtitle) => ListTile(
-    title: Text(title,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 20,
-        )),
-    subtitle: Text(subtitle),
-  );
-  Widget _buildList() => ListView(
-    children: [
-      _tile('CineArts at the Empire', '85 W Portal Ave'),
-      _tile('The Castro Theater', '429 Castro St'),
-      _tile('Alamo Drafthouse Cinema', '2550 Mission St'),
-    ],
-  );
-}
-//>>>>>>> 68977d2055e1bfa1fedad386e27784c39fc884a6
