@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 void main() => runApp(MaterialApp(
-  home:MyGallery(),
+  home:MePage(key: UniqueKey()),
 ));
 
-class MyGallery extends StatelessWidget {
-  const MyGallery({Key key}) : super(key: key);
+class MePage extends StatelessWidget {
+  const MePage({required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
