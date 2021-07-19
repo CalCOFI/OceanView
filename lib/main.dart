@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:ocean_view/MapPage.dart';
 import 'package:ocean_view/UploadPage.dart';
@@ -11,6 +12,11 @@ import 'notification_library.dart' as notification;
 
 Future<void> main() async{
   notification.initializeNotification();
+
+  // Initialize firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  final FirebaseApp app = await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 

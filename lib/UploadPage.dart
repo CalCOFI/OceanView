@@ -1,17 +1,19 @@
 import 'dart:io';
 import 'dart:convert';
 
+
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as pPath;
 import 'package:provider/provider.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:async/async.dart' hide Result;
+import 'package:image_picker/image_picker.dart';
 
 import 'package:ocean_view/src/prediction.dart';
 import '../models/picture.dart';
@@ -111,6 +113,13 @@ class _UploaderState extends State<Uploader> {
   String _imageListText = "What did you see?";
   late Image _image;
 
+  // Firebase
+  String userID = "abcdef";
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _database = FirebaseFirestore.instance;
+  UploadTask? _uploadTask = null;
+
+
   _UploaderState (File file) {
     this._image = new Image.file(
       file,
@@ -140,6 +149,7 @@ class _UploaderState extends State<Uploader> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
+        this.textDict['time'] = selectedDate.toString();
       });
     }
   }
@@ -278,7 +288,35 @@ class _UploaderState extends State<Uploader> {
                       )
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(onPressed: onPressed, child: const Text("Upload"))
+                  (_uploadTask==null)
+                    ?ElevatedButton(onPressed: _pressUpload, child: const Text("Upload"))
+                    :StreamBuilder<TaskSnapshot>(
+                      stream: _uploadTask!.snapshotEvents,
+                      builder: (context,snapshot){
+                        //var event = snapshot.data?.snapshot;
+                        double progressPercent = snapshot.data!=null
+                            ? snapshot.data!.bytesTransferred/snapshot.data!.totalBytes
+                            :0;
+                        TaskState state = snapshot.data!=null
+                          ? snapshot.data!.state
+                          : TaskState.running;
+                        return Column(
+                          children:[
+                            if(state == TaskState.success)
+                              Text('Completed'),
+                            if (state == TaskState.paused)
+                              FlatButton(
+                                child:Icon(Icons.play_arrow),
+                                onPressed: _uploadTask!.resume,
+                              ),
+                            LinearProgressIndicator(value:progressPercent),
+                            Text(
+                                '${(progressPercent*100).toStringAsFixed(2)} %'
+                            ),
+                          ]
+                        );
+                      }
+                    )
                 ],
               )
           )
@@ -300,13 +338,33 @@ class _UploaderState extends State<Uploader> {
     // After the ImageClassification Screen returns a result, change text of TextButton
     setState((){
       _imageListText = result;
+      textDict['name'] = result;
       print(_imageListText);
     });
   }
 
-  void onPressed(){
-    print('Upload');
+
+  void _pressUpload(){
+
+    String filePath = 'images/${this.userID}/${DateTime.now()}.png';
+
+    // Upload meta data to firebase
+    // A ?? B => If A is null, return B. Otherwise, return A.
+    _database.collection("observations").add({
+      "user" : this.userID,
+      "name" : this.textDict['name'] ?? "None",
+      "length" : this.textDict['length'] ?? "None",
+      "weight" : this.textDict['weight'] ?? "None",
+      "time" : this.textDict['time'] ?? "None",
+      "status" : this.textDict['status'] ?? "None"
+    });
+
+    // Upload image file to firebase
+    setState(() {
+      _uploadTask = _storage.ref().child(filePath).putFile(widget.file);
+    });
   }
+
 }
 
 class ImageClassification extends StatefulWidget {
