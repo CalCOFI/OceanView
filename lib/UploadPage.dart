@@ -117,7 +117,7 @@ class _UploaderState extends State<Uploader> {
   String userID = "abcdef";
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _database = FirebaseFirestore.instance;
-  UploadTask? _uploadTask = null;
+  UploadTask? _uploadTask;
 
 
   _UploaderState (File file) {
@@ -288,35 +288,10 @@ class _UploaderState extends State<Uploader> {
                       )
                   ),
                   const SizedBox(height: 10),
-                  (_uploadTask==null)
-                    ?ElevatedButton(onPressed: _pressUpload, child: const Text("Upload"))
-                    :StreamBuilder<TaskSnapshot>(
-                      stream: _uploadTask!.snapshotEvents,
-                      builder: (context,snapshot){
-                        //var event = snapshot.data?.snapshot;
-                        double progressPercent = snapshot.data!=null
-                            ? snapshot.data!.bytesTransferred/snapshot.data!.totalBytes
-                            :0;
-                        TaskState state = snapshot.data!=null
-                          ? snapshot.data!.state
-                          : TaskState.running;
-                        return Column(
-                          children:[
-                            if(state == TaskState.success)
-                              Text('Completed'),
-                            if (state == TaskState.paused)
-                              FlatButton(
-                                child:Icon(Icons.play_arrow),
-                                onPressed: _uploadTask!.resume,
-                              ),
-                            LinearProgressIndicator(value:progressPercent),
-                            Text(
-                                '${(progressPercent*100).toStringAsFixed(2)} %'
-                            ),
-                          ]
-                        );
-                      }
-                    )
+                  ElevatedButton(
+                      child: Text("Upload"),
+                      onPressed: _pressUpload
+                  ),
                 ],
               )
           )
@@ -344,25 +319,29 @@ class _UploaderState extends State<Uploader> {
   }
 
 
-  void _pressUpload(){
+  _pressUpload() async {
 
     String filePath = 'images/${this.userID}/${DateTime.now()}.png';
 
-    // Upload meta data to firebase
-    // A ?? B => If A is null, return B. Otherwise, return A.
-    _database.collection("observations").add({
-      "user" : this.userID,
-      "name" : this.textDict['name'] ?? "None",
-      "length" : this.textDict['length'] ?? "None",
-      "weight" : this.textDict['weight'] ?? "None",
-      "time" : this.textDict['time'] ?? "None",
-      "status" : this.textDict['status'] ?? "None"
-    });
+    TaskSnapshot snapshot = await _storage.ref().child(filePath).putFile(widget.file);
+    if(snapshot.state == TaskState.success) {
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
+      await _database.collection("observations").add({
+        "user": this.userID,
+        "name": this.textDict['name'] ?? "None",
+        "length": this.textDict['length'] ?? "None",
+        "weight": this.textDict['weight'] ?? "None",
+        "time": this.textDict['time'] ?? "None",
+        "status": this.textDict['status'] ?? "None",
+        "url": downloadUrl
+      });
 
-    // Upload image file to firebase
-    setState(() {
-      _uploadTask = _storage.ref().child(filePath).putFile(widget.file);
-    });
+      final snackBar = SnackBar(content: Text('Success'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      print('Error from image repo ${snapshot.state.toString()}');
+      throw ('This file is not an image');
+    }
   }
 
 }
@@ -490,62 +469,3 @@ class _ImageClassificationState extends State<ImageClassification>{
     );
   }
 }
-
-/*
-class Uploader extends StatefulWidget{
-  final File file;
-  Uploader({required Key key, required this.file}): super(key:key);
-  createState() => _UploaderState();
-}
-
-class _UploaderState extends State<Uploader>{
-  final FirebaseStorage _storage =
-  FirebaseStorage(storageBucket:'gs://ecoapp-f4145.appspot.com');
-  StorageUploadTask? _uploadTask = null;
-
-  void _startUpload(){
-    String filePath = 'images/${DateTime.now()}.png';
-    setState(() {
-      _uploadTask = _storage.ref().child(filePath).putFile(widget.file);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context){
-    if(_uploadTask !=null){
-      return StreamBuilder<StorageTaskEvent>(
-          stream: _uploadTask!.events,
-          builder: (context,snapshot){
-            var event = snapshot?.data?.snapshot;
-            double progressPercent = event!=null
-                ? event.bytesTransferred/event.totalByteCount
-                :0;
-            return Column(
-                children:[
-                  if(_uploadTask!.isComplete)
-                    Text('Completed'),
-                  if (_uploadTask!.isPaused)
-                    FlatButton(
-                      child:Icon(Icons.play_arrow),
-                      onPressed: _uploadTask!.resume,
-                    ),
-                  LinearProgressIndicator(value:progressPercent),
-                  Text(
-                      '${(progressPercent*100).toStringAsFixed(2)} %'
-                  ),
-                ]
-            );
-          }
-      );
-
-    }else{
-      return FlatButton.icon(
-        label: Text('Confirm Your Photo Upload!'),
-        icon: Icon(Icons.cloud_upload),
-        onPressed: _startUpload,
-      );
-    }
-  }
-}
-
- */
