@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "265418984293",
-    "project_id": "ecoapp-f4145",
-    "storage_bucket": "ecoapp-f4145.appspot.com"
+    "project_number": "666596831554",
+    "project_id": "oceanview-2c289",
+    "storage_bucket": "oceanview-2c289.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:265418984293:android:90d415372017e32aa22f8c",
+        "mobilesdk_app_id": "1:666596831554:android:bd96f2f612805a477558db",
         "android_client_info": {
-          "package_name": "com.tran.firebase.firebasesetup"
+          "package_name": "edu.ucsd.h4oceans.ecoapp.ocean_view"
         }
       },
       "oauth_client": [
         {
-          "client_id": "265418984293-s8i0r0faf8uelqqvserc1n0jf8a65sh6.apps.googleusercontent.com",
+          "client_id": "666596831554-paph0auh68hgoiui0jh7nlt78023mece.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBfdJ_iqGazj_rEcZJZv8s7K-tjHp1p32U"
+          "current_key": "AIzaSyCTwdqVnPm18sKOE8EtFOdRGX23KJ6-SLU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "265418984293-s8i0r0faf8uelqqvserc1n0jf8a65sh6.apps.googleusercontent.com",
+              "client_id": "666596831554-paph0auh68hgoiui0jh7nlt78023mece.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

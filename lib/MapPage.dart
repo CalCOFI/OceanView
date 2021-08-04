@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
       loiteringDelay: 1000 * 60);
 
   // Google map members
-  late GoogleMapController mapController;
+  late GoogleMapController? mapController;
 
   final LatLng _center = LatLng(32.832809, -117.271271);
   LatLng _location = LatLng(0.0,0.0);
@@ -288,6 +288,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     notification.dispose();
+    mapController = null;
     super.dispose();
   }
 
