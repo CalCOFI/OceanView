@@ -41,8 +41,23 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>location-services</string>
+        <string>gps</string>
+        <string>armv7</string>
+    </array>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+    </array>
+
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Do you want to always share location?</string>
+
     <key>NSLocationWhenInUsageDescription</key>
     <string>I need location when in use.</string>
-	<false/>
+
 </dict>
 </plist>

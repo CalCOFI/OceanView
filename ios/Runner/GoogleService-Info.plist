@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>666596831554-1h5k001ooovp9rt8kh0o2jc8u5vb3396.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.666596831554-1h5k001ooovp9rt8kh0o2jc8u5vb3396</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD8KNdsWpz_tdGIMua0S4M4GXJhtdL_1tY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>666596831554</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>edu.ucsd.h4oceans.ecoapp.oceanView</string>
+	<key>PROJECT_ID</key>
+	<string>oceanview-2c289</string>
+	<key>STORAGE_BUCKET</key>
+	<string>oceanview-2c289.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:666596831554:ios:b0cfe45b6b70ac117558db</string>
+	<key>DATABASE_URL</key>
+	<string>https://oceanview-2c289-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
