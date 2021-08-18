@@ -8,12 +8,16 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-
     GeneratedPluginRegistrant.register(with: self)
-    // Firebase
-    FirebaseApp.configure()
-    // GoogleMaps
+
+    // Local notifications
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+    }
+
+    // TODO: Add your API key
     GMSServices.provideAPIKey("AIzaSyBpDLenOUhz8cWFT0Oc7gWD4MneSUboyVc")
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

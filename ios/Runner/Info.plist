@@ -11,7 +11,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>ocean_view</string>
+	<string>oceanview</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -22,6 +22,20 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Get access to camera</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Required for Flutter Geofencing example events.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Required for Flutter Geofencing example events.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Get access to microphone</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Get access to camera roll</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -40,24 +54,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-    <false/>
-
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-        <string>location-services</string>
-        <string>gps</string>
-        <string>armv7</string>
-    </array>
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>location</string>
-    </array>
-
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Do you want to always share location?</string>
-
-    <key>NSLocationWhenInUsageDescription</key>
-    <string>I need location when in use.</string>
-
+	<false/>
 </dict>
 </plist>

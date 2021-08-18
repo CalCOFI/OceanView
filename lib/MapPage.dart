@@ -19,6 +19,7 @@ class MapPage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context){
+    print("Build MapPage");
     return MaterialApp(
       initialRoute: notification.initialRoute,
       routes: <String, WidgetBuilder>{
@@ -35,7 +36,7 @@ class HomePage extends StatefulWidget {
         Key? key,
       }) : super(key: key);
 
-  static const String routeName = '/';
+  static const String routeName = '/homePage';
 
   final NotificationAppLaunchDetails? notificationAppLaunchDetails;
 
@@ -100,7 +101,7 @@ class _HomePageState extends State<HomePage> {
         geofenceState = data;
       });
     });
-    initPlatformState();
+    //initPlatformState();
   }
 
   // Callback for entering or leaving geofence
