@@ -312,11 +312,13 @@ class _HomePageState extends State<HomePage> {
             markers: _markers.values.toSet(),
             myLocationEnabled: true,
           ),
+          /*
           floatingActionButton: FloatingActionButton(
             onPressed: () => _registerGeofences(),
             tooltip: 'Register geofences',
             child: const Icon(Icons.add),
           ),
+           */
           floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop
       ),
     );
