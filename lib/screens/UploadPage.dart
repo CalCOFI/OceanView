@@ -15,8 +15,8 @@ import 'package:async/async.dart' hide Result;
 import 'package:image_picker/image_picker.dart';
 
 import 'package:ocean_view/src/prediction.dart';
-import '../models/picture.dart';
-import '../providers/pictures.dart';
+import '../../models/picture.dart';
+import '../../providers/pictures.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({required Key key}) : super(key: key);

@@ -11,7 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:ocean_view/src/mpa.dart' as mpa;
 import 'package:geofencing/geofencing.dart';
-import 'notification_library.dart' as notification;
+import '../notification_library.dart' as notification;
 
 class MapPage extends StatelessWidget{
 
