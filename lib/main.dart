@@ -5,8 +5,6 @@ import 'package:ocean_view/services/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-
-
 import './providers/pictures.dart';
 import 'notification_library.dart' as notification;
 
@@ -24,7 +22,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<User>.value(
+    return StreamProvider<User?>.value(
+      initialData: null,
       value: AuthService().user,
       child: MaterialApp(
         home: Wrapper(),
