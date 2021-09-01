@@ -107,7 +107,7 @@ class _UploaderState extends State<Uploader> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final myController = TextEditingController();
-  Map<String,String> textDict = <String,String>{};
+  Map<String,dynamic> observation = <String,dynamic>{};
   String statusValue = 'Observe';
   String _imageListText = "What did you see?";
   late Image _image;
@@ -148,7 +148,7 @@ class _UploaderState extends State<Uploader> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        this.textDict['time'] = selectedDate.toString();
+        this.observation['time'] = Timestamp.fromDate(selectedDate);
       });
     }
   }
@@ -209,7 +209,7 @@ class _UploaderState extends State<Uploader> {
                           const Text('Length: '),
                           Expanded(
                             child: TextField(
-                              onSubmitted: (String value){textDict['length']=value;},
+                              onSubmitted: (String value){observation['length']=value;},
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -228,7 +228,7 @@ class _UploaderState extends State<Uploader> {
                           const Text('Weight: '),
                           Expanded(
                             child: TextField(
-                              onSubmitted: (String value){textDict['weight']=value;},
+                              onSubmitted: (String value){observation['weight']=value;},
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -273,7 +273,7 @@ class _UploaderState extends State<Uploader> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 statusValue = newValue!;
-                                textDict['status'] = statusValue;
+                                observation['status'] = statusValue;
                               });
                             },
                             items: <String>['Observe', 'Release', 'Catch']
@@ -312,7 +312,7 @@ class _UploaderState extends State<Uploader> {
     // After the ImageClassification Screen returns a result, change text of TextButton
     setState((){
       _imageListText = result;
-      textDict['name'] = result;
+      observation['name'] = result;
       print(_imageListText);
     });
   }
@@ -327,11 +327,11 @@ class _UploaderState extends State<Uploader> {
       final String downloadUrl = await snapshot.ref.getDownloadURL();
       await _database.collection("observations").add({
         "user": this.userID,
-        "name": this.textDict['name'] ?? "None",
-        "length": this.textDict['length'] ?? "None",
-        "weight": this.textDict['weight'] ?? "None",
-        "time": this.textDict['time'] ?? "None",
-        "status": this.textDict['status'] ?? "None",
+        "name": this.observation['name'] ?? "None",
+        "length": this.observation['length'] ?? "None",
+        "weight": this.observation['weight'] ?? "None",
+        "time": this.observation['time'] ?? "None",
+        "status": this.observation['status'] ?? "None",
         "url": downloadUrl
       });
 

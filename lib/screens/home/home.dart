@@ -60,5 +60,4 @@ class _HomeState extends State<Home> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
 }

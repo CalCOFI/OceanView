@@ -22,32 +22,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<User?>.value(
-      initialData: null,
-      value: AuthService().user,
-      child: MaterialApp(
-        home: Wrapper(),
-      ),
-    );
-  }
-  /*
-  Widget build(BuildContext context) {
     return  MultiProvider(
-      providers: [
-        ChangeNotifierProvider<Pictures>(create: (_) => Pictures()),
-      ],
-      child: Container(
-        child:MaterialApp(
-          title: 'OceanView',
-          theme: ThemeData(
-            primarySwatch: Colors.blueGrey,
+        providers: [
+          ChangeNotifierProvider<Pictures>(create: (_) => Pictures()),
+          StreamProvider<User?>(
+            create: (_) => AuthService().user,
+            initialData: null,
           ),
-          home: MyHomePage(title: 'OceanView Home Page', key: UniqueKey()),
-        )
-      )
+        ],
+        child: MaterialApp(
+          home: Wrapper(),
+        ),
     );
   }
-   */
-
 }
 

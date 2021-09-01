@@ -39,7 +39,7 @@ class AuthService {
       UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
 
       // create the document for the user with the uid
-      await DatabaseService(uid: result.user!.uid).updateUserData('0', 'new crew members', 100);
+      // await DatabaseService(uid: result.user!.uid).updateUserData('0', 'new crew members', 100);
 
       return result.user;
     } catch (e) {
