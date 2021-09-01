@@ -10,12 +10,16 @@ class DatabaseService {
   final CollectionReference observationCollection = FirebaseFirestore.instance.collection('observations');
 
   Future updateObservation(Map<String, dynamic> observation) async {
-    return await observationCollection.add(observation);
-  }
+    // Check for each field in observation
+    observation['uid'] = observation['uid'] ?? 'None';
+    observation['name'] = observation['name'] ?? 'None';
+    observation['length'] = observation['length'] ?? 0.0;
+    observation['weight'] = observation['name'] ?? 0.0;
+    observation['time'] = observation['time'] ?? 'None';
+    observation['status'] = observation['status'] ?? 'Observe';
+    observation['url'] = observation['url'] ?? 'None';
 
-  // get brews stream
-  Stream<QuerySnapshot> get brews {
-    return observationCollection.snapshots();
+    return await observationCollection.add(observation);
   }
 
 }

@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/services/database.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as pPath;
 import 'package:provider/provider.dart';
@@ -162,6 +165,8 @@ class _UploaderState extends State<Uploader> {
 
   @override
   Widget build(BuildContext context) {
+
+    final user = Provider.of<User?>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -288,8 +293,25 @@ class _UploaderState extends State<Uploader> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                      child: Text("Upload"),
-                      onPressed: _pressUpload
+                    child: Text("Upload"),
+                    onPressed: () async {
+                      String filePath = 'images/${user!.uid}/${DateTime.now()}.png';
+
+                      TaskSnapshot snapshot = await _storage.ref().child(filePath).putFile(widget.file);
+                      if(snapshot.state == TaskState.success) {
+                        final String downloadUrl = await snapshot.ref.getDownloadURL();
+                        this.observation['uid'] = user.uid;
+                        this.observation['url'] = downloadUrl;
+
+                        await DatabaseService(uid: user.uid).updateObservation(this.observation);
+
+                        final snackBar = SnackBar(content: Text('Success'));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        print('Error from image repo ${snapshot.state.toString()}');
+                        throw ('This file is not an image');
+                      }
+                    },
                   ),
                 ],
               )
@@ -313,34 +335,7 @@ class _UploaderState extends State<Uploader> {
     setState((){
       _imageListText = result;
       observation['name'] = result;
-      print(_imageListText);
     });
-  }
-
-
-  _pressUpload() async {
-
-    String filePath = 'images/${this.userID}/${DateTime.now()}.png';
-
-    TaskSnapshot snapshot = await _storage.ref().child(filePath).putFile(widget.file);
-    if(snapshot.state == TaskState.success) {
-      final String downloadUrl = await snapshot.ref.getDownloadURL();
-      await _database.collection("observations").add({
-        "user": this.userID,
-        "name": this.observation['name'] ?? "None",
-        "length": this.observation['length'] ?? "None",
-        "weight": this.observation['weight'] ?? "None",
-        "time": this.observation['time'] ?? "None",
-        "status": this.observation['status'] ?? "None",
-        "url": downloadUrl
-      });
-
-      final snackBar = SnackBar(content: Text('Success'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
-      print('Error from image repo ${snapshot.state.toString()}');
-      throw ('This file is not an image');
-    }
   }
 
 }
