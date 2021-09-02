@@ -71,26 +71,6 @@ class _UploadPageState extends State<UploadPage>{
         (_imageFile==null)
           ? SizedBox(width: 10,)
           : Uploader(key: UniqueKey(), file:_imageFile!)
-
-      /*
-      ListView(
-        children: <Widget>[
-          if(_imageFile != null) ...[
-            Image.file(_imageFile!),
-
-            Row(
-              children: <Widget>[
-                FlatButton(
-                  child: Icon(Icons.refresh),
-                  onPressed: _clear,
-                ),
-              ],
-            ),
-            Uploader(key: UniqueKey(), file:_imageFile!)
-          ]
-        ],
-      ),
-       */
     );
   }
 }
@@ -130,14 +110,6 @@ class _UploaderState extends State<Uploader> {
       fit: BoxFit.contain,
     );
   }
-  /*
-  final Image _image = Image.File(
-    widget.file,
-    width: 200,
-    height: 100,
-    fit: BoxFit.contain,
-  );
-   */
 
   DateTime selectedDate = DateTime.now();
 
@@ -214,7 +186,7 @@ class _UploaderState extends State<Uploader> {
                           const Text('Length: '),
                           Expanded(
                             child: TextField(
-                              onSubmitted: (String value){observation['length']=value;},
+                              onSubmitted: (String value){observation['length']=double.parse(value);},
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -233,7 +205,7 @@ class _UploaderState extends State<Uploader> {
                           const Text('Weight: '),
                           Expanded(
                             child: TextField(
-                              onSubmitted: (String value){observation['weight']=value;},
+                              onSubmitted: (String value){observation['weight']=double.parse(value);},
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -303,7 +275,7 @@ class _UploaderState extends State<Uploader> {
                         this.observation['uid'] = user.uid;
                         this.observation['url'] = downloadUrl;
 
-                        await DatabaseService(uid: user.uid).updateObservation(this.observation);
+                        await DatabaseService(uid: user.uid).addObservation(this.observation);
 
                         final snackBar = SnackBar(content: Text('Success'));
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);

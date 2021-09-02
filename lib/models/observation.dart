@@ -2,15 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Observation {
 
-  final String user;
-  final String name;
-  final double length;
-  final double weight;
-  final Timestamp time;
-  final String status;
-  final String url;
+  String? documentID;
+  String? uid;
+  String? name;
+  double? length;
+  double? weight;
+  dynamic time;
+  String? status;
+  String? url;
 
-  Observation( {required this.user, required this.name, required this.length,
-    required this.weight, required this.time, required this.status, required this.url} );
+  Observation( {this.documentID, this.uid, this.name, this.length, this.weight, this.time, this.status, this.url} );
 
 }

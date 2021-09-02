@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:ocean_view/screens/MapPage.dart';
-import 'package:ocean_view/screens/UploadPage.dart';
-import 'package:ocean_view/screens/ActivityPage.dart';
-import 'package:ocean_view/screens/MePage.dart';
+import 'package:ocean_view/screens/map_page.dart';
+import 'package:ocean_view/screens/upload_page.dart';
+import 'package:ocean_view/screens/activity_page.dart';
+import 'package:ocean_view/screens/me/me_page.dart';
 
 class Home extends StatefulWidget {
   Home({required Key key, required this.title}) : super(key: key);
