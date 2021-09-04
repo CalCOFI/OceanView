@@ -1,92 +1,27 @@
 import 'dart:io';
-import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/screens/upload/upload_classification.dart';
 import 'package:ocean_view/services/database.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart' as pPath;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'package:async/async.dart' hide Result;
-import 'package:image_picker/image_picker.dart';
 
-import 'package:ocean_view/src/prediction.dart';
-import '../../models/picture.dart';
-import '../../providers/pictures.dart';
-
-class UploadPage extends StatefulWidget {
-  const UploadPage({required Key key}) : super(key: key);
-
-  @override
-  _UploadPageState createState() => _UploadPageState();
-}
-
-class _UploadPageState extends State<UploadPage>{
-  File? _imageFile = null;
-
-  Future<void> _pickImage(ImageSource source) async{
-    File selected = await ImagePicker.pickImage(source:source);
-
-    setState((){
-      _imageFile = selected;
-    });
-    final appDir = await pPath.getApplicationDocumentsDirectory();
-    final fileName = path.basename(_imageFile!.path);
-    final savedImage = await _imageFile!.copy('${appDir.path}/$fileName');
-    var _imageToStore = Picture(picName: savedImage);
-    _storeImage() {
-      Provider.of<Pictures>(context, listen: false).storeImage(_imageToStore);
-    }
-    _storeImage();
-  }
-
-  void _clear(){
-    setState(()=> _imageFile=null);
-  }
-  @override
-  Widget build(BuildContext context){
-    return Scaffold(
-      bottomNavigationBar: BottomAppBar(
-          child:Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.photo_camera),
-                  onPressed:() => _pickImage(ImageSource.camera),
-                ),
-                IconButton(
-                  icon:Icon(Icons.photo_library),
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                )
-              ]
-          )
-      ),
-      body:
-        (_imageFile==null)
-          ? SizedBox(width: 10,)
-          : Uploader(key: UniqueKey(), file:_imageFile!)
-    );
-  }
-}
 
 // Define a custom Form widget.
-class Uploader extends StatefulWidget {
+class UploadObservation extends StatefulWidget {
   final File file;
-  Uploader({required Key key, required this.file}): super(key:key);
+  UploadObservation({required Key key, required this.file}): super(key:key);
 
   @override
-  _UploaderState createState() => _UploaderState(file);
+  _UploadObservationState createState() => _UploadObservationState(file);
 }
 
 // Define a corresponding State class.
 // This class holds the data related to the Form.
-class _UploaderState extends State<Uploader> {
+class _UploadObservationState extends State<UploadObservation> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final myController = TextEditingController();
@@ -102,7 +37,7 @@ class _UploaderState extends State<Uploader> {
   UploadTask? _uploadTask;
 
 
-  _UploaderState (File file) {
+  _UploadObservationState (File file) {
     this._image = new Image.file(
       file,
       width: 200,
@@ -292,7 +227,7 @@ class _UploaderState extends State<Uploader> {
     );
   }
 
-  // A method that launches the ImageClassification screen and awaits the result from
+  // A method that launches the UploadClassification screen and awaits the result from
   // Navigator.pop.
   void _navigateAndDisplaySelection(BuildContext context) async {
     // Navigator.push returns a Future that completes after calling
@@ -300,138 +235,13 @@ class _UploaderState extends State<Uploader> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) =>
-          ImageClassification(key: UniqueKey(), imageFile: widget.file)),
+          UploadClassification(key: UniqueKey(), imageFile: widget.file)),
     );
 
-    // After the ImageClassification Screen returns a result, change text of TextButton
+    // After the UploadClassification Screen returns a result, change text of TextButton
     setState((){
       _imageListText = result;
       observation['name'] = result;
     });
-  }
-
-}
-
-class ImageClassification extends StatefulWidget {
-  final File imageFile;
-  const ImageClassification({required Key key, required this.imageFile}) : super(key:key);
-
-  @override
-  State<StatefulWidget> createState() => _ImageClassificationState();
-}
-
-class _ImageClassificationState extends State<ImageClassification>{
-
-  var _imageFile;
-  var _prediction;
-  late List<Result> _results;
-
-  Map<String,String> headers = {
-    'x-rapidapi-key':'5b2f443d6cmsh9e04ef3014bde3dp176b6ajsnea7f884ff2e9',
-    'x-rapidapi-host':'visionapi.p.rapidapi.com'
-  };
-  String apiUrl = "https://visionapi.p.rapidapi.com/v1/rapidapi/score_image";
-
-  Future<void> getImage() async{
-    _imageFile = widget.imageFile;
-    var path = _imageFile.path;
-    print('Path of imageFile: $path');
-  }
-
-  upload() async {
-    await getImage();
-    //var bytes = imageFile.openRead();
-    //print(' --- Successfully read ---');
-    // ignore: deprecated_member_use
-    var stream = new http.ByteStream(DelegatingStream.typed(_imageFile.openRead()));
-    //var stream = new http.ByteStream(imageFile.openRead());
-    //stream.cast();
-    var length = await _imageFile.length();
-    print(length);
-
-    var uri = Uri.parse(apiUrl);
-
-    var request = new http.MultipartRequest("POST", uri);
-
-    Map<String,String> mapContent = {"content-type":"mutipart/form-data"};
-    request.headers.addAll(headers);
-    request.headers.addAll(mapContent);
-    var multipartFile = new http.MultipartFile('image', stream, length,
-        filename: path.basename(_imageFile.path),contentType: MediaType.parse("multipart/form-data"));
-
-    request.files.add(multipartFile);
-    var response = await request.send();
-    print(response.statusCode);
-
-    String jsonText = '';
-
-    await response.stream.transform(utf8.decoder).listen((value) {
-      //print(value);
-      jsonText = value;
-    });
-
-    setState (() {
-      _prediction = Prediction.fromJson(json.decode(jsonText));
-      _results = _prediction.results;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context, "None"),
-          ),
-          title: Text("Species suggestions"),
-        ),
-        body:
-        Container(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(onPressed: upload, child: Text('Search')),
-                ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: _prediction==null? 0 : _prediction.results.length,
-                  itemBuilder: (context, index) {
-                    /*
-                  return ListTile(
-                    title: Text('${_prediction==null? 0: _prediction.results[index].taxon.preferredCommonName}'),
-                  );
-                  */
-                    return _prediction==null? ListTile(title:Text("0")) : getCard(context, index);
-                  },
-                ),
-              ]
-          ),
-        )
-    );
-  }
-
-  getCard(BuildContext context, int position) {
-    Result model = _results[position];
-    return Card(
-      child: new InkWell(
-        onTap: (){
-          print("Tap ${model.taxon.preferredCommonName}");
-          Navigator.pop(context, model.taxon.preferredCommonName);
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              model.taxon.preferredCommonName,
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
-          ],
-        ),
-      ),
-      margin: EdgeInsets.all(5),
-    );
   }
 }
