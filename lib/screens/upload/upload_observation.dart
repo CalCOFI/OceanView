@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 // Define a custom Form widget.
 class UploadObservation extends StatefulWidget {
   final File file;
-  UploadObservation({required Key key, required this.file}): super(key:key);
+  UploadObservation({required this.file});
 
   @override
   _UploadObservationState createState() => _UploadObservationState(file);

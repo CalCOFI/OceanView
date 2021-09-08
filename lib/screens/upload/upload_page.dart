@@ -30,6 +30,11 @@ class _UploadPageState extends State<UploadPage>{
     setState((){
       _imageFile = selected;
     });
+
+    if (selected==null){
+      return ;
+    }
+
     final appDir = await pPath.getApplicationDocumentsDirectory();
     final fileName = path.basename(_imageFile!.path);
     final savedImage = await _imageFile!.copy('${appDir.path}/$fileName');
@@ -71,7 +76,7 @@ class _UploadPageState extends State<UploadPage>{
       body:
         (_imageFile==null)
           ? SizedBox(width: 10,)
-          : UploadObservation(key: UniqueKey(), file:_imageFile!)
+          : UploadObservation(file:_imageFile!)
     );
   }
 }
