@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/upload/upload_classification.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,38 +12,65 @@ import 'package:provider/provider.dart';
 
 
 // Define a custom Form widget.
-class UploadObservation extends StatefulWidget {
+class ObservationPage extends StatefulWidget {
   final File file;
-  UploadObservation({required this.file});
+  final String mode;
+  Observation? observation;
+  ObservationPage({required this.file, required this.mode, this.observation});
 
   @override
-  _UploadObservationState createState() => _UploadObservationState(file);
+  _ObservationPageState createState() => _ObservationPageState(file, mode, observation);
 }
 
 // Define a corresponding State class.
 // This class holds the data related to the Form.
-class _UploadObservationState extends State<UploadObservation> {
+class _ObservationPageState extends State<ObservationPage> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final myController = TextEditingController();
-  Map<String,dynamic> observation = <String,dynamic>{};
   String statusValue = 'Observe';
   String _imageListText = "What did you see?";
+
+  // From previous widget
   late Image _image;
+  late String mode;           // single, session, me
+  late String buttonName;     // Upload, Add    , Edit
+  Observation? observation;
 
   // Firebase
   final FirebaseStorage _storage = FirebaseStorage.instance;
-  final FirebaseFirestore _database = FirebaseFirestore.instance;
-  UploadTask? _uploadTask;
 
-
-  _UploadObservationState (File file) {
+  _ObservationPageState (File file, String mode, Observation? observation) {
     this._image = new Image.file(
       file,
       width: 200,
       height: 100,
       fit: BoxFit.contain,
     );
+    this.mode = mode;
+    this.observation = (observation!=null)? observation:Observation();
+    try {
+      switch (mode) {
+        case 'single': {
+          this.buttonName = 'Upload';
+        }
+        break;
+        case 'session': {
+          this.buttonName = 'Add';
+        }
+        break;
+        case 'me': {
+          this.buttonName = 'Edit';
+        }
+        break;
+        default: {
+          throw new FormatException('Undefined mode');
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+
   }
 
   DateTime selectedDate = DateTime.now();
@@ -57,7 +85,7 @@ class _UploadObservationState extends State<UploadObservation> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        this.observation['time'] = Timestamp.fromDate(selectedDate);
+        this.observation!.time = Timestamp.fromDate(selectedDate);
       });
     }
   }
@@ -120,7 +148,7 @@ class _UploadObservationState extends State<UploadObservation> {
                           const Text('Length: '),
                           Expanded(
                             child: TextField(
-                              onSubmitted: (String value){observation['length']=double.parse(value);},
+                              onSubmitted: (String value){this.observation!.length=double.parse(value);},
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -139,7 +167,7 @@ class _UploadObservationState extends State<UploadObservation> {
                           const Text('Weight: '),
                           Expanded(
                             child: TextField(
-                              onSubmitted: (String value){observation['weight']=double.parse(value);},
+                              onSubmitted: (String value){this.observation!.weight=double.parse(value);},
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -184,7 +212,7 @@ class _UploadObservationState extends State<UploadObservation> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 statusValue = newValue!;
-                                observation['status'] = statusValue;
+                                this.observation!.status = statusValue;
                               });
                             },
                             items: <String>['Observe', 'Release', 'Catch']
@@ -199,24 +227,33 @@ class _UploadObservationState extends State<UploadObservation> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    child: Text("Upload"),
+                    child: Text(this.buttonName),
                     onPressed: () async {
-                      String filePath = 'images/${user!.uid}/${DateTime.now()}.png';
 
-                      TaskSnapshot snapshot = await _storage.ref().child(filePath).putFile(widget.file);
-                      if(snapshot.state == TaskState.success) {
-                        final String downloadUrl = await snapshot.ref.getDownloadURL();
-                        this.observation['uid'] = user.uid;
-                        this.observation['url'] = downloadUrl;
+                      if (this.mode == 'single') {
+                        String filePath = 'images/${user!.uid}/${DateTime.now()}.png';
 
-                        // await DatabaseService(uid: user.uid).addObservation(this.observation);
+                        TaskSnapshot snapshot = await _storage.ref().child(filePath).putFile(widget.file);
+                        if(snapshot.state == TaskState.success) {
+                          final String downloadUrl = await snapshot.ref.getDownloadURL();
+                          this.observation!.uid = user.uid;
+                          this.observation!.url = downloadUrl;
 
-                        final snackBar = SnackBar(content: Text('Success'));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          await DatabaseService(uid: user.uid).addObservation(this.observation!);
+
+                          final snackBar = SnackBar(content: Text('Success'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else {
+                          print('Error from image repo ${snapshot.state.toString()}');
+                          throw ('This file is not an image');
+                        }
+                      } else if (this.mode == 'session') {
+                        print('Add');
+                        Navigator.pop(context, [this.observation, this._image]);
                       } else {
-                        print('Error from image repo ${snapshot.state.toString()}');
-                        throw ('This file is not an image');
+                        print('Edit');
                       }
+
                     },
                   ),
                 ],
@@ -240,7 +277,7 @@ class _UploadObservationState extends State<UploadObservation> {
     // After the UploadClassification Screen returns a result, change text of TextButton
     setState((){
       _imageListText = result;
-      observation['name'] = result;
+      this.observation!.name = result;
     });
   }
 }

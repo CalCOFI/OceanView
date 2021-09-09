@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../models/picture.dart';
 import '../../../providers/pictures.dart';
+import '../observation_page.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({required Key key}) : super(key: key);
@@ -45,9 +46,6 @@ class _UploadPageState extends State<UploadPage>{
     _storeImage();
   }
 
-  void _clear(){
-    setState(()=> _imageFile=null);
-  }
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -76,7 +74,8 @@ class _UploadPageState extends State<UploadPage>{
       body:
         (_imageFile==null)
           ? SizedBox(width: 10,)
-          : UploadObservation(file:_imageFile!)
+          //: UploadObservation(file:_imageFile!)
+          : ObservationPage(file:_imageFile!, mode: 'Single')
     );
   }
 }

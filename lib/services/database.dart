@@ -10,6 +10,7 @@ class DatabaseService {
   final CollectionReference observationCollection = FirebaseFirestore.instance.collection('observations');
 
   // Add new observations
+  /*
   Future addObservation(Map<String, dynamic> observation) async {
     // Check for each field in observation
     observation['uid'] = observation['uid'] ?? 'None';
@@ -21,6 +22,21 @@ class DatabaseService {
     observation['url'] = observation['url'] ?? 'None';
 
     return await observationCollection.add(observation);
+  }
+   */
+  Future addObservation(Observation observation) async {
+
+    Map<String, dynamic> obsMap = Map<String, dynamic>();
+    // Check for each field in observation
+    obsMap['uid'] = observation.uid ?? 'None';
+    obsMap['name'] = observation.name ?? 'None';
+    obsMap['length'] = observation.length ?? 0.0;
+    obsMap['weight'] = observation.weight ?? 0.0;
+    obsMap['time'] = observation.time ?? 'None';
+    obsMap['status'] = observation.status ?? 'Observe';
+    obsMap['url'] = observation.url ?? 'None';
+
+    return await observationCollection.add(obsMap);
   }
 
   // observation list from snapshots
