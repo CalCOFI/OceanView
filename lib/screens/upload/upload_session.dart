@@ -22,16 +22,15 @@ class UploadSession extends StatefulWidget {
 class _UploadSessionState extends State<UploadSession> {
 
   File? _imageFile = null;
+  DateTime _startTime = DateTime.now();
   List<dynamic> result = [];
   List<Observation> observationList = [];
   List<Image> imageList = [];
 
   Future<void> _pickImage(ImageSource source) async{
-    File selected = await ImagePicker.pickImage(source:source);
+    _imageFile = await ImagePicker.pickImage(source:source);
 
-    _imageFile = selected;
-
-    if (selected==null){
+    if (_imageFile==null){
       return ;
     }
 
@@ -70,9 +69,11 @@ class _UploadSessionState extends State<UploadSession> {
                     ? IconButton(
                         icon: Icon(Icons.add_circle_outline),
                         onPressed: () async {
+
                           await _pickImage(ImageSource.camera);
                           print(_imageFile);
                           if (_imageFile!=null) {
+                            // Get observation from ObservationPage
                             result = await Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
@@ -83,6 +84,9 @@ class _UploadSessionState extends State<UploadSession> {
                               observationList.add(result[0]);
                               imageList.add(result[1]);
                             });
+
+                            // Add observation to local directory
+
                           }
                         }
                       )

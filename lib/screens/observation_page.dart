@@ -71,6 +71,11 @@ class _ObservationPageState extends State<ObservationPage> {
       print(e.toString());
     }
 
+    if (mode == 'single'){
+      this.observation!.session = DateTime.now().toString();
+    }
+
+
   }
 
   DateTime selectedDate = DateTime.now();

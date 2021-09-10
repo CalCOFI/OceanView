@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ocean_view/screens/upload/upload_observation.dart';
 import 'package:ocean_view/screens/upload/upload_session.dart';
@@ -26,13 +27,9 @@ class _UploadPageState extends State<UploadPage>{
   File? _imageFile = null;
 
   Future<void> _pickImage(ImageSource source) async{
-    File selected = await ImagePicker.pickImage(source:source);
+    _imageFile = await ImagePicker.pickImage(source:source);
 
-    setState((){
-      _imageFile = selected;
-    });
-
-    if (selected==null){
+    if (_imageFile==null){
       return ;
     }
 
@@ -49,33 +46,51 @@ class _UploadPageState extends State<UploadPage>{
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      bottomNavigationBar: BottomAppBar(
-          child:Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.photo_camera),
-                  onPressed:() => _pickImage(ImageSource.camera),
-                ),
-                IconButton(
-                  icon:Icon(Icons.photo_library),
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                ),
-                IconButton(
-                  icon: Icon(Icons.not_started_outlined),
-                  onPressed: () => Navigator.push(
-                    context, MaterialPageRoute(
-                      builder: (context) => UploadSession()
-                    )
-                  ),
-                ),
-              ]
-          )
-      ),
       body:
-        (_imageFile==null)
-          ? SizedBox(width: 10,)
-          //: UploadObservation(file:_imageFile!)
-          : ObservationPage(file:_imageFile!, mode: 'Single')
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('Single Observation'),
+              IconButton(
+                  icon: Icon(Icons.photo_camera),
+                  onPressed:() async {
+                    await _pickImage(ImageSource.camera);
+                    if (_imageFile != null) {
+                      Navigator.push(
+                          context, MaterialPageRoute(
+                          builder: (context) =>
+                              ObservationPage(file: _imageFile!, mode:'single')
+                      )
+                      );
+                    }
+                  }
+              ),
+              IconButton(
+                  icon:Icon(Icons.photo_library),
+                  onPressed: () async {
+                    await _pickImage(ImageSource.gallery);
+                    if (_imageFile != null) {
+                      Navigator.push(
+                          context, MaterialPageRoute(
+                          builder: (context) =>
+                              ObservationPage(file: _imageFile!, mode:'single')
+                      )
+                      );
+                    }
+                  }
+              ),
+              Text('Record Session'),
+              IconButton(
+                icon: Icon(Icons.not_started_outlined),
+                onPressed: () => Navigator.push(
+                    context, MaterialPageRoute(
+                    builder: (context) => UploadSession()
+                )
+                ),
+              ),
+            ],
+          )
     );
   }
 }
