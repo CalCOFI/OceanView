@@ -10,16 +10,22 @@ import 'package:ocean_view/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
+import 'package:ocean_view/models/picture.dart';
+import 'package:ocean_view/providers/pictures.dart';
+import 'package:ocean_view/services/local_store.dart';
+
+
 
 // Define a custom Form widget.
 class ObservationPage extends StatefulWidget {
   final File file;
   final String mode;
   Observation? observation;
-  ObservationPage({required this.file, required this.mode, this.observation});
+  int? index;    // Index for observation in session
+  ObservationPage({required this.file, required this.mode, this.observation, this.index});
 
   @override
-  _ObservationPageState createState() => _ObservationPageState(file, mode, observation);
+  _ObservationPageState createState() => _ObservationPageState(file, mode, observation, index);
 }
 
 // Define a corresponding State class.
@@ -33,14 +39,17 @@ class _ObservationPageState extends State<ObservationPage> {
 
   // From previous widget
   late Image _image;
+  late File _imageFile;
   late String mode;           // single, session, me
   late String buttonName;     // Upload, Add    , Edit
   Observation? observation;
+  int index = 0;
 
   // Firebase
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  _ObservationPageState (File file, String mode, Observation? observation) {
+  _ObservationPageState (File file, String mode, Observation? observation, int? index) {
+    this._imageFile = file;
     this._image = new Image.file(
       file,
       width: 200,
@@ -75,7 +84,7 @@ class _ObservationPageState extends State<ObservationPage> {
       this.observation!.session = DateTime.now().toString();
     }
 
-
+    this.index = (index==null)? 0 : index;
   }
 
   DateTime selectedDate = DateTime.now();
@@ -254,6 +263,13 @@ class _ObservationPageState extends State<ObservationPage> {
                         }
                       } else if (this.mode == 'session') {
                         print('Add');
+
+                        // Add image to local directory
+                        await LocalStoreService().saveImage(context, _imageFile, '$index.png');
+
+                        // Add observation to local directory
+                        await LocalStoreService().saveObservation(this.observation!, '$index.txt');
+
                         Navigator.pop(context, [this.observation, this._image]);
                       } else {
                         print('Edit');

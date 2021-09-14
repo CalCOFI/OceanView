@@ -1,17 +1,11 @@
 import 'dart:io';
 
 import 'package:ocean_view/models/observation.dart';
-import 'package:ocean_view/screens/upload/upload_observation.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart' as pPath;
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/upload/stopwatch.dart';
-import 'package:provider/provider.dart';
-import '../../../models/picture.dart';
-import '../../../providers/pictures.dart';
-import '../observation_page.dart';
+import 'package:ocean_view/screens/observation_page.dart';
 
 class UploadSession extends StatefulWidget {
 
@@ -33,15 +27,6 @@ class _UploadSessionState extends State<UploadSession> {
     if (_imageFile==null){
       return ;
     }
-
-    final appDir = await pPath.getApplicationDocumentsDirectory();
-    final fileName = path.basename(_imageFile!.path);
-    final savedImage = await _imageFile!.copy('${appDir.path}/$fileName');
-    var _imageToStore = Picture(picName: savedImage);
-    _storeImage() {
-      Provider.of<Pictures>(context, listen: false).storeImage(_imageToStore);
-    }
-    _storeImage();
   }
 
   @override
@@ -71,13 +56,12 @@ class _UploadSessionState extends State<UploadSession> {
                         onPressed: () async {
 
                           await _pickImage(ImageSource.camera);
-                          print(_imageFile);
                           if (_imageFile!=null) {
                             // Get observation from ObservationPage
                             result = await Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
-                                  ObservationPage(file: _imageFile!, mode:'session')
+                                  ObservationPage(file: _imageFile!, mode:'session', index: observationList.length)
                               )
                             );
                             setState(() {

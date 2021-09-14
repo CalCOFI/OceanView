@@ -11,8 +11,8 @@ class StopWatch extends StatefulWidget {
 class _StopWatchState extends State<StopWatch> {
 
   bool recording = false;
-  late Stream<int> timerStream;
-  late StreamSubscription<int> timerSubscription;
+  Stream<int>? timerStream;
+  StreamSubscription<int>? timerSubscription;
   String hoursStr = '00';
   String minutesStr = '00';
   String secondsStr = '00';
@@ -36,6 +36,9 @@ class _StopWatchState extends State<StopWatch> {
     void tick(_) {
       counter++;
       streamController.add(counter);
+      if (!recording) {
+        stopTimer();
+      }
     }
 
     void startTimer() {
@@ -54,6 +57,14 @@ class _StopWatchState extends State<StopWatch> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    if (timerSubscription!=null){
+      timerSubscription!.cancel();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +73,7 @@ class _StopWatchState extends State<StopWatch> {
           onPressed: () {
             if (!recording) {
               timerStream = stopWatchStream();
-              timerSubscription = timerStream.listen((int newTick) {
+              timerSubscription = timerStream!.listen((int newTick) {
                 setState(() {
                   hoursStr = ((newTick / (60 * 60)) % 60)
                       .floor()
@@ -89,7 +100,7 @@ class _StopWatchState extends State<StopWatch> {
         IconButton(
           onPressed: () {
             if (recording){
-              timerSubscription.cancel();
+              timerSubscription!.cancel();
               //timerStream = null;
               setState(() {
                 hoursStr = '00';

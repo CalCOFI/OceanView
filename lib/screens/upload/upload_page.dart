@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ocean_view/screens/upload/upload_observation.dart';
 import 'package:ocean_view/screens/upload/upload_session.dart';
 
 import 'package:path/path.dart' as path;
@@ -12,9 +11,10 @@ import 'package:provider/provider.dart';
 
 import 'package:image_picker/image_picker.dart';
 
-import '../../../models/picture.dart';
-import '../../../providers/pictures.dart';
-import '../observation_page.dart';
+import 'package:ocean_view/services/local_store.dart';
+import 'package:ocean_view/models/picture.dart';
+import 'package:ocean_view/providers/pictures.dart';
+import 'package:ocean_view/screens/observation_page.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({required Key key}) : super(key: key);
@@ -32,15 +32,6 @@ class _UploadPageState extends State<UploadPage>{
     if (_imageFile==null){
       return ;
     }
-
-    final appDir = await pPath.getApplicationDocumentsDirectory();
-    final fileName = path.basename(_imageFile!.path);
-    final savedImage = await _imageFile!.copy('${appDir.path}/$fileName');
-    var _imageToStore = Picture(picName: savedImage);
-    _storeImage() {
-      Provider.of<Pictures>(context, listen: false).storeImage(_imageToStore);
-    }
-    _storeImage();
   }
 
   @override
