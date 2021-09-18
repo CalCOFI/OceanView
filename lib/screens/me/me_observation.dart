@@ -1,15 +1,186 @@
 import 'package:flutter/material.dart';
+import 'package:ocean_view/screens/me/observation_list.dart';
+import 'package:provider/provider.dart';
+import 'package:ocean_view/models/observation.dart';
 
-class MeObservation extends StatefulWidget {
-  const MeObservation({Key? key}) : super(key: key);
+class MeObservation extends StatelessWidget {
+  const MeObservation({Key? key, required this.observation}) : super(key: key);
+  final Observation observation;
 
-  @override
-  _MeObservationState createState() => _MeObservationState();
-}
-
-class _MeObservationState extends State<MeObservation> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    //Create an object for each information
+
+    String speciesName ='';
+    double length =0.0;
+    double weight =0.0;
+    dynamic time = [];
+    String status = '';
+    String imageURL = '';
+
+    //observations.forEach((observation) {
+      //Assign values for all objects
+      speciesName = observation.name!;
+      length = observation.length!;
+      weight = observation.weight!;
+      time = observation.time!;
+      status = observation.status!;
+      imageURL = observation.url!;
+      print('documentID: ${observation.documentID}');
+      print('uid: ${observation.uid}');
+      print('length: ${observation.length}');
+      print('weight: ${observation.weight}');
+    //}
+    //);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Observation Details'),
+      ),
+      //Layout for all information
+      body:
+      Padding(
+        padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+
+            Container(
+              margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+              child: Center(
+                child: Image(
+                  image:NetworkImage(imageURL),
+                  height: 250,
+                  width: 180,
+                ),
+              ),
+            ),
+            Divider(
+
+              color: Colors.black,
+            ),
+            Text(
+                'Species Name:',
+                style: TextStyle(
+                  color: Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '$speciesName',
+                style: TextStyle(
+                  color: Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Length(feet):',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '$length',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Weight(lb):',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '$weight',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Quantity: ',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '????',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Time:',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '$time',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Location: ',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '?????',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Status',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '$status',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+          ],
+        ),
+      ),
+    );
   }
+
 }
