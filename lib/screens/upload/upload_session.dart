@@ -61,7 +61,9 @@ class _UploadSessionState extends State<UploadSession> {
                             result = await Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
-                                  ObservationPage(file: _imageFile!, mode:'session', index: observationList.length)
+                                  ObservationPage(file: _imageFile!, mode:'session',
+                                      index: observationList.length,
+                                      stopwatchStart: _startTime)
                               )
                             );
                             setState(() {

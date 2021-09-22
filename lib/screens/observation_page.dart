@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -22,10 +23,11 @@ class ObservationPage extends StatefulWidget {
   final String mode;
   Observation? observation;
   int? index;    // Index for observation in session
-  ObservationPage({required this.file, required this.mode, this.observation, this.index});
+  DateTime? stopwatchStart;
+  ObservationPage({required this.file, required this.mode, this.observation, this.index, this.stopwatchStart});
 
   @override
-  _ObservationPageState createState() => _ObservationPageState(file, mode, observation, index);
+  _ObservationPageState createState() => _ObservationPageState(file, mode, observation, index, stopwatchStart);
 }
 
 // Define a corresponding State class.
@@ -48,7 +50,7 @@ class _ObservationPageState extends State<ObservationPage> {
   // Firebase
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  _ObservationPageState (File file, String mode, Observation? observation, int? index) {
+  _ObservationPageState (File file, String mode, Observation? observation, int? index, DateTime? stopwatchStart) {
     this._imageFile = file;
     this._image = new Image.file(
       file,
@@ -80,9 +82,8 @@ class _ObservationPageState extends State<ObservationPage> {
       print(e.toString());
     }
 
-    if (mode == 'single'){
-      this.observation!.session = DateTime.now().toString();
-    }
+    this.observation!.session =
+      (mode=='session')? Timestamp.fromDate(stopwatchStart!) : '0';
 
     this.index = (index==null)? 0 : index;
   }

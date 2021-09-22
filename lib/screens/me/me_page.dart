@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import 'observation_list.dart';
 
-
 class MePage extends StatelessWidget {
   const MePage({Key? key}) : super(key: key);
 
@@ -21,7 +20,7 @@ class MePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.brown[50],
         appBar: AppBar(
-          title: Text('Me: ${user!.uid}'),
+          title: Text('Me: ${user.uid}'),
           backgroundColor: Colors.brown[400],
           elevation: 0.0,
         ),
