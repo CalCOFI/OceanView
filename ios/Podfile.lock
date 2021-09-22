@@ -409,7 +409,7 @@ PODS:
     - Flutter
   - geofencing (0.0.1):
     - Flutter
-  - geolocator (6.2.0):
+  - geolocator_apple (1.0.0):
     - Flutter
   - google_maps_flutter (0.0.1):
     - Flutter
@@ -489,7 +489,7 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_native_timezone (from `.symlinks/plugins/flutter_native_timezone/ios`)
   - geofencing (from `.symlinks/plugins/geofencing/ios`)
-  - geolocator (from `.symlinks/plugins/geolocator/ios`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - location (from `.symlinks/plugins/location/ios`)
@@ -535,8 +535,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_native_timezone/ios"
   geofencing:
     :path: ".symlinks/plugins/geofencing/ios"
-  geolocator:
-    :path: ".symlinks/plugins/geolocator/ios"
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/ios"
   google_maps_flutter:
     :path: ".symlinks/plugins/google_maps_flutter/ios"
   image_picker:
@@ -551,7 +551,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
-  camera: a0ca5080336f7af47b88436e5e26da3dee5568f0
+  camera: 3164201dc344383e62282964016528c4f5a9ad50
   cloud_firestore: 9faeed9b5f842959d3fb9ba2cd7fa8e596536009
   Firebase: ff8c73105b90e33e1dc6c8e5445d7adc2ccdc7c1
   firebase_auth: 214ff86facd807bbb0ccff32f4b2d3865e3bc4f3
@@ -566,7 +566,7 @@ SPEC CHECKSUMS:
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_native_timezone: 5f05b2de06c9776b4cc70e1839f03de178394d22
   geofencing: 98674d4c10508e8bbf7678623d48c2a4172559ee
-  geolocator: f5e3de65e241caba7ce3e8a618803387bda73384
+  geolocator_apple: 60a1c3f5930c090d2f5164ba8bf25f4f89121e3c
   google_maps_flutter: df4e7de95264aa0a2f11aac0fc7e313acb8ffc7e
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
   GoogleMaps: eb03e327edfd70b06de1e6e321653f73712df7ad
@@ -584,4 +584,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.10.1
