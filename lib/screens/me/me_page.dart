@@ -22,11 +22,12 @@ class MePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.brown[50],
         appBar: AppBar(
-          title: Text('Me: ${user!.uid}'),
+          title: Text('Me Page'),
           backgroundColor: Colors.brown[400],
           elevation: 0.0,
           
         ),
+        //Run ObservationList() from observation_list.dart
         body: ObservationList(),
       ),
     );
