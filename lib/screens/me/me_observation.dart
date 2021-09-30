@@ -5,12 +5,13 @@ import 'package:ocean_view/models/observation.dart';
 
 class MeObservation extends StatelessWidget {
   const MeObservation({Key? key, required this.observation}) : super(key: key);
+  //Create an observation object to store the data passed from the onTap() function from
+  //observation_list.dart
   final Observation observation;
 
   @override
   Widget build(BuildContext context) {
-    //Create an object for each information
-
+    //Create objects to store detailed information of the observation
     String speciesName ='';
     double length =0.0;
     double weight =0.0;
@@ -18,8 +19,7 @@ class MeObservation extends StatelessWidget {
     String status = '';
     String imageURL = '';
 
-    //observations.forEach((observation) {
-      //Assign values for all objects
+    //Assign values for all objects
       speciesName = observation.name!;
       length = observation.length!;
       weight = observation.weight!;
@@ -30,8 +30,8 @@ class MeObservation extends StatelessWidget {
       print('uid: ${observation.uid}');
       print('length: ${observation.length}');
       print('weight: ${observation.weight}');
-    //}
-    //);
+
+      //Return the information in an organized layout
     return Scaffold(
       appBar: AppBar(
         title: Text('Observation Details'),
