@@ -24,7 +24,7 @@ class _ObservationListState extends State<ObservationList> {
     observations.forEach((observation) {
       print('$index');
       imageURL = observation.url!;
-      index+=1;
+      index += 1;
       print('$imageURL');
     });
     return Padding(
@@ -39,34 +39,34 @@ class _ObservationListState extends State<ObservationList> {
         itemCount: observations.length,
         itemBuilder: (BuildContext ctx, index) {
           return Container(
-            alignment: Alignment.center,
-            //A widget that contains the onTap() function which passes the observation
+              alignment: Alignment.center,
+              //A widget that contains the onTap() function which passes the observation
               //data to MeObservation() when clicking an image
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder:(context) => MeObservation(observation:observations[index]),
-                    settings: RouteSettings(
-                    arguments: observations[index],
-                  ),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MeObservation(observation: observations[index]),
+                      settings: RouteSettings(
+                        arguments: observations[index],
+                      ),
+                    ),
+                  );
+                },
+                //Image Widget which displays the image
+                child: Image(
+                  image: NetworkImage(observations[index].url!),
+                  height: 250,
+                  width: 180,
                 ),
-                );
-              },
-              //Image Widget which displays the image
-              child: Image(
-                image:NetworkImage(observations[index].url!),
-                height: 250,
-                width: 180,
-              ),
-            )
+              )
           );
         },
 
 
       ),
     );
-
-
-
+  }
+}
