@@ -21,6 +21,10 @@ class _UploadSessionState extends State<UploadSession> {
   List<Observation> observationList = [];
   List<Image> imageList = [];
 
+  timeCallback (callbackTime) {
+    print(callbackTime);
+  }
+
   Future<void> _pickImage(ImageSource source) async{
     _imageFile = await ImagePicker.pickImage(source:source);
 
@@ -40,7 +44,7 @@ class _UploadSessionState extends State<UploadSession> {
         Column(
           //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            StopWatch(),
+            StopWatch(timeCallback: timeCallback),
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

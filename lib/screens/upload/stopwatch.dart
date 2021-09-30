@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 
 class StopWatch extends StatefulWidget {
 
+  final Function(String) timeCallback;
+  StopWatch ({required this.timeCallback});
+
   @override
   _StopWatchState createState() => _StopWatchState();
 }
@@ -100,6 +103,9 @@ class _StopWatchState extends State<StopWatch> {
         IconButton(
           onPressed: () {
             if (recording){
+
+              widget.timeCallback('$hoursStr:$minutesStr:$secondsStr');
+
               timerSubscription!.cancel();
               //timerStream = null;
               setState(() {
