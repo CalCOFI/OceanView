@@ -15,19 +15,17 @@ import 'package:ocean_view/models/picture.dart';
 import 'package:ocean_view/providers/pictures.dart';
 import 'package:ocean_view/services/local_store.dart';
 
-
-
 // Define a custom Form widget.
 class ObservationPage extends StatefulWidget {
   final File file;
   final String mode;
   Observation? observation;
   int? index;    // Index for observation in session
-  DateTime? stopwatchStart;
-  ObservationPage({required this.file, required this.mode, this.observation, this.index, this.stopwatchStart});
+  double? stopwatchRecord;
+  ObservationPage({required this.file, required this.mode, this.observation, this.index, this.stopwatchRecord});
 
   @override
-  _ObservationPageState createState() => _ObservationPageState(file, mode, observation, index, stopwatchStart);
+  _ObservationPageState createState() => _ObservationPageState(this.file, this.mode, this.observation, this.index, this.stopwatchRecord);
 }
 
 // Define a corresponding State class.
@@ -50,7 +48,7 @@ class _ObservationPageState extends State<ObservationPage> {
   // Firebase
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  _ObservationPageState (File file, String mode, Observation? observation, int? index, DateTime? stopwatchStart) {
+  _ObservationPageState (File file, String mode, Observation? observation, int? index, double? stopwatchRecord) {
     this._imageFile = file;
     this._image = new Image.file(
       file,
@@ -61,7 +59,7 @@ class _ObservationPageState extends State<ObservationPage> {
     this.mode = mode;
     this.observation = (observation!=null)? observation:Observation();
     try {
-      switch (mode) {
+      switch (this.mode) {
         case 'single': {
           this.buttonName = 'Upload';
         }
@@ -82,8 +80,8 @@ class _ObservationPageState extends State<ObservationPage> {
       print(e.toString());
     }
 
-    this.observation!.session =
-      (mode=='session')? Timestamp.fromDate(stopwatchStart!) : '0';
+    this.observation!.stopwatchRecord =
+      (mode=='session')? stopwatchRecord : 0;
 
     this.index = (index==null)? 0 : index;
   }
@@ -262,7 +260,12 @@ class _ObservationPageState extends State<ObservationPage> {
                           print('Error from image repo ${snapshot.state.toString()}');
                           throw ('This file is not an image');
                         }
+
+                        // Back to previous page
+                        Navigator.pop(context);
+
                       } else if (this.mode == 'session') {
+                        print('Stopwatch: ${this.observation!.stopwatchRecord}');
                         print('Add');
 
                         // Add image to local directory

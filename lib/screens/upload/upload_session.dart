@@ -4,8 +4,10 @@ import 'package:ocean_view/models/observation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ocean_view/screens/upload/stopwatch.dart';
+import 'package:ocean_view/screens/upload/upload_stopwatch.dart';
 import 'package:ocean_view/screens/observation_page.dart';
+import 'package:ocean_view/screens/upload/upload_timeline.dart';
+import 'package:ocean_view/singletons/appdata.dart';
 
 class UploadSession extends StatefulWidget {
 
@@ -21,8 +23,16 @@ class _UploadSessionState extends State<UploadSession> {
   List<Observation> observationList = [];
   List<Image> imageList = [];
 
-  timeCallback (callbackTime) {
-    print(callbackTime);
+  // Use stopCallback in stopwatch to navigate to timeline
+  stopCallback (Duration elapsedTime) {
+    print(elapsedTime.toString());
+
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) =>
+                UploadTimeline()
+        )
+    );
   }
 
   Future<void> _pickImage(ImageSource source) async{
@@ -44,7 +54,7 @@ class _UploadSessionState extends State<UploadSession> {
         Column(
           //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            StopWatch(timeCallback: timeCallback),
+            UploadStopwatch(stopCallback: stopCallback),
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -67,7 +77,7 @@ class _UploadSessionState extends State<UploadSession> {
                               builder: (context) =>
                                   ObservationPage(file: _imageFile!, mode:'session',
                                       index: observationList.length,
-                                      stopwatchStart: _startTime)
+                                      stopwatchRecord: appData.getElapsedSeconds())
                               )
                             );
                             setState(() {

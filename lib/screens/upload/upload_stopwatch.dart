@@ -1,17 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ocean_view/singletons/appdata.dart';
 
-class StopWatch extends StatefulWidget {
+class UploadStopwatch extends StatefulWidget {
 
-  final Function(String) timeCallback;
-  StopWatch ({required this.timeCallback});
+  final Function(Duration) stopCallback;
+  UploadStopwatch ({required this.stopCallback});
 
   @override
-  _StopWatchState createState() => _StopWatchState();
+  _UploadStopwatchState createState() => _UploadStopwatchState();
 }
 
-class _StopWatchState extends State<StopWatch> {
+class _UploadStopwatchState extends State<UploadStopwatch> {
 
   bool recording = false;
   Stream<int>? timerStream;
@@ -90,6 +91,8 @@ class _StopWatchState extends State<StopWatch> {
                       (newTick % 60).floor().toString().padLeft(2, '0');
                 });
               });
+              // Start Stopwatch in appdata
+              appData.start();
             }
           },
           icon: Icon(Icons.not_started_rounded),
@@ -104,7 +107,12 @@ class _StopWatchState extends State<StopWatch> {
           onPressed: () {
             if (recording){
 
-              widget.timeCallback('$hoursStr:$minutesStr:$secondsStr');
+              var duration = Duration(
+                hours: int.parse(hoursStr),
+                minutes: int.parse(minutesStr),
+                seconds: int.parse(secondsStr)
+              );
+              widget.stopCallback(duration);
 
               timerSubscription!.cancel();
               //timerStream = null;
@@ -113,6 +121,9 @@ class _StopWatchState extends State<StopWatch> {
                 minutesStr = '00';
                 secondsStr = '00';
               });
+
+              // Stop Stopwatch in appdata
+              appData.stop();
             }
           },
           icon: Icon(Icons.stop_circle_sharp),

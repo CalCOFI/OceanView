@@ -21,7 +21,7 @@ class MePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.brown[50],
         appBar: AppBar(
-          title: Text('Me Page'),
+          title: Text('Me Page: ${user.uid.substring(0,5)}'),
           backgroundColor: Colors.brown[400],
           elevation: 0.0,
           

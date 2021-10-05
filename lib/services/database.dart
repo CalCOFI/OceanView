@@ -35,7 +35,7 @@ class DatabaseService {
     obsMap['time'] = observation.time ?? 'None';
     obsMap['status'] = observation.status ?? 'Observe';
     obsMap['url'] = observation.url ?? 'None';
-    obsMap['session'] = observation.session ?? '0';
+    obsMap['stopwatchRecord'] = observation.stopwatchRecord ?? 0;
 
     return await observationCollection.add(obsMap);
   }
@@ -52,7 +52,7 @@ class DatabaseService {
         time: doc.data()['time'],
         status: doc.data()['status'],
         url: doc.data()['url'],
-        session: doc.data()['session'],
+        stopwatchRecord: doc.data()['stopwatchRecord'],
       );
     }).toList();
   }

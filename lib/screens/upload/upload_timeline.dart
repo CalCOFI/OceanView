@@ -10,6 +10,15 @@ class UploadTimeline extends StatefulWidget {
 class _UploadTimelineState extends State<UploadTimeline> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: Text('timeline')),
+      body: ElevatedButton(
+        onPressed: () {
+          // Pop to the main page
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+        child: Text('back'),
+      )
+    );
   }
 }
