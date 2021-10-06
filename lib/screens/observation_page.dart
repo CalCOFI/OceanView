@@ -1,19 +1,18 @@
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+
+import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/upload/upload_classification.dart';
 import 'package:ocean_view/services/database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
-
-import 'package:ocean_view/models/picture.dart';
-import 'package:ocean_view/providers/pictures.dart';
-import 'package:ocean_view/services/local_store.dart';
 
 // Define a custom Form widget.
 class ObservationPage extends StatefulWidget {
@@ -21,11 +20,10 @@ class ObservationPage extends StatefulWidget {
   final String mode;
   Observation? observation;
   int? index;    // Index for observation in session
-  double? stopwatchRecord;
-  ObservationPage({required this.file, required this.mode, this.observation, this.index, this.stopwatchRecord});
+  ObservationPage({required this.file, required this.mode, this.observation, this.index});
 
   @override
-  _ObservationPageState createState() => _ObservationPageState(this.file, this.mode, this.observation, this.index, this.stopwatchRecord);
+  _ObservationPageState createState() => _ObservationPageState(this.file, this.mode, this.observation, this.index);
 }
 
 // Define a corresponding State class.
@@ -43,12 +41,13 @@ class _ObservationPageState extends State<ObservationPage> {
   late String mode;           // single, session, me
   late String buttonName;     // Upload, Add    , Edit
   Observation? observation;
+  DateTime? selectedDate;
   int index = 0;
 
   // Firebase
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  _ObservationPageState (File file, String mode, Observation? observation, int? index, double? stopwatchRecord) {
+  _ObservationPageState (File file, String mode, Observation? observation, int? index) {
     this._imageFile = file;
     this._image = new Image.file(
       file,
@@ -80,25 +79,42 @@ class _ObservationPageState extends State<ObservationPage> {
       print(e.toString());
     }
 
-    this.observation!.stopwatchRecord =
-      (mode=='session')? stopwatchRecord : 0;
-
     this.index = (index==null)? 0 : index;
+    if (this.observation!.time==null) {
+      selectedDate = DateTime.now();
+      this.observation!.time = selectedDate;
+    } else {
+      selectedDate = this.observation!.time;
+    }
   }
-
-  DateTime selectedDate = DateTime.now();
 
   // Select date
   Future<Null> _selectDate(BuildContext context) async {
+    /*
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: selectedDate,
+        initialDate: selectedDate!,
         firstDate: DateTime(2015, 8),
         lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
-        this.observation!.time = Timestamp.fromDate(selectedDate);
+        this.observation!.time = selectedDate;
+      });
+    }
+     */
+    final DateTime? picked = await DatePicker.showDateTimePicker(context,
+        showTitleActions: true,
+        minTime: DateTime(2000, 1, 1),
+        maxTime: DateTime.now(), onChanged: (date) {
+          print('change $date');
+        }, onConfirm: (date) {
+          print('confirm $date');
+        }, currentTime: selectedDate!, locale: LocaleType.en);
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+        this.observation!.time = selectedDate;
       });
     }
   }
@@ -117,7 +133,8 @@ class _ObservationPageState extends State<ObservationPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Retrieve Text Input'),
+        title: Text('Observation'),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
           child: Container(
@@ -160,8 +177,9 @@ class _ObservationPageState extends State<ObservationPage> {
                         children: <Widget>[
                           const Text('Length: '),
                           Expanded(
-                            child: TextField(
-                              onSubmitted: (String value){this.observation!.length=double.parse(value);},
+                            child: TextFormField(
+                              initialValue: (this.observation!.length==null)? '0':this.observation!.length.toString(),
+                              onChanged: (String value){this.observation!.length=double.parse(value);},
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -198,7 +216,7 @@ class _ObservationPageState extends State<ObservationPage> {
                         children: <Widget>[
                           const Text("Time: "),
                           const SizedBox(width: 10.0,),
-                          Text("${selectedDate.toLocal()}".split(' ')[0]),
+                          Text("${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
                           const SizedBox(width: 10.0),
                           ElevatedButton(
                             onPressed: () => _selectDate(context),
@@ -265,7 +283,7 @@ class _ObservationPageState extends State<ObservationPage> {
                         Navigator.pop(context);
 
                       } else if (this.mode == 'session') {
-                        print('Stopwatch: ${this.observation!.stopwatchRecord}');
+                        print('Stopwatch: ${this.observation!.stopwatchStart}');
                         print('Add');
 
                         // Add image to local directory

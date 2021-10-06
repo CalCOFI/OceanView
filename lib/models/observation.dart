@@ -12,11 +12,10 @@ class Observation {
   String? url;
 
   // stopwatch time
-  dynamic stopwatchRecord;   // 0: single observation / Elapsed seconds: session observation
-  dynamic stopwatchStop;
+  dynamic stopwatchStart;      // Record timestamp of stopwatch start
 
   Observation( {this.documentID, this.uid, this.name,
     this.length, this.weight, this.time, this.status,
-    this.url, this.stopwatchRecord, this.stopwatchStop} );
+    this.url, this.stopwatchStart} );
 
 }

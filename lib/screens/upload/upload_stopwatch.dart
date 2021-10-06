@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:ocean_view/singletons/appdata.dart';
 
 class UploadStopwatch extends StatefulWidget {
 
-  final Function(Duration) stopCallback;
-  UploadStopwatch ({required this.stopCallback});
+  final Function() startCallback;
+  final Function(DateTime, Duration) stopCallback;
+  UploadStopwatch ({required this.startCallback, required this.stopCallback});
 
   @override
   _UploadStopwatchState createState() => _UploadStopwatchState();
@@ -14,12 +14,13 @@ class UploadStopwatch extends StatefulWidget {
 
 class _UploadStopwatchState extends State<UploadStopwatch> {
 
-  bool recording = false;
+  bool isRecording = false;
   Stream<int>? timerStream;
   StreamSubscription<int>? timerSubscription;
   String hoursStr = '00';
   String minutesStr = '00';
   String secondsStr = '00';
+  DateTime _startTime = DateTime.now();
 
   Stream<int> stopWatchStream() {
     StreamController<int> streamController = StreamController();
@@ -33,21 +34,21 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
         timer = null;
         counter = 0;
         streamController.close();
-        recording = false;
+        isRecording = false;
       }
     }
 
     void tick(_) {
       counter++;
       streamController.add(counter);
-      if (!recording) {
+      if (!isRecording) {
         stopTimer();
       }
     }
 
     void startTimer() {
       timer = Timer.periodic(timerInterval, tick);
-      recording = true;
+      isRecording = true;
     }
 
     streamController = StreamController<int>(
@@ -75,7 +76,8 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
       children: <Widget>[
         IconButton(
           onPressed: () {
-            if (!recording) {
+            if (!isRecording) {
+              widget.startCallback();
               timerStream = stopWatchStream();
               timerSubscription = timerStream!.listen((int newTick) {
                 setState(() {
@@ -91,8 +93,7 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
                       (newTick % 60).floor().toString().padLeft(2, '0');
                 });
               });
-              // Start Stopwatch in appdata
-              appData.start();
+
             }
           },
           icon: Icon(Icons.not_started_rounded),
@@ -105,14 +106,14 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
         ),
         IconButton(
           onPressed: () {
-            if (recording){
+            if (isRecording){
 
               var duration = Duration(
                 hours: int.parse(hoursStr),
                 minutes: int.parse(minutesStr),
                 seconds: int.parse(secondsStr)
               );
-              widget.stopCallback(duration);
+              widget.stopCallback(_startTime, duration);
 
               timerSubscription!.cancel();
               //timerStream = null;
@@ -122,8 +123,6 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
                 secondsStr = '00';
               });
 
-              // Stop Stopwatch in appdata
-              appData.stop();
             }
           },
           icon: Icon(Icons.stop_circle_sharp),

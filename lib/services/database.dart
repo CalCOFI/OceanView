@@ -10,20 +10,6 @@ class DatabaseService {
   final CollectionReference observationCollection = FirebaseFirestore.instance.collection('observations');
 
   // Add new observations
-  /*
-  Future addObservation(Map<String, dynamic> observation) async {
-    // Check for each field in observation
-    observation['uid'] = observation['uid'] ?? 'None';
-    observation['name'] = observation['name'] ?? 'None';
-    observation['length'] = observation['length'] ?? 0.0;
-    observation['weight'] = observation['weight'] ?? 0.0;
-    observation['time'] = observation['time'] ?? 'None';
-    observation['status'] = observation['status'] ?? 'Observe';
-    observation['url'] = observation['url'] ?? 'None';
-
-    return await observationCollection.add(observation);
-  }
-   */
   Future addObservation(Observation observation) async {
 
     Map<String, dynamic> obsMap = Map<String, dynamic>();
@@ -35,7 +21,6 @@ class DatabaseService {
     obsMap['time'] = observation.time ?? 'None';
     obsMap['status'] = observation.status ?? 'Observe';
     obsMap['url'] = observation.url ?? 'None';
-    obsMap['stopwatchRecord'] = observation.stopwatchRecord ?? 0;
 
     return await observationCollection.add(obsMap);
   }
@@ -52,7 +37,6 @@ class DatabaseService {
         time: doc.data()['time'],
         status: doc.data()['status'],
         url: doc.data()['url'],
-        stopwatchRecord: doc.data()['stopwatchRecord'],
       );
     }).toList();
   }

@@ -10,15 +10,20 @@ import 'package:ocean_view/providers/pictures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStoreService {
-  late Directory appDir;
 
-  // Save Image
+  // Get local path
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  // Save Image File
   Future saveImage(BuildContext context, File imageFile, String fileName) async {
-    appDir = await getApplicationDocumentsDirectory();
+    final path = await _localPath;
 
-    print('Save image $imageFile in ${appDir.path}/$fileName');
+    print('Save image $imageFile in $path/$fileName');
 
-    final savedImage = await imageFile.copy('${appDir.path}/$fileName');
+    final savedImage = await imageFile.copy('$path/$fileName');
     var _imageToStore = Picture(picName: savedImage);
     Provider.of<Pictures>(context, listen: false).storeImage(_imageToStore);
   }
@@ -29,6 +34,17 @@ class LocalStoreService {
 
     // TODO: save observation in local storage
     //   idea: observation -> json -> String -> txt file
+  }
+
+  // Load Image File
+  Future<File> loadImage (String fileName) async {
+    final path = await _localPath;
+
+    File imageFile = File('$path/$fileName');
+
+    print('Load image $imageFile in $path/$fileName');
+
+    return imageFile;
   }
 
 

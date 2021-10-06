@@ -22,6 +22,7 @@ class MePage extends StatelessWidget {
         backgroundColor: Colors.brown[50],
         appBar: AppBar(
           title: Text('Me Page: ${user.uid.substring(0,5)}'),
+          centerTitle: true,
           backgroundColor: Colors.brown[400],
           elevation: 0.0,
           

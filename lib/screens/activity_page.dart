@@ -16,6 +16,7 @@ class _ActivityPageState extends State<ActivityPage> {
     return Scaffold(
       appBar: AppBar(
           title: Text('OceanView'),
+          centerTitle: true,
           backgroundColor: Colors.lightBlueAccent,
           elevation: 0.0,
           actions: <Widget>[

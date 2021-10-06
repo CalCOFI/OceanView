@@ -298,8 +298,9 @@ class _HomePageState extends State<HomePage> {
     return MaterialApp(
       home: Scaffold(
           appBar: AppBar(
-            title: Text('Maps Sample App'),
+            title: Text('Map'),
             backgroundColor: Colors.green[700],
+            centerTitle: true,
           ),
           body: GoogleMap(
             onMapCreated: _onMapCreated,
