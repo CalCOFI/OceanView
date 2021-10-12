@@ -1,10 +1,14 @@
 import 'dart:math';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/screens/observation_page.dart';
+import 'package:provider/provider.dart';
 
 class UploadTimeline extends StatefulWidget {
 
@@ -29,10 +33,11 @@ class _UploadTimelineState extends State<UploadTimeline> {
   @override
   Widget build(BuildContext context) {
 
+    final user = Provider.of<User?>(context);
+
     // Screen size
     Size size = MediaQuery.of(context).size;
 
-    Random random = new Random();
     widget.observationList.forEach((element)
     {
       print(element.stopwatchStart);
@@ -51,8 +56,22 @@ class _UploadTimelineState extends State<UploadTimeline> {
             ),
             icon: Icon(Icons.upload_sharp),
             label: Text('Upload'),
-            onPressed: () {
+            onPressed: () async {
               print('Upload');
+
+              // Batched write all the observations to Firebase
+              List<TaskState> states = await DatabaseService(uid: user!.uid)
+                .batchedWriteObservations(widget.observationList);
+
+              String snackBarText = 'Upload:';
+              for (int i=0; i<states.length; i++) {
+                snackBarText += ' $i,';
+              }
+
+              final snackBar = SnackBar(content: Text(snackBarText));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+              // Delete images in local directory
 
               // pop to the main page
               Navigator.of(context).popUntil((route) => route.isFirst);

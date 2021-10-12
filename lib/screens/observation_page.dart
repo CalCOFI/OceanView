@@ -44,9 +44,6 @@ class _ObservationPageState extends State<ObservationPage> {
   DateTime? selectedDate;
   int index = 0;
 
-  // Firebase
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-
   _ObservationPageState (File file, String mode, Observation? observation, int? index) {
     this._imageFile = file;
     this._image = new Image.file(
@@ -262,20 +259,14 @@ class _ObservationPageState extends State<ObservationPage> {
                     onPressed: () async {
 
                       if (this.mode == 'single') {
-                        String filePath = 'images/${user!.uid}/${DateTime.now()}.png';
 
-                        TaskSnapshot snapshot = await _storage.ref().child(filePath).putFile(widget.file);
-                        if(snapshot.state == TaskState.success) {
-                          final String downloadUrl = await snapshot.ref.getDownloadURL();
-                          this.observation!.uid = user.uid;
-                          this.observation!.url = downloadUrl;
+                        TaskState state = await DatabaseService(uid: user!.uid).addObservation(this.observation!, widget.file);
 
-                          await DatabaseService(uid: user.uid).addObservation(this.observation!);
-
+                        if (state == TaskState.success){
                           final snackBar = SnackBar(content: Text('Success'));
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         } else {
-                          print('Error from image repo ${snapshot.state.toString()}');
+                          print('Error from image repo ${state.toString()}');
                           throw ('This file is not an image');
                         }
 
