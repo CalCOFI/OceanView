@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:ocean_view/shared/constants.dart';
 
 import 'package:ocean_view/src/mpa.dart' as mpa;
 import 'package:geofencing/geofencing.dart';
@@ -173,6 +174,7 @@ class _HomePageState extends State<HomePage> {
       var num = 1;
       for (final MPA in MPAs.features){
         var name = MPA.properties.FULLNAME;
+        var type = MPA.properties.Type;
         var polygonCoords = <LatLng>[];
         var radius = 0.0;
         var points = MPA.geometry.coordinates[0];
@@ -213,9 +215,9 @@ class _HomePageState extends State<HomePage> {
         final polygon = Polygon(
           polygonId: PolygonId(name),
           points: polygonCoords,
-          fillColor: Colors.blue.withOpacity(0.5),
+          fillColor: MPA_type_color[type]!.withOpacity(0.5),
           strokeWidth: 1,
-          strokeColor: Colors.blue.withOpacity(0.5),
+          strokeColor: MPA_type_color[type]!.withOpacity(0.5),
         );
         _polygons[name] = polygon;
 
@@ -226,7 +228,7 @@ class _HomePageState extends State<HomePage> {
             alpha: 0.5,
             infoWindow: InfoWindow(
                 title: name,
-                snippet: MPA.properties.Type
+                snippet: type
             )
         );
 
@@ -237,7 +239,7 @@ class _HomePageState extends State<HomePage> {
         _distances[name] = sqrt(pow(_location.latitude - center.latitude, 2) +
             pow(_location.longitude - center.longitude, 2))*111000;
 
-        var type = MPA.properties.Type;
+
         print('$num. Add $name, Type: $type, Radius: $radius');
         num++;
       }
