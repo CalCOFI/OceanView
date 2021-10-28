@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:ocean_view/screens/map_page.dart';
+import 'package:ocean_view/screens/map/map_page.dart';
 import 'package:ocean_view/screens/upload/upload_page.dart';
 import 'package:ocean_view/screens/activity_page.dart';
 import 'package:ocean_view/screens/me/me_page.dart';

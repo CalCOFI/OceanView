@@ -8,11 +8,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:ocean_view/screens/map/regulation_page.dart';
 import 'package:ocean_view/shared/constants.dart';
 
 import 'package:ocean_view/src/mpa.dart' as mpa;
 import 'package:geofencing/geofencing.dart';
-import '../notification_library.dart' as notification;
+import 'package:ocean_view/src/mpa_regulation.dart';
+import 'package:ocean_view/src/pin_information.dart';
+import '../../notification_library.dart' as notification;
 
 class MapPage extends StatelessWidget{
 
@@ -85,6 +88,10 @@ class _HomePageState extends State<HomePage> {
   final Map<String, LatLng> _centers = {};
   final Map<String, double> _radiuses = {};
   final Map<String, double> _distances = {};
+
+  // Pin for showing MPA information
+  double _pinPillPosition = -100;
+  PinInformation pinInformation = PinInformation('None', 'None', []);
 
   @override
   void initState(){
@@ -165,6 +172,9 @@ class _HomePageState extends State<HomePage> {
     // Load MPAs
     final MPAs = await mpa.getMPAs();
 
+    // Load MPA regulations
+    final mpaRegulations = await getMPARegulations();
+
     setState(() {
 
       _markers.clear();
@@ -223,13 +233,22 @@ class _HomePageState extends State<HomePage> {
 
         // Add markers
         _markers[name] = Marker(
-            markerId: MarkerId(name),
-            position: center,
-            alpha: 0.5,
-            infoWindow: InfoWindow(
-                title: name,
-                snippet: type
-            )
+          markerId: MarkerId(name),
+          position: center,
+          alpha: 0.5,
+
+          infoWindow: InfoWindow(
+              title: name,
+              snippet: type
+          ),
+
+          onTap: () {
+            print('Tap ' + name);
+            setState(() {
+              _pinPillPosition = 100;
+              pinInformation = PinInformation(name, type, mpaRegulations[name]??['None']);
+            });
+          }
         );
 
         // Store names, centers, radius and distances from current location
@@ -238,7 +257,6 @@ class _HomePageState extends State<HomePage> {
         _radiuses[name] = radius;
         _distances[name] = sqrt(pow(_location.latitude - center.latitude, 2) +
             pow(_location.longitude - center.longitude, 2))*111000;
-
 
         print('$num. Add $name, Type: $type, Radius: $radius');
         num++;
@@ -295,6 +313,39 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //     home: Scaffold(
+  //         appBar: AppBar(
+  //           title: Text('Map'),
+  //           backgroundColor: Colors.green[700],
+  //           centerTitle: true,
+  //         ),
+  //         body: GoogleMap(
+  //           onMapCreated: _onMapCreated,
+  //           mapType: MapType.normal,
+  //           initialCameraPosition: CameraPosition(
+  //             target: _center,
+  //           ),
+  //           polygons: _polygons.values.toSet(),
+  //           circles: _circles.values.toSet(),
+  //           markers: _markers.values.toSet(),
+  //           myLocationEnabled: true,
+  //         ),
+  //         /*
+  //         floatingActionButton: FloatingActionButton(
+  //           onPressed: () => _registerGeofences(),
+  //           tooltip: 'Register geofences',
+  //           child: const Icon(Icons.add),
+  //         ),
+  //          */
+  //         floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -304,28 +355,104 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.green[700],
             centerTitle: true,
           ),
-          body: GoogleMap(
-            onMapCreated: _onMapCreated,
-            mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(
-              target: _center,
-            ),
-            polygons: _polygons.values.toSet(),
-            circles: _circles.values.toSet(),
-            markers: _markers.values.toSet(),
-            myLocationEnabled: true,
-          ),
-          /*
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => _registerGeofences(),
-            tooltip: 'Register geofences',
-            child: const Icon(Icons.add),
-          ),
-           */
-          floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop
+          body: Stack(
+            children: [
+              GoogleMap(
+                onMapCreated: _onMapCreated,
+                mapType: MapType.normal,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                ),
+                polygons: _polygons.values.toSet(),
+                circles: _circles.values.toSet(),
+                markers: _markers.values.toSet(),
+                myLocationEnabled: true,
+              ),
+              AnimatedPositioned(
+                bottom: _pinPillPosition, right: 0, left: 0,
+                duration: Duration(microseconds: 200),
+                child: Align(
+                  // Force it to be aligned at the bottom of the screen
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    // Wrap it inside a container so we can provide the
+                    // background white and rounded corners
+                    // and nice breathing room with margins, a fixed height
+                    // and a nice subtle shadow for a depth effect
+                    margin: EdgeInsets.all(5),
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          blurRadius: 20,
+                          offset: Offset.zero,
+                          color: Colors.grey.withOpacity(0.5),
+                        )
+                      ]
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children:[
+                        Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:[
+                                FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  child: Text(pinInformation.locationName),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Image.asset(
+                                      'assets/commercial_fishing.jpeg',
+                                      width: 50,
+
+                                    ),
+                                    Image.asset(
+                                      'assets/recreational_fishing.jpeg',
+                                      width: 50,
+                                    ),
+                                    // Expanded(
+                                    //   child: Image.asset('assets/commercial_fishing.jpeg'),
+                                    //   child: Image.asset('assets/commercial_fishing.jpeg'),
+                                    // ),
+                                    // Expanded(
+                                    //   child: Image.asset('assets/recreational_fishing.jpeg'),
+                                    // ),
+                                  ],
+                                ),
+                              ]
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_forward_ios),
+                            onPressed: () {
+                              print('Go to exceptions');
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) =>
+                                      RegulationPage(pinInformation: pinInformation,))
+                              );
+                            },
+                          ),
+                        )
+                      ]
+                    )
+                  )
+                ),
+              ),
+            ]
+          )
       ),
     );
   }
+
 }
 
 class SecondPage extends StatefulWidget {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ocean_view/src/mpa_regulation.dart';
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({required Key key}) : super(key: key);
@@ -31,28 +32,16 @@ class _ActivityPageState extends State<ActivityPage> {
           ]
       ),
       body: Center(
-        child: Text('This is an activity.'),
-        /*
+        // child: Text('This is an activity.'),
+
         child: ElevatedButton(
           child: Text('Upload'),
-          onPressed: () {
-            WriteBatch writeBatch = FirebaseFirestore.instance.batch();
-            final CollectionReference observationCollection = FirebaseFirestore.instance.collection('observations');
-            DocumentReference documentReference;
-
-            for (int i = 0; i<2; i++) {
-              documentReference = observationCollection.doc();
-              print(documentReference.id);
-              writeBatch.set(documentReference, {
-                'Name': 'Bill',
-                'Age': i
-              });
-            }
-
-            writeBatch.commit();
-          },
+          onPressed: () async {
+            Map<String, dynamic> regulations = await getMPARegulations();
+            print(regulations['111']??'None');
+          }
         )
-         */
+
       ),
     );
   }

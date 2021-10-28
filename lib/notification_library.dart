@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import 'package:ocean_view/screens/map_page.dart';
+import 'package:ocean_view/screens/map/map_page.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();

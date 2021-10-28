@@ -42,34 +42,45 @@ class _UploadPageState extends State<UploadPage>{
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Single Observation'),
-              IconButton(
-                  icon: Icon(Icons.photo_camera),
-                  onPressed:() async {
-                    await _pickImage(ImageSource.camera);
-                    if (_imageFile != null) {
-                      Navigator.push(
-                          context, MaterialPageRoute(
-                          builder: (context) =>
-                              ObservationPage(file: _imageFile!, mode:'single')
-                      )
-                      );
-                    }
-                  }
+              Container(
+                width: double.infinity,
+                child: Text(
+                  'Single Observation',
+                  textAlign: TextAlign.center,
+                ),
               ),
-              IconButton(
-                  icon:Icon(Icons.photo_library),
-                  onPressed: () async {
-                    await _pickImage(ImageSource.gallery);
-                    if (_imageFile != null) {
-                      Navigator.push(
-                          context, MaterialPageRoute(
-                          builder: (context) =>
-                              ObservationPage(file: _imageFile!, mode:'single')
-                      )
-                      );
-                    }
-                  }
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                      icon: Icon(Icons.photo_camera),
+                      onPressed:() async {
+                        await _pickImage(ImageSource.camera);
+                        if (_imageFile != null) {
+                          Navigator.push(
+                              context, MaterialPageRoute(
+                              builder: (context) =>
+                                  ObservationPage(file: _imageFile!, mode:'single')
+                          )
+                          );
+                        }
+                      }
+                  ),
+                  IconButton(
+                      icon:Icon(Icons.photo_library),
+                      onPressed: () async {
+                        await _pickImage(ImageSource.gallery);
+                        if (_imageFile != null) {
+                          Navigator.push(
+                              context, MaterialPageRoute(
+                              builder: (context) =>
+                                  ObservationPage(file: _imageFile!, mode:'single')
+                          )
+                          );
+                        }
+                      }
+                  ),
+                ]
               ),
               Text('Record Session'),
               IconButton(
