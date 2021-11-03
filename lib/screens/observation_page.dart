@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ocean_view/src/extract_exif.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
@@ -31,7 +32,7 @@ class ObservationPage extends StatefulWidget {
 class _ObservationPageState extends State<ObservationPage> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
-  final myController = TextEditingController();
+  final _nameController = TextEditingController();
   String statusValue = 'Observe';
   String _imageListText = "What did you see?";
 
@@ -48,8 +49,8 @@ class _ObservationPageState extends State<ObservationPage> {
     this._imageFile = file;
     this._image = new Image.file(
       file,
-      width: 200,
-      height: 100,
+      width: 250,
+      height: 180,
       fit: BoxFit.contain,
     );
     this.mode = mode;
@@ -83,6 +84,7 @@ class _ObservationPageState extends State<ObservationPage> {
     } else {
       selectedDate = this.observation!.time;
     }
+
   }
 
   // Select date
@@ -119,7 +121,7 @@ class _ObservationPageState extends State<ObservationPage> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    myController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -134,165 +136,208 @@ class _ObservationPageState extends State<ObservationPage> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-          child: Container(
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      child: _image
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    child: Card(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.question_answer),
-                            title: Text(_imageListText),
-                            subtitle: Text('><'),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              TextButton(
-                                  child: const Text('See suggestions'),
-                                  onPressed: () {
-                                    _navigateAndDisplaySelection(context);
-                                  }
-                              ),
-                              const SizedBox(width: 8),
-                            ],
-                          ),
-                        ],
+          padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+          child: Column(
+
+            children: <Widget>[
+
+              Padding(
+                  padding: EdgeInsets.all(8),
+                  child: _image
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              //   child: Card(
+              //     child: Column(
+              //       mainAxisSize: MainAxisSize.min,
+              //       children: <Widget>[
+              //         ListTile(
+              //           leading: Icon(Icons.question_answer),
+              //           title: Text(_imageListText),
+              //           subtitle: Text('><'),
+              //         ),
+              //         Row(
+              //           mainAxisAlignment: MainAxisAlignment.end,
+              //           children: <Widget>[
+              //             TextButton(
+              //                 child: const Text('See suggestions'),
+              //                 onPressed: () {
+              //                   _navigateAndDisplaySelection(context);
+              //                 }
+              //             ),
+              //             const SizedBox(width: 8),
+              //           ],
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              Padding(
+                padding: EdgeInsets.all(4),
+                child: Row(
+                  children: [
+                    const Text('Name:'),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _nameController,
+                        textAlign: TextAlign.center,
+                        onChanged: (String value) => this.observation!.name=value,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    child: Row(
-                        children: <Widget>[
-                          const Text('Length: '),
-                          Expanded(
-                            child: TextFormField(
-                              initialValue: (this.observation!.length==null)? '0':this.observation!.length.toString(),
-                              onChanged: (String value){this.observation!.length=double.parse(value);},
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text("inches"),
-                        ]
+                    IconButton(
+                      onPressed: () {
+                        _navigateAndDisplaySelection(context);
+                        print(this.observation!.name);
+                      },
+                      icon: Icon(Icons.arrow_forward_ios),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    child: Row(
-                        children: <Widget>[
-                          const Text('Weight: '),
-                          Expanded(
-                            child: TextField(
-                              onSubmitted: (String value){this.observation!.weight=double.parse(value);},
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                              ],
-                            ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(4),
+                child: Row(
+                    children: <Widget>[
+                      const Text('Length: '),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          onChanged: (String value) => this.observation!.length=double.parse(value),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text("inches"),
+                    ]
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(4),
+                child: Row(
+                    children: <Widget>[
+                      const Text('Weight: '),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          textAlign: TextAlign.center,
+                          onChanged: (String value) => this.observation!.weight=double.parse(value),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text("lb"),
+                    ]
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(4),
+                child: Row(
+                    children: <Widget>[
+                      const Text("Time: "),
+                      const SizedBox(width: 10.0,),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                              "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"
                           ),
-                          const SizedBox(width: 10),
-                          const Text("lb"),
-                        ]
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    child: Row(
-                        children: <Widget>[
-                          const Text("Time: "),
-                          const SizedBox(width: 10.0,),
-                          Text("${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
-                          const SizedBox(width: 10.0),
-                          ElevatedButton(
-                            onPressed: () => _selectDate(context),
-                            child: Icon(Icons.date_range),
+                        )
+                      ),
+                      const SizedBox(width: 10.0),
+                      ElevatedButton(
+                        onPressed: () => _selectDate(context),
+                        child: Icon(Icons.date_range),
+                      ),
+                    ]
+                ),
+              ),
+              Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Row(
+                    children: [
+                      const Text("Status: "),
+                      const SizedBox(width: 10.0,),
+                      Container(
+                        alignment: Alignment.center,
+                        child: DropdownButton<String>(
+                          value: statusValue,
+                          icon: const Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.black26,
                           ),
-                        ]
-                    ),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                      child: Row(
-                        children: [
-                          const Text("Status: "),
-                          DropdownButton<String>(
-                            value: statusValue,
-                            icon: const Icon(Icons.arrow_downward),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: const TextStyle(color: Colors.deepPurple),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.black26,
-                            ),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                statusValue = newValue!;
-                                this.observation!.status = statusValue;
-                              });
-                            },
-                            items: <String>['Observe', 'Release', 'Catch']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),)
-                        ],
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              statusValue = newValue!;
+                              this.observation!.status = statusValue;
+                            });
+                          },
+                          items: <String>['Observe', 'Release', 'Catch']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        )
                       )
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    child: Text(this.buttonName),
-                    onPressed: () async {
+                    ],
+                  )
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                child: Text(this.buttonName),
+                onPressed: () async {
 
-                      if (this.mode == 'single') {
+                  if (this.mode == 'single') {
 
-                        TaskState state = await DatabaseService(uid: user!.uid).addObservation(this.observation!, widget.file);
+                    TaskState state = await DatabaseService(uid: user!.uid).addObservation(this.observation!, widget.file);
 
-                        if (state == TaskState.success){
-                          final snackBar = SnackBar(content: Text('Success'));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        } else {
-                          print('Error from image repo ${state.toString()}');
-                          throw ('This file is not an image');
-                        }
+                    if (state == TaskState.success){
+                      final snackBar = SnackBar(content: Text('Success'));
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else {
+                      print('Error from image repo ${state.toString()}');
+                      throw ('This file is not an image');
+                    }
 
-                        // Back to previous page
-                        Navigator.pop(context);
+                    // Back to previous page
+                    Navigator.pop(context);
 
-                      } else if (this.mode == 'session') {
-                        print('Stopwatch: ${this.observation!.stopwatchStart}');
-                        print('Add');
+                  } else if (this.mode == 'session') {
+                    print('Stopwatch: ${this.observation!.stopwatchStart}');
+                    print('Add');
 
-                        // Add image to local directory
-                        await LocalStoreService().saveImage(context, _imageFile, '$index.png');
+                    // Add image to local directory
+                    await LocalStoreService().saveImage(context, _imageFile, '$index.png');
 
-                        // Add observation to local directory
-                        await LocalStoreService().saveObservation(this.observation!, '$index.txt');
+                    // Add observation to local directory
+                    await LocalStoreService().saveObservation(this.observation!, '$index.txt');
 
-                        Navigator.pop(context, [this.observation, this._image]);
-                      } else {
-                        print('Edit');
-                      }
+                    Navigator.pop(context, [this.observation, this._image]);
+                  } else {
+                    print('Edit');
+                  }
 
-                    },
-                  ),
-                ],
-              )
+                },
+              ),
+            ],
           )
+
       ),
     );
   }
@@ -310,8 +355,8 @@ class _ObservationPageState extends State<ObservationPage> {
 
     // After the UploadClassification Screen returns a result, change text of TextButton
     setState((){
-      _imageListText = result;
-      this.observation!.name = result;
+      _nameController.text = result;
     });
   }
+
 }

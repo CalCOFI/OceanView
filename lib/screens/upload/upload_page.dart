@@ -5,16 +5,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ocean_view/screens/upload/upload_session.dart';
 
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart' as pPath;
-import 'package:provider/provider.dart';
-
 import 'package:image_picker/image_picker.dart';
-
-import 'package:ocean_view/services/local_store.dart';
-import 'package:ocean_view/models/picture.dart';
-import 'package:ocean_view/providers/pictures.dart';
 import 'package:ocean_view/screens/observation_page.dart';
+import 'package:ocean_view/src/extract_exif.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({required Key key}) : super(key: key);
@@ -57,6 +50,11 @@ class _UploadPageState extends State<UploadPage>{
                       onPressed:() async {
                         await _pickImage(ImageSource.camera);
                         if (_imageFile != null) {
+
+                          // Extract exif data from image file
+                          Pair pair = await extractLocationAndTime(_imageFile!);
+                          print(pair);
+
                           Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
@@ -71,6 +69,11 @@ class _UploadPageState extends State<UploadPage>{
                       onPressed: () async {
                         await _pickImage(ImageSource.gallery);
                         if (_imageFile != null) {
+
+                          // Extract exif data from image file
+                          Pair pair = await extractLocationAndTime(_imageFile!);
+                          print(pair);
+
                           Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
