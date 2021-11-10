@@ -22,9 +22,30 @@ class RegulationPage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(10),
             child: Text(
-              "Type: ${pinInformation.locationType}",
+              "${pinInformation.locationType} General Regulations",
               style: const TextStyle(fontSize: 16),
             ),
+          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Text(
+              pinInformation.generalRegulation,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+          Divider(),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Text(
+                "Exceptions in ${pinInformation.locationName}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ),
+            )
           ),
           Expanded(
             child: ListView.separated(

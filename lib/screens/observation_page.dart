@@ -20,11 +20,12 @@ class ObservationPage extends StatefulWidget {
   final File file;
   final String mode;
   Observation? observation;
+  PhotoMeta? photoMeta;
   int? index;    // Index for observation in session
-  ObservationPage({required this.file, required this.mode, this.observation, this.index});
+  ObservationPage({required this.file, required this.mode, this.observation, this.photoMeta, this.index});
 
   @override
-  _ObservationPageState createState() => _ObservationPageState(this.file, this.mode, this.observation, this.index);
+  _ObservationPageState createState() => _ObservationPageState(this.file, this.mode, this.observation, this.photoMeta, this.index);
 }
 
 // Define a corresponding State class.
@@ -45,7 +46,7 @@ class _ObservationPageState extends State<ObservationPage> {
   DateTime? selectedDate;
   int index = 0;
 
-  _ObservationPageState (File file, String mode, Observation? observation, int? index) {
+  _ObservationPageState (File file, String mode, Observation? observation, PhotoMeta? photoMeta, int? index) {
     this._imageFile = file;
     this._image = new Image.file(
       file,
@@ -78,30 +79,25 @@ class _ObservationPageState extends State<ObservationPage> {
     }
 
     this.index = (index==null)? 0 : index;
-    if (this.observation!.time==null) {
+
+    if (photoMeta!.time == 0) {
       selectedDate = DateTime.now();
       this.observation!.time = selectedDate;
     } else {
-      selectedDate = this.observation!.time;
+      selectedDate = photoMeta.time;
+      this.observation!.time = selectedDate;
+    }
+
+    if (photoMeta!.location == 0) {
+      this.observation!.location = 'None';
+    } else {
+      this.observation!.location = photoMeta.location.toString();
     }
 
   }
 
   // Select date
   Future<Null> _selectDate(BuildContext context) async {
-    /*
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate!,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-        this.observation!.time = selectedDate;
-      });
-    }
-     */
     final DateTime? picked = await DatePicker.showDateTimePicker(context,
         showTitleActions: true,
         minTime: DateTime(2000, 1, 1),
@@ -148,33 +144,6 @@ class _ObservationPageState extends State<ObservationPage> {
               Divider(
                 color: Colors.black,
               ),
-              // Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              //   child: Card(
-              //     child: Column(
-              //       mainAxisSize: MainAxisSize.min,
-              //       children: <Widget>[
-              //         ListTile(
-              //           leading: Icon(Icons.question_answer),
-              //           title: Text(_imageListText),
-              //           subtitle: Text('><'),
-              //         ),
-              //         Row(
-              //           mainAxisAlignment: MainAxisAlignment.end,
-              //           children: <Widget>[
-              //             TextButton(
-              //                 child: const Text('See suggestions'),
-              //                 onPressed: () {
-              //                   _navigateAndDisplaySelection(context);
-              //                 }
-              //             ),
-              //             const SizedBox(width: 8),
-              //           ],
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
               Padding(
                 padding: EdgeInsets.all(4),
                 child: Row(
@@ -258,6 +227,22 @@ class _ObservationPageState extends State<ObservationPage> {
                       ElevatedButton(
                         onPressed: () => _selectDate(context),
                         child: Icon(Icons.date_range),
+                      ),
+                    ]
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(4),
+                child: Row(
+                    children: <Widget>[
+                      const Text('Location: '),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          initialValue: this.observation!.location,
+                          onChanged: (String value) => this.observation!.location = value,
+                        ),
                       ),
                     ]
                 ),

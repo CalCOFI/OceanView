@@ -53,9 +53,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  // Permission handler
-  // late PermissionStatus _status;
-
   // Geofencing members
   String geofenceState = 'N/A';
   List<String> registeredGeofences = [];
@@ -91,7 +88,7 @@ class _HomePageState extends State<HomePage> {
 
   // Pin for showing MPA information
   double _pinPillPosition = -100;
-  PinInformation pinInformation = PinInformation('None', 'None', []);
+  PinInformation pinInformation = PinInformation('None', 'None', [], 'None');
 
   @override
   void initState(){
@@ -112,40 +109,12 @@ class _HomePageState extends State<HomePage> {
     //initPlatformState();
   }
 
-  // Callback for entering or leaving geofence
-  static void callback(List<String> ids, Location l, GeofenceEvent e) async {
-    print('Fences: $ids Location $l Event: $e');
-    final send =
-    IsolateNameServer.lookupPortByName('geofencing_send_port');
-    send!.send(e.toString());
-
-    if (e==GeofenceEvent.enter) {
-      print('Enter $ids');
-      await notification.showNotification('enter', ids);
-    }
-    /*
-    else {
-      print('Leave $ids');
-      await _showNotification('leave', ids);
-    }
-     */
+  @override
+  void dispose() {
+    notification.dispose();
+    mapController = null;
+    super.dispose();
   }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-
-    //_status = await Permission.location.request();
-    //print('Location permission status: $_status');
-    print('Initializing...');
-    await GeofencingManager.initialize();
-    print('Initialization done');
-  }
-
-  /*
-  Future<void> _requestLocationPermission() async {
-    _status = await Permission.location.request();
-  }
-   */
 
   Future<void> getCurrentLocation() async {
     final position = await Geolocator.getCurrentPosition();
@@ -158,22 +127,13 @@ class _HomePageState extends State<HomePage> {
     // Controller moves with current location
     mapController = controller;
     await getCurrentLocation();
-    /*
-    _location.onLocationChanged.listen((l) {
-      controller.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(l.latitude!, l.longitude!),zoom: 15),
-        ),
-      );
-      getCurrentLocation();
-    });
-     */
 
     // Load MPAs
     final MPAs = await mpa.getMPAs();
 
     // Load MPA regulations
     final mpaRegulations = await getMPARegulations();
+    String generalRegulation = '';    // General regulation in certain type
 
     setState(() {
 
@@ -231,6 +191,15 @@ class _HomePageState extends State<HomePage> {
         );
         _polygons[name] = polygon;
 
+        // Get general regulation according to MPA type
+        if (type.length>4 && type.substring(0,4)=='SMCA') {
+          generalRegulation = mpaRegulations['SMCA'];
+        } else if (mpaRegulations.containsKey(type)) {
+          generalRegulation = mpaRegulations[type];
+        } else {
+          generalRegulation = 'None';
+        }
+
         // Add markers
         _markers[name] = Marker(
           markerId: MarkerId(name),
@@ -246,7 +215,10 @@ class _HomePageState extends State<HomePage> {
             print('Tap ' + name);
             setState(() {
               _pinPillPosition = 100;
-              pinInformation = PinInformation(name, type, mpaRegulations[name]??['None']);
+              pinInformation = PinInformation(
+                  name, type,
+                  mpaRegulations[name]??['None'],
+                  generalRegulation);
             });
           }
         );
@@ -262,6 +234,136 @@ class _HomePageState extends State<HomePage> {
         num++;
       }
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+          appBar: AppBar(
+            title: Text('Map'),
+            backgroundColor: Colors.green[700],
+            centerTitle: true,
+          ),
+          body: Stack(
+              children: [
+                GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  mapType: MapType.normal,
+                  initialCameraPosition: CameraPosition(
+                    target: _center,
+                  ),
+                  polygons: _polygons.values.toSet(),
+                  circles: _circles.values.toSet(),
+                  markers: _markers.values.toSet(),
+                  myLocationEnabled: true,
+                ),
+                AnimatedPositioned(
+                  bottom: _pinPillPosition, right: 0, left: 0,
+                  duration: Duration(microseconds: 200),
+                  child: Align(
+                    // Force it to be aligned at the bottom of the screen
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        // Wrap it inside a container so we can provide the
+                        // background white and rounded corners
+                        // and nice breathing room with margins, a fixed height
+                        // and a nice subtle shadow for a depth effect
+                          margin: EdgeInsets.all(5),
+                          height: 70,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(50)),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  blurRadius: 20,
+                                  offset: Offset.zero,
+                                  color: Colors.grey.withOpacity(0.5),
+                                )
+                              ]
+                          ),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:[
+                                Expanded(
+                                  child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children:[
+                                        FittedBox(
+                                          fit: BoxFit.fitWidth,
+                                          child: Text(pinInformation.locationName),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ImageIcon(
+                                              AssetImage('assets/no-fishing.png'),
+                                            ),
+                                            ImageIcon(
+                                              AssetImage('assets/duck.png'),
+                                            ),
+                                          ],
+                                        ),
+                                      ]
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_forward_ios),
+                                    onPressed: () {
+                                      print('Go to exceptions');
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) =>
+                                              RegulationPage(pinInformation: pinInformation)
+                                          )
+                                      );
+                                    },
+                                  ),
+                                )
+                              ]
+                          )
+                      )
+                  ),
+                ),
+              ]
+          )
+      ),
+    );
+  }
+
+  /*
+  // --- Geofence code (Unfinished) ---
+
+  // Callback for entering or leaving geofence
+  static void callback(List<String> ids, Location l, GeofenceEvent e) async {
+    print('Fences: $ids Location $l Event: $e');
+    final send =
+    IsolateNameServer.lookupPortByName('geofencing_send_port');
+    send!.send(e.toString());
+
+    if (e==GeofenceEvent.enter) {
+      print('Enter $ids');
+      await notification.showNotification('enter', ids);
+    }
+    /*
+    else {
+      print('Leave $ids');
+      await _showNotification('leave', ids);
+    }
+     */
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+
+    //_status = await Permission.location.request();
+    //print('Location permission status: $_status');
+    print('Initializing...');
+    await GeofencingManager.initialize();
+    print('Initialization done');
   }
 
   Future<void> _registerGeofences() async {
@@ -305,153 +407,7 @@ class _HomePageState extends State<HomePage> {
       print('Add circles to google map.');
     });
   }
-
-  @override
-  void dispose() {
-    notification.dispose();
-    mapController = null;
-    super.dispose();
-  }
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     home: Scaffold(
-  //         appBar: AppBar(
-  //           title: Text('Map'),
-  //           backgroundColor: Colors.green[700],
-  //           centerTitle: true,
-  //         ),
-  //         body: GoogleMap(
-  //           onMapCreated: _onMapCreated,
-  //           mapType: MapType.normal,
-  //           initialCameraPosition: CameraPosition(
-  //             target: _center,
-  //           ),
-  //           polygons: _polygons.values.toSet(),
-  //           circles: _circles.values.toSet(),
-  //           markers: _markers.values.toSet(),
-  //           myLocationEnabled: true,
-  //         ),
-  //         /*
-  //         floatingActionButton: FloatingActionButton(
-  //           onPressed: () => _registerGeofences(),
-  //           tooltip: 'Register geofences',
-  //           child: const Icon(Icons.add),
-  //         ),
-  //          */
-  //         floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop
-  //     ),
-  //   );
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(
-            title: Text('Map'),
-            backgroundColor: Colors.green[700],
-            centerTitle: true,
-          ),
-          body: Stack(
-            children: [
-              GoogleMap(
-                onMapCreated: _onMapCreated,
-                mapType: MapType.normal,
-                initialCameraPosition: CameraPosition(
-                  target: _center,
-                ),
-                polygons: _polygons.values.toSet(),
-                circles: _circles.values.toSet(),
-                markers: _markers.values.toSet(),
-                myLocationEnabled: true,
-              ),
-              AnimatedPositioned(
-                bottom: _pinPillPosition, right: 0, left: 0,
-                duration: Duration(microseconds: 200),
-                child: Align(
-                  // Force it to be aligned at the bottom of the screen
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    // Wrap it inside a container so we can provide the
-                    // background white and rounded corners
-                    // and nice breathing room with margins, a fixed height
-                    // and a nice subtle shadow for a depth effect
-                    margin: EdgeInsets.all(5),
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          blurRadius: 20,
-                          offset: Offset.zero,
-                          color: Colors.grey.withOpacity(0.5),
-                        )
-                      ]
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children:[
-                        Expanded(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children:[
-                                FittedBox(
-                                  fit: BoxFit.fitWidth,
-                                  child: Text(pinInformation.locationName),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Image.asset(
-                                      'assets/commercial_fishing.jpeg',
-                                      width: 50,
-
-                                    ),
-                                    Image.asset(
-                                      'assets/recreational_fishing.jpeg',
-                                      width: 50,
-                                    ),
-                                    // Expanded(
-                                    //   child: Image.asset('assets/commercial_fishing.jpeg'),
-                                    //   child: Image.asset('assets/commercial_fishing.jpeg'),
-                                    // ),
-                                    // Expanded(
-                                    //   child: Image.asset('assets/recreational_fishing.jpeg'),
-                                    // ),
-                                  ],
-                                ),
-                              ]
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_forward_ios),
-                            onPressed: () {
-                              print('Go to exceptions');
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) =>
-                                      RegulationPage(pinInformation: pinInformation,))
-                              );
-                            },
-                          ),
-                        )
-                      ]
-                    )
-                  )
-                ),
-              ),
-            ]
-          )
-      ),
-    );
-  }
+   */
 
 }
 

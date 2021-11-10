@@ -1,8 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:exif/exif.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
 
 class Location {
   // Represent them in decimal degrees
@@ -24,16 +21,18 @@ class Location {
 
   @override
   String toString() {
-    return 'Longitude: ${this.longitude}, Latitude: ${this.latitude}';
+    String latSymbol = (this.latitude>=0)? 'N' : 'S';
+    String longSymbol = (this.longitude>=0)? 'E' : 'W';
+    return '( ${this.latitude.abs().toStringAsFixed(2) + latSymbol} , ${this.longitude.abs().toStringAsFixed(2) + longSymbol} )';
   }
 }
 
-// Class of pair of location and time
-class Pair<T1, T2> {
+// Class of PhotoMeta of location and time
+class PhotoMeta<T1, T2> {
   final T1 location;
   final T2 time;
 
-  Pair(this.location, this.time);
+  PhotoMeta(this.location, this.time);
 
   @override
   String toString() {
@@ -50,7 +49,7 @@ class Pair<T1, T2> {
 //   return file;
 // }
 
-Future<Pair> extractLocationAndTime(File imageFile) async {
+Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
 
   // Read data from imageFile
   final fileBytes = imageFile.readAsBytesSync();
@@ -68,7 +67,7 @@ Future<Pair> extractLocationAndTime(File imageFile) async {
 
   if (data!.isEmpty) {
     print("No EXIF information found");
-    return Pair(0,0);
+    return PhotoMeta(0,0);
   } else {
 
     Location location = Location.empty();
@@ -93,6 +92,6 @@ Future<Pair> extractLocationAndTime(File imageFile) async {
       dateTime = DateTime.parse('${list[0]}-${list[1]}-${list[2]}:${list[3]}:${list[4]}');
     }
 
-    return Pair(location, dateTime);
+    return PhotoMeta(location, dateTime);
   }
 }

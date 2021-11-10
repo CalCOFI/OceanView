@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/upload/upload_stopwatch.dart';
 import 'package:ocean_view/screens/observation_page.dart';
 import 'package:ocean_view/screens/upload/upload_timeline.dart';
+import 'package:ocean_view/src/extract_exif.dart';
 
 class UploadSession extends StatefulWidget {
 
@@ -85,13 +86,17 @@ class _UploadSessionState extends State<UploadSession> {
                           onPressed: () async {
 
                             await _pickImage(ImageSource.camera);
+
+                            // Extract exif data from image file
+                            PhotoMeta photoMeta = await extractLocationAndTime(_imageFile!);
+
                             if (_imageFile!=null) {
                               // Get observation from ObservationPage
                               result = await Navigator.push(
                                 context, MaterialPageRoute(
                                 builder: (context) =>
                                     ObservationPage(file: _imageFile!, mode:'session',
-                                        index: observationList.length)
+                                        photoMeta: photoMeta, index: observationList.length)
                                 )
                               );
                               setState(() {

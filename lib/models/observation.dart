@@ -8,6 +8,7 @@ class Observation {
   double? length;
   double? weight;
   dynamic time;     // None: not showing / Timestamp from the picture
+  String? location;
   String? status;
   String? url;
 
@@ -15,7 +16,7 @@ class Observation {
   dynamic stopwatchStart;      // Record timestamp of stopwatch start
 
   Observation( {this.documentID, this.uid, this.name,
-    this.length, this.weight, this.time, this.status,
-    this.url, this.stopwatchStart} );
+    this.length, this.weight, this.time, this.location,
+    this.status, this.url, this.stopwatchStart} );
 
 }

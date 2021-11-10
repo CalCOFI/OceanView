@@ -52,13 +52,12 @@ class _UploadPageState extends State<UploadPage>{
                         if (_imageFile != null) {
 
                           // Extract exif data from image file
-                          Pair pair = await extractLocationAndTime(_imageFile!);
-                          print(pair);
+                          PhotoMeta photoMeta = await extractLocationAndTime(_imageFile!);
 
                           Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
-                                  ObservationPage(file: _imageFile!, mode:'single')
+                                  ObservationPage(file: _imageFile!, mode:'single', photoMeta: photoMeta)
                           )
                           );
                         }
@@ -71,13 +70,12 @@ class _UploadPageState extends State<UploadPage>{
                         if (_imageFile != null) {
 
                           // Extract exif data from image file
-                          Pair pair = await extractLocationAndTime(_imageFile!);
-                          print(pair);
+                          PhotoMeta photoMeta = await extractLocationAndTime(_imageFile!);
 
                           Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
-                                  ObservationPage(file: _imageFile!, mode:'single')
+                                  ObservationPage(file: _imageFile!, mode:'single', photoMeta: photoMeta)
                           )
                           );
                         }
