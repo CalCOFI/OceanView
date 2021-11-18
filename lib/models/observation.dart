@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Observation {
 
@@ -8,7 +9,7 @@ class Observation {
   double? length;
   double? weight;
   dynamic time;     // None: not showing / Timestamp from the picture
-  String? location;
+  LatLng? location; // None: not showing / LatLng from picture
   String? status;
   String? url;
 

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -89,9 +90,9 @@ class _ObservationPageState extends State<ObservationPage> {
     }
 
     if (photoMeta!.location == 0) {
-      this.observation!.location = 'None';
+      this.observation!.location = LatLng(0,0);
     } else {
-      this.observation!.location = photoMeta.location.toString();
+      this.observation!.location = photoMeta.location.getLatLng();
     }
 
   }
@@ -112,6 +113,13 @@ class _ObservationPageState extends State<ObservationPage> {
         this.observation!.time = selectedDate;
       });
     }
+  }
+
+  // print location
+  String _printLocation(LatLng position) {
+    String lat = position.latitude.toStringAsFixed(2);
+    String lng = position.longitude.toStringAsFixed(2);
+    return "(${lat},${lng})";
   }
 
   @override
@@ -238,10 +246,9 @@ class _ObservationPageState extends State<ObservationPage> {
                       const Text('Location: '),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: TextFormField(
+                        child: Text(
+                          _printLocation(this.observation!.location!),
                           textAlign: TextAlign.center,
-                          initialValue: this.observation!.location,
-                          onChanged: (String value) => this.observation!.location = value,
                         ),
                       ),
                     ]

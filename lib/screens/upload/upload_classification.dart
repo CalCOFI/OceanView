@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:async/async.dart' hide Result;
+import 'package:ocean_view/shared/loading.dart';
 import 'package:ocean_view/src/prediction.dart';
 import 'package:path/path.dart' as path;
 
@@ -18,9 +18,9 @@ class UploadClassification extends StatefulWidget {
 
 class _UploadClassificationState extends State<UploadClassification>{
 
-  var _imageFile;
   var _prediction;
   late List<Result> _results;
+  bool loading = true;
 
   Map<String,String> headers = {
     'x-rapidapi-key':'5b2f443d6cmsh9e04ef3014bde3dp176b6ajsnea7f884ff2e9',
@@ -28,21 +28,10 @@ class _UploadClassificationState extends State<UploadClassification>{
   };
   String apiUrl = "https://visionapi.p.rapidapi.com/v1/rapidapi/score_image";
 
-  Future<void> getImage() async{
-    _imageFile = widget.imageFile;
-    var path = _imageFile.path;
-    print('Path of imageFile: $path');
-  }
-
+  // Send request to VisionAPI
   upload() async {
-    await getImage();
-    //var bytes = imageFile.openRead();
-    //print(' --- Successfully read ---');
-    // ignore: deprecated_member_use
-    var stream = new http.ByteStream(DelegatingStream.typed(_imageFile.openRead()));
-    //var stream = new http.ByteStream(imageFile.openRead());
-    //stream.cast();
-    var length = await _imageFile.length();
+    var stream = new http.ByteStream(widget.imageFile.openRead().cast());
+    var length = await widget.imageFile.length();
     print(length);
 
     var uri = Uri.parse(apiUrl);
@@ -53,7 +42,7 @@ class _UploadClassificationState extends State<UploadClassification>{
     request.headers.addAll(headers);
     request.headers.addAll(mapContent);
     var multipartFile = new http.MultipartFile('image', stream, length,
-        filename: path.basename(_imageFile.path),contentType: MediaType.parse("multipart/form-data"));
+        filename: path.basename(widget.imageFile.path),contentType: MediaType.parse("multipart/form-data"));
 
     request.files.add(multipartFile);
     var response = await request.send();
@@ -62,51 +51,14 @@ class _UploadClassificationState extends State<UploadClassification>{
     String jsonText = '';
 
     await response.stream.transform(utf8.decoder).listen((value) {
-      //print(value);
       jsonText = value;
     });
 
     setState (() {
       _prediction = Prediction.fromJson(json.decode(jsonText));
       _results = _prediction.results;
+      loading = false;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context, "None"),
-          ),
-          title: Text("Species suggestions"),
-        ),
-        body:
-        Container(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(onPressed: upload, child: Text('Search')),
-                ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: _prediction==null? 0 : _prediction.results.length,
-                  itemBuilder: (context, index) {
-                    /*
-                  return ListTile(
-                    title: Text('${_prediction==null? 0: _prediction.results[index].taxon.preferredCommonName}'),
-                  );
-                  */
-                    return _prediction==null? ListTile(title:Text("0")) : getCard(context, index);
-                  },
-                ),
-              ]
-          ),
-        )
-    );
   }
 
   getCard(BuildContext context, int position) {
@@ -128,6 +80,53 @@ class _UploadClassificationState extends State<UploadClassification>{
         ),
       ),
       margin: EdgeInsets.all(5),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Only upload once when entering this page
+    if (loading)
+      upload();
+    return loading? Loading() : Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context, "None"),
+          ),
+          title: Text("Species suggestions"),
+        ),
+        body:
+        Container(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(40),
+                  child: Image.asset(
+                    'assets/images/iNaturalist.png',
+                  ),
+                ),
+                SizedBox(height: 40,),
+                (_prediction==null)?
+                  Text(
+                    'Cannot find corresponding species',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ):
+                  ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: _prediction.results.length,
+                    itemBuilder: (context, index) {
+                      return getCard(context, index);
+                    },
+                  ),
+              ]
+          ),
+        )
     );
   }
 }

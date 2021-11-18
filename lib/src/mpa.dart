@@ -102,7 +102,7 @@ class MPAs {
 
 Future<MPAs> getMPAs() async {
   final jsonText = await rootBundle
-      .loadString('assets/California_Marine_Protected_Areas_[ds582].geojson');
+      .loadString('assets/jsons/California_Marine_Protected_Areas_[ds582].geojson');
 
   return MPAs.fromJson(json.decode(jsonText));
 }

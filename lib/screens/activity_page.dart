@@ -35,7 +35,7 @@ class _ActivityPageState extends State<ActivityPage> {
         // child: Text('This is an activity.'),
 
         child: ElevatedButton(
-          child: Text('Upload'),
+          child: Text('Test'),
           onPressed: () async {
             Map<String, dynamic> regulations = await getMPARegulations();
             print(regulations['111']??'None');

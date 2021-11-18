@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:exif/exif.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Location {
   // Represent them in decimal degrees
   // Positive for N and E, Negative for S and W
   double longitude = 0;
   double latitude = 0;
+  LatLng latLng = LatLng(0,0);
 
   Location(List<dynamic> longitude, List<dynamic> longRef, List<dynamic> latitude, List<dynamic> latRef) {
     this.longitude = toDouble(longitude[0]) + toDouble(longitude[1])/60 + toDouble(longitude[2])/3600;
@@ -18,6 +20,10 @@ class Location {
   Location.empty() { }
 
   double toDouble(Ratio ratio) => ratio.numerator/ratio.denominator;
+
+  LatLng getLatLng() {
+    return LatLng(this.latitude, this.longitude);
+  }
 
   @override
   String toString() {

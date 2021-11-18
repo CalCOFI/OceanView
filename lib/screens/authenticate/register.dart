@@ -30,7 +30,7 @@ class _RegisterState extends State<Register> {
         appBar: AppBar(
           backgroundColor: Colors.brown[400],
           elevation: 0.0,
-          title: Text('Sign up to demo'),
+          title: Text('Sign up to OceanView'),
           actions: <Widget>[
             TextButton.icon(
               icon: Icon(Icons.person),

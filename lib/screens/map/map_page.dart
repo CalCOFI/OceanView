@@ -299,10 +299,10 @@ class _HomePageState extends State<HomePage> {
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             ImageIcon(
-                                              AssetImage('assets/no-fishing.png'),
+                                              AssetImage('assets/images/no-fishing.png'),
                                             ),
                                             ImageIcon(
-                                              AssetImage('assets/duck.png'),
+                                              AssetImage('assets/images/duck.png'),
                                             ),
                                           ],
                                         ),
@@ -411,6 +411,7 @@ class _HomePageState extends State<HomePage> {
 
 }
 
+// --- Second page for notification (Unfinished) ---
 class SecondPage extends StatefulWidget {
   const SecondPage(
       this.payload, {

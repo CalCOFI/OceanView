@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/screens/me/observation_list.dart';
 import 'package:provider/provider.dart';
 import 'package:ocean_view/models/observation.dart';
@@ -20,18 +21,24 @@ class MeObservation extends StatelessWidget {
     String imageURL = '';
 
     //Assign values for all objects
-      speciesName = observation.name!;
-      length = observation.length!;
-      weight = observation.weight!;
-      time = observation.time!;
-      status = observation.status!;
-      imageURL = observation.url!;
-      print('documentID: ${observation.documentID}');
-      print('uid: ${observation.uid}');
-      print('length: ${observation.length}');
-      print('weight: ${observation.weight}');
+    speciesName = observation.name!;
+    length = observation.length!;
+    weight = observation.weight!;
+    time = observation.time!;
+    status = observation.status!;
+    imageURL = observation.url!;
+    print('documentID: ${observation.documentID}');
+    print('uid: ${observation.uid}');
+    print('length: ${observation.length}');
+    print('weight: ${observation.weight}');
 
-      //Return the information in an organized layout
+    String _printLocation(LatLng position) {
+      String lat = position.latitude.toStringAsFixed(2);
+      String lng = position.longitude.toStringAsFixed(2);
+      return "(${lat},${lng})";
+    }
+
+    //Return the information in an organized layout
     return Scaffold(
       appBar: AppBar(
         title: Text('Observation Details'),
@@ -111,23 +118,6 @@ class MeObservation extends StatelessWidget {
             ),
             SizedBox(height:10.0),
             Text(
-                'Quantity: ',
-                style: TextStyle(
-                  color:Colors.grey,
-                  letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                '????',
-                style: TextStyle(
-                  color:Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize:18.0,
-                  fontWeight: FontWeight.bold,
-                )
-            ),
-            SizedBox(height:10.0),
-            Text(
                 'Time:',
                 style: TextStyle(
                   color:Colors.grey,
@@ -135,7 +125,7 @@ class MeObservation extends StatelessWidget {
                 )
             ),
             Text(
-                '$time',
+                time.toString(),
                 style: TextStyle(
                   color:Colors.black54,
                   letterSpacing: 2.0,
@@ -152,7 +142,7 @@ class MeObservation extends StatelessWidget {
                 )
             ),
             Text(
-                '?????',
+                _printLocation(observation.location!),
                 style: TextStyle(
                   color:Colors.black54,
                   letterSpacing: 2.0,

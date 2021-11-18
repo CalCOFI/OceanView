@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
 
 import 'local_store.dart';
@@ -26,6 +27,12 @@ class DatabaseService {
     obsMap['length'] = observation.length ?? 0.0;
     obsMap['weight'] = observation.weight ?? 0.0;
     obsMap['time'] = observation.time ?? 'None';
+    if (observation.location!=null) {
+      obsMap['location'] = GeoPoint(
+        observation.location!.latitude,
+        observation.location!.longitude
+      );
+    }
     obsMap['status'] = observation.status ?? 'Observe';
     obsMap['url'] = observation.url ?? 'None';
 
@@ -106,7 +113,12 @@ class DatabaseService {
         name: doc.data()['name'],
         length: doc.data()['length'],
         weight: doc.data()['weight'],
-        time: doc.data()['time'],
+        time: (doc.data()['time']!=null)?
+          DateTime.fromMillisecondsSinceEpoch(doc.data()['time'].seconds*1000):
+          'None',
+        location: (doc.data()['location']!=null)?
+          LatLng(doc.data()['location'].latitude, doc.data()['location'].longitude):
+          LatLng(0,0),
         status: doc.data()['status'],
         url: doc.data()['url'],
       );
