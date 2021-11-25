@@ -90,24 +90,24 @@ class _HomePageState extends State<HomePage> {
   double _pinPillPosition = -100;
   PinInformation pinInformation = PinInformation('None', 'None', [], 'None');
 
-  @override
-  void initState(){
-    super.initState();
-
-    notification.requestPermissions();
-    notification.configureDidReceiveLocalNotificationSubject(context);
-    notification.configureSelectNotificationSubject(context);
-
-    IsolateNameServer.registerPortWithName(
-        port.sendPort, 'geofencing_send_port');
-    port.listen((dynamic data) {
-      print('Event: $data');
-      setState(() {
-        geofenceState = data;
-      });
-    });
-    //initPlatformState();
-  }
+  // @override
+  // void initState(){
+  //   super.initState();
+  //
+  //   notification.requestPermissions();
+  //   notification.configureDidReceiveLocalNotificationSubject(context);
+  //   notification.configureSelectNotificationSubject(context);
+  //
+  //   IsolateNameServer.registerPortWithName(
+  //       port.sendPort, 'geofencing_send_port');
+  //   port.listen((dynamic data) {
+  //     print('Event: $data');
+  //     setState(() {
+  //       geofenceState = data;
+  //     });
+  //   });
+  //   //initPlatformState();
+  // }
 
   @override
   void dispose() {

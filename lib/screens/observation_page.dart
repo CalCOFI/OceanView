@@ -89,7 +89,7 @@ class _ObservationPageState extends State<ObservationPage> {
       this.observation!.time = selectedDate;
     }
 
-    if (photoMeta!.location == 0) {
+    if (photoMeta.location == 0) {
       this.observation!.location = LatLng(0,0);
     } else {
       this.observation!.location = photoMeta.location.getLatLng();

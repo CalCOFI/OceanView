@@ -29,7 +29,7 @@ class _UploadClassificationState extends State<UploadClassification>{
   String apiUrl = "https://visionapi.p.rapidapi.com/v1/rapidapi/score_image";
 
   // Send request to VisionAPI
-  upload() async {
+  uploadToVisionAPI() async {
     var stream = new http.ByteStream(widget.imageFile.openRead().cast());
     var length = await widget.imageFile.length();
     print(length);
@@ -61,6 +61,14 @@ class _UploadClassificationState extends State<UploadClassification>{
     });
   }
 
+  // Run once when this widget is added to widget tree
+  @override
+  void initState() {
+    super.initState();
+
+    uploadToVisionAPI();
+  }
+
   getCard(BuildContext context, int position) {
     Result model = _results[position];
     return Card(
@@ -85,9 +93,7 @@ class _UploadClassificationState extends State<UploadClassification>{
 
   @override
   Widget build(BuildContext context) {
-    // Only upload once when entering this page
-    if (loading)
-      upload();
+
     return loading? Loading() : Scaffold(
         appBar: AppBar(
           leading: IconButton(
