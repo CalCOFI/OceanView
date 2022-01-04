@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/services/auth.dart';
+import 'package:ocean_view/src/mpa.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ocean_view/src/mpa_regulation.dart';
+
+/*
+  Page for activity, not finished
+ */
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({required Key key}) : super(key: key);

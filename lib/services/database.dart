@@ -7,6 +7,11 @@ import 'package:ocean_view/models/observation.dart';
 
 import 'local_store.dart';
 
+/*
+  Class for accessing data in Firebase including fetch observations,
+  add single observation, add multiple observations in a batch
+ */
+
 class DatabaseService {
 
   String uid;

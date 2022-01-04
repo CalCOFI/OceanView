@@ -7,6 +7,10 @@ import 'package:provider/provider.dart';
 
 import 'observation_list.dart';
 
+/*
+  A wrapper widget fetching user's observations from Firebase
+  and show the ObservationList
+ */
 class MePage extends StatelessWidget {
   const MePage({Key? key}) : super(key: key);
 

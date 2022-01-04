@@ -16,7 +16,16 @@ import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/upload/upload_classification.dart';
 import 'package:ocean_view/services/database.dart';
 
-// Define a custom Form widget.
+/*
+  Page for editing all the information of one specific observation
+
+  It loads the meta data of the image (shot time, location) when building the widget.
+  Image classification button navigates to the page for recommending species name
+  by utilizing VisionAPI.
+  Other information, such as size and status can be typed or selected based on
+  data formats.
+ */
+
 class ObservationPage extends StatefulWidget {
   final File file;
   final String mode;

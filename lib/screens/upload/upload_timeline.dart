@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +8,12 @@ import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/screens/observation_page.dart';
 import 'package:provider/provider.dart';
+
+/*
+  A page to show all the observations and their recording time in current recording session
+
+  Upload button batched writes all the observations to Firebase.
+ */
 
 class UploadTimeline extends StatefulWidget {
 

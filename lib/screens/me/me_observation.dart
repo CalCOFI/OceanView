@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ocean_view/screens/me/observation_list.dart';
-import 'package:provider/provider.dart';
 import 'package:ocean_view/models/observation.dart';
 
+/*
+  A page showing one observation
+ */
 class MeObservation extends StatelessWidget {
   const MeObservation({Key? key, required this.observation}) : super(key: key);
   //Create an observation object to store the data passed from the onTap() function from

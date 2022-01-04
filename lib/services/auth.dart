@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'database.dart';
+/*
+  Class for all the user authentication services including sign in, register,
+  and sign out
+ */
 
 class AuthService {
 

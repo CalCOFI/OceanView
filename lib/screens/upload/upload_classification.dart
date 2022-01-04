@@ -8,6 +8,10 @@ import 'package:ocean_view/shared/loading.dart';
 import 'package:ocean_view/src/prediction.dart';
 import 'package:path/path.dart' as path;
 
+/*
+  A page sends the image to VisionAPI and shows ten suggestions from VisionAPI
+ */
+
 class UploadClassification extends StatefulWidget {
   final File imageFile;
   const UploadClassification({required Key key, required this.imageFile}) : super(key:key);

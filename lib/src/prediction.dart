@@ -1,3 +1,9 @@
+/*
+  Files for defining classes to decode json returned from VisionAPI
+
+  Prediction <- Result <- Taxon
+ */
+
 class Prediction {
   List<Result> results;
 
