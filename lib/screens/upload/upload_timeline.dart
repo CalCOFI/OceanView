@@ -92,10 +92,26 @@ class _UploadTimelineState extends State<UploadTimeline> {
           itemBuilder: (context, i){
             return Stack(
               children: [
+                Positioned(   // Line
+                  left: 49,
+                  child: new Container(
+                    height: size.height * 0.4,
+                    width: 1.0,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
                 Padding(
                   padding: EdgeInsets.all(40),
                   child: Row(
                     children: [
+                      Container(    // Dot
+                        height: 20,
+                        width: 20,
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
                       SizedBox(width: size.width * 0.1),
                       SizedBox(
                         child: Text(_getStringOfDuration(
@@ -125,28 +141,21 @@ class _UploadTimelineState extends State<UploadTimeline> {
                     ],
                   )
                 ),
-                Positioned(   // Line
-                  left: 50,
-                  child: new Container(
-                    height: size.height * 0.4,
-                    width: 1.0,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-                Positioned(   // Dots
-                  bottom: 40,
-                  child: Padding(
-                    padding: const EdgeInsets.all(40.0),
-                    child: Container(
-                      height: 20.0,
-                      width: 20.0,
-                      decoration: new BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                ),
+
+                // Positioned(   // Dots
+                //   bottom: size.height * 0.108,
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(40.0),
+                //     child: Container(
+                //       height: 20.0,
+                //       width: 20.0,
+                //       decoration: new BoxDecoration(
+                //         color: Colors.blue,
+                //         borderRadius: BorderRadius.circular(20),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             );
           },
