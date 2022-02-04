@@ -280,16 +280,17 @@ class _HomePageState extends State<HomePage> {
                                           fit: BoxFit.fitWidth,
                                           child: Text(pinInformation.locationName),
                                         ),
+                                        SizedBox(height: 10),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            ImageIcon(
-                                              AssetImage('assets/images/no-fishing.png'),
-                                            ),
-                                            ImageIcon(
-                                              AssetImage('assets/images/duck.png'),
-                                            ),
-                                          ],
+                                          // children: [
+                                          //   Image.asset('assets/images/duck.png', height:30, width:30, fit:BoxFit.fitWidth),
+                                          //   Image.asset('assets/images/WaterfowlHunting_OK-removebg-preview.png', height:30, width:30, fit:BoxFit.fitWidth),
+                                          //   Image.asset('assets/images/Collecting_SomeRestrictions.png', height:30, width:30, fit:BoxFit.fitWidth),
+                                          // ]
+                                          children: (MPA_type_icon.containsKey(pinInformation.locationType))
+                                            ? MPA_type_icon[pinInformation.locationType]!
+                                            : [],
                                         ),
                                       ]
                                   ),

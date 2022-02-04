@@ -16,13 +16,57 @@ const textInputDecoration = InputDecoration(
   ),
 );
 
+// Color for regions of MPA on GoogleMap, which is according to color on CDFW
 Map<String, Color> MPA_type_color = {
-  'SMCA': Colors.blue,
   'SMR': Colors.red,
+  'SMCA': Colors.blue,
   'SMCA (No-Take)': Colors.purple,
   'Special Closure': Colors.purpleAccent,
+  'SMRMA': Colors.green,
   'FMR': Colors.red[200]!,
   'SMP': Colors.yellow,
-  'SMRMA': Colors.green,
   'FMCA': Colors.blue[200]!
+};
+
+// Corresponding images for each type of MPA
+Image get_mpa_image(String path) {
+  return Image.asset(
+    path,
+    width: 30,
+    height: 30,
+    fit: BoxFit.fitWidth,
+  );
+}
+
+Map<String, List<Image>> MPA_type_icon = {
+  'SMR': [
+    get_mpa_image('assets/images/No_Fishing.png'),
+    get_mpa_image('assets/images/No_Collecting.png'),
+  ],
+  'SMCA': [
+    get_mpa_image('assets/images/Fishing_SomeRestrictions.png'),
+    get_mpa_image('assets/images/Collecting_SomeRestrictions.png'),
+  ],
+  'SMCA (No-Take)': [
+    get_mpa_image('assets/images/No_Fishing.png'),
+    get_mpa_image('assets/images/No_Collecting.png'),
+  ],
+  'Special Closure': [
+    get_mpa_image('assets/images/Entry_SomeRestrictions.png'),
+  ],
+  'SMRMA': [
+    get_mpa_image('assets/images/WaterfowlHunting_OK.png'),
+  ],
+  'FMR': [
+    get_mpa_image('assets/images/No_Fishing.png'),
+    get_mpa_image('assets/images/No_Collecting.png'),
+  ],
+  'SMP': [
+    get_mpa_image('assets/images/No_Fishing.png'),
+    get_mpa_image('assets/images/No_Collecting.png'),
+  ],
+  'FMCA': [
+    get_mpa_image('assets/images/No_Fishing.png'),
+    get_mpa_image('assets/images/No_Collecting.png'),
+  ],
 };
