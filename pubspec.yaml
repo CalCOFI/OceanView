@@ -64,6 +64,9 @@ dependencies:
   # Local notifications
   flutter_local_notifications: ^6.0.0
 
+  # Launch browser through url
+  url_launcher: ^6.0.18
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

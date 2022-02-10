@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ocean_view/screens/map/regulation_page.dart';
 import 'package:ocean_view/shared/constants.dart';
 
@@ -283,11 +284,6 @@ class _HomePageState extends State<HomePage> {
                                         SizedBox(height: 10),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          // children: [
-                                          //   Image.asset('assets/images/duck.png', height:30, width:30, fit:BoxFit.fitWidth),
-                                          //   Image.asset('assets/images/WaterfowlHunting_OK-removebg-preview.png', height:30, width:30, fit:BoxFit.fitWidth),
-                                          //   Image.asset('assets/images/Collecting_SomeRestrictions.png', height:30, width:30, fit:BoxFit.fitWidth),
-                                          // ]
                                           children: (MPA_type_icon.containsKey(pinInformation.locationType))
                                             ? MPA_type_icon[pinInformation.locationType]!
                                             : [],
@@ -299,13 +295,18 @@ class _HomePageState extends State<HomePage> {
                                   padding: EdgeInsets.all(5),
                                   child: IconButton(
                                     icon: Icon(Icons.arrow_forward_ios),
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      /*
                                       print('Go to exceptions');
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) =>
                                               RegulationPage(pinInformation: pinInformation)
                                           )
                                       );
+                                       */
+                                      const String url = 'https://wildlife.ca.gov/Conservation/Marine/MPAs';
+                                      if (!await launch(url, forceWebView: true, enableJavaScript: true))
+                                        throw 'Could not launch $url';
                                     },
                                   ),
                                 )
