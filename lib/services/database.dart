@@ -39,6 +39,7 @@ class DatabaseService {
       );
     }
     obsMap['status'] = observation.status ?? 'Observe';
+    obsMap['confidence'] = observation.status ?? 'Keep secret';
     obsMap['url'] = observation.url ?? 'None';
 
     return obsMap;
@@ -124,7 +125,8 @@ class DatabaseService {
         location: (doc.data()['location']!=null)?
           LatLng(doc.data()['location'].latitude, doc.data()['location'].longitude):
           LatLng(0,0),
-        status: doc.data()['status'],
+        status: doc.data()['status'] ?? 'Observe',
+        confidence: doc.data()['confidence'] ?? 'Keep secret',
         url: doc.data()['url'],
       );
     }).toList();

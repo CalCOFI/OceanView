@@ -35,7 +35,7 @@ class ObservationPage extends StatefulWidget {
   ObservationPage({required this.file, required this.mode, this.observation, this.photoMeta, this.index});
 
   @override
-  _ObservationPageState createState() => _ObservationPageState(this.file, this.mode, this.observation, this.photoMeta, this.index);
+  _ObservationPageState createState() => _ObservationPageState();
 }
 
 // Define a corresponding State class.
@@ -44,8 +44,7 @@ class _ObservationPageState extends State<ObservationPage> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final _nameController = TextEditingController();
-  String statusValue = 'Observe';
-  String _imageListText = "What did you see?";
+
 
   // From previous widget
   late Image _image;
@@ -55,17 +54,22 @@ class _ObservationPageState extends State<ObservationPage> {
   Observation? observation;
   DateTime? selectedDate;
   int index = 0;
+  String statusValue = 'Observe';
+  String confidenceValue = 'Share with scientists';
 
-  _ObservationPageState (File file, String mode, Observation? observation, PhotoMeta? photoMeta, int? index) {
-    this._imageFile = file;
+  @override
+  void initState() {
+    super.initState();
+
+    this._imageFile = widget.file;
     this._image = new Image.file(
-      file,
+      widget.file,
       width: 250,
-      height: 180,
+      height: 100,
       fit: BoxFit.contain,
     );
-    this.mode = mode;
-    this.observation = (observation!=null)? observation:Observation();
+    this.mode = widget.mode;
+    this.observation = (widget.observation!=null)? widget.observation:Observation();
     try {
       switch (this.mode) {
         case 'single': {
@@ -87,23 +91,21 @@ class _ObservationPageState extends State<ObservationPage> {
     } catch (e) {
       print(e.toString());
     }
+    this.index = ((widget.index==null)? 0 : widget.index)!;
 
-    this.index = (index==null)? 0 : index;
-
-    if (photoMeta!.time == 0) {
+    if (widget.photoMeta!.time == 0) {
       selectedDate = DateTime.now();
       this.observation!.time = selectedDate;
     } else {
-      selectedDate = photoMeta.time;
+      selectedDate = widget.photoMeta!.time;
       this.observation!.time = selectedDate;
     }
 
-    if (photoMeta.location == 0) {
+    if (widget.photoMeta!.location == 0) {
       this.observation!.location = LatLng(0,0);
     } else {
-      this.observation!.location = photoMeta.location.getLatLng();
+      this.observation!.location = widget.photoMeta!.location.getLatLng();
     }
-
   }
 
   // Select date
@@ -295,6 +297,42 @@ class _ObservationPageState extends State<ObservationPage> {
                             );
                           }).toList(),
                         )
+                      )
+                    ],
+                  )
+              ),
+              Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Row(
+                    children: [
+                      const Text("Confidence: "),
+                      const SizedBox(width: 10.0,),
+                      Container(
+                          alignment: Alignment.center,
+                          child: DropdownButton<String>(
+                            value: confidenceValue,
+                            icon: const Icon(Icons.arrow_downward),
+                            iconSize: 24,
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.black26,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                confidenceValue = newValue!;
+                                // this.observation!.status = statusValue;
+                              });
+                            },
+                            items: <String>['Share with scientists', 'Keep secret']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          )
                       )
                     ],
                   )

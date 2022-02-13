@@ -19,6 +19,7 @@ class MeObservation extends StatelessWidget {
     double weight =0.0;
     dynamic time = [];
     String status = '';
+    String confidence = '';
     String imageURL = '';
 
     //Assign values for all objects
@@ -27,6 +28,7 @@ class MeObservation extends StatelessWidget {
     weight = observation.weight!;
     time = observation.time!;
     status = observation.status!;
+    confidence = observation.confidence!;
     imageURL = observation.url!;
     print('documentID: ${observation.documentID}');
     print('uid: ${observation.uid}');
@@ -161,6 +163,23 @@ class MeObservation extends StatelessWidget {
             ),
             Text(
                 '$status',
+                style: TextStyle(
+                  color:Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize:18.0,
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+            SizedBox(height:10.0),
+            Text(
+                'Confidence',
+                style: TextStyle(
+                  color:Colors.grey,
+                  letterSpacing: 2.0,
+                )
+            ),
+            Text(
+                '$confidence',
                 style: TextStyle(
                   color:Colors.black54,
                   letterSpacing: 2.0,
