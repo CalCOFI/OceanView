@@ -15,12 +15,12 @@ class Observation {
   dynamic time;             // Timestamp from the picture (None: not showing)
   LatLng? location;         // LatLng from picture (None: not showing)
   String? status;           // Observe / Release / Catch
-  String? confidence;       // Share with scientists / Confidence
+  String? confidentiality;  // Share with scientists / Keep private
   String? url;              // Url of photo on Firebase, generated when uploading
   dynamic stopwatchStart;   // Timestamp of stopwatch start
 
   Observation( {this.documentID, this.uid, this.name,
     this.length, this.weight, this.time, this.location,
-    this.status, this.url, this.stopwatchStart, this.confidence} );
+    this.status, this.url, this.stopwatchStart, this.confidentiality} );
 
 }

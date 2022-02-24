@@ -1,6 +1,15 @@
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uri_to_file/uri_to_file.dart';
+
+import '../observation_page.dart';
 
 /*
   A page showing one observation
@@ -11,6 +20,19 @@ class MeObservation extends StatelessWidget {
   //observation_list.dart
   final Observation observation;
 
+  // From url to file
+  Future<File> urlToFile(String imageUrl) async {
+    var rng = new Random();
+
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    File file = new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
+    http.Response response = await http.get(Uri.parse(imageUrl));
+    await file.writeAsBytes(response.bodyBytes);
+
+    return file;
+  }
+
   @override
   Widget build(BuildContext context) {
     //Create objects to store detailed information of the observation
@@ -19,7 +41,7 @@ class MeObservation extends StatelessWidget {
     double weight =0.0;
     dynamic time = [];
     String status = '';
-    String confidence = '';
+    String confidentiality = '';
     String imageURL = '';
 
     //Assign values for all objects
@@ -28,7 +50,7 @@ class MeObservation extends StatelessWidget {
     weight = observation.weight!;
     time = observation.time!;
     status = observation.status!;
-    confidence = observation.confidence!;
+    confidentiality = observation.confidentiality!;
     imageURL = observation.url!;
     print('documentID: ${observation.documentID}');
     print('uid: ${observation.uid}');
@@ -44,7 +66,47 @@ class MeObservation extends StatelessWidget {
     //Return the information in an organized layout
     return Scaffold(
       appBar: AppBar(
-        title: Text('Observation Details'),
+        title: Text('Details'),
+        centerTitle: true,
+        backgroundColor: Colors.lightBlueAccent,
+        actions: <Widget>[
+          TextButton(
+            child: Text(
+              'Edit',
+              style: TextStyle(fontSize: 16),
+            ),
+            style: TextButton.styleFrom(
+              primary: Colors.white,
+            ),
+            onPressed: () async {
+              print('Edit observation');
+              File _imageFile = await urlToFile(imageURL);
+              Navigator.push(
+                  context, MaterialPageRoute(
+                  builder: (context) =>
+                      ObservationPage(
+                        file: _imageFile,
+                        mode:'me',
+                        observation: observation,
+                      )
+                )
+              );
+              print('End Edit');
+            },
+          ),
+          TextButton(
+            child: Text(
+              'Delete',
+              style: TextStyle(fontSize: 16),
+            ),
+            style: TextButton.styleFrom(
+              primary: Colors.red,
+            ),
+            onPressed: () {
+              print('Delete observation');
+            },
+          ),
+        ],
       ),
       //Layout for all information
       body:
@@ -172,14 +234,14 @@ class MeObservation extends StatelessWidget {
             ),
             SizedBox(height:10.0),
             Text(
-                'Confidence',
+                'Confidentiality',
                 style: TextStyle(
                   color:Colors.grey,
                   letterSpacing: 2.0,
                 )
             ),
             Text(
-                '$confidence',
+                '$confidentiality',
                 style: TextStyle(
                   color:Colors.black54,
                   letterSpacing: 2.0,

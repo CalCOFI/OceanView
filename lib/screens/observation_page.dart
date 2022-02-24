@@ -43,19 +43,19 @@ class ObservationPage extends StatefulWidget {
 class _ObservationPageState extends State<ObservationPage> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
-  final _nameController = TextEditingController();
-
+  late TextEditingController _nameController;
 
   // From previous widget
   late Image _image;
   late File _imageFile;
   late String mode;           // single, session, me
-  late String buttonName;     // Upload, Add    , Edit
+  late String buttonName;     // Upload, Add    , Update
+  String statusValue = 'Observe';
+  String confidentialityValue = 'Share with scientists';
   Observation? observation;
   DateTime? selectedDate;
   int index = 0;
-  String statusValue = 'Observe';
-  String confidenceValue = 'Share with scientists';
+
 
   @override
   void initState() {
@@ -70,6 +70,9 @@ class _ObservationPageState extends State<ObservationPage> {
     );
     this.mode = widget.mode;
     this.observation = (widget.observation!=null)? widget.observation:Observation();
+    this._nameController = (this.observation!.name!=null)
+      ? TextEditingController(text: this.observation!.name)
+      : TextEditingController(text: '');
     try {
       switch (this.mode) {
         case 'single': {
@@ -93,18 +96,26 @@ class _ObservationPageState extends State<ObservationPage> {
     }
     this.index = ((widget.index==null)? 0 : widget.index)!;
 
-    if (widget.photoMeta!.time == 0) {
-      selectedDate = DateTime.now();
-      this.observation!.time = selectedDate;
-    } else {
-      selectedDate = widget.photoMeta!.time;
-      this.observation!.time = selectedDate;
-    }
+    // Only load meta data when adding observation
+    if (this.mode == 'single' || this.mode == 'session') {
+      if (widget.photoMeta!.time == 0) {
+        selectedDate = DateTime.now();
+        this.observation!.time = selectedDate;
+      } else {
+        selectedDate = widget.photoMeta!.time;
+        this.observation!.time = selectedDate;
+      }
 
-    if (widget.photoMeta!.location == 0) {
-      this.observation!.location = LatLng(0,0);
+      if (widget.photoMeta!.location == 0) {
+        this.observation!.location = LatLng(0, 0);
+      } else {
+        this.observation!.location = widget.photoMeta!.location.getLatLng();
+      }
+
     } else {
-      this.observation!.location = widget.photoMeta!.location.getLatLng();
+      selectedDate = this.observation!.time;
+      statusValue = this.observation!.status!;
+      confidentialityValue = this.observation!.confidentiality!;
     }
   }
 
@@ -194,6 +205,9 @@ class _ObservationPageState extends State<ObservationPage> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: TextFormField(
+                          initialValue: (this.observation!.length==null)
+                              ? ''
+                              : this.observation!.length.toString(),
                           textAlign: TextAlign.center,
                           onChanged: (String value) => this.observation!.length=double.parse(value),
                           keyboardType: TextInputType.number,
@@ -214,7 +228,10 @@ class _ObservationPageState extends State<ObservationPage> {
                       const Text('Weight: '),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: TextField(
+                        child: TextFormField(
+                          initialValue: (this.observation!.weight == null)
+                            ? ''
+                            : this.observation!.weight.toString(),
                           textAlign: TextAlign.center,
                           onChanged: (String value) => this.observation!.weight=double.parse(value),
                           keyboardType: TextInputType.number,
@@ -305,12 +322,12 @@ class _ObservationPageState extends State<ObservationPage> {
                   padding: EdgeInsets.all(4),
                   child: Row(
                     children: [
-                      const Text("Confidence: "),
+                      const Text("Confidentiality: "),
                       const SizedBox(width: 10.0,),
                       Container(
                           alignment: Alignment.center,
                           child: DropdownButton<String>(
-                            value: confidenceValue,
+                            value: confidentialityValue,
                             icon: const Icon(Icons.arrow_downward),
                             iconSize: 24,
                             elevation: 16,
@@ -321,11 +338,11 @@ class _ObservationPageState extends State<ObservationPage> {
                             ),
                             onChanged: (String? newValue) {
                               setState(() {
-                                confidenceValue = newValue!;
+                                confidentialityValue = newValue!;
                                 // this.observation!.status = statusValue;
                               });
                             },
-                            items: <String>['Share with scientists', 'Keep secret']
+                            items: <String>['Share with scientists', 'Keep private']
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
@@ -368,10 +385,22 @@ class _ObservationPageState extends State<ObservationPage> {
                     await LocalStoreService().saveObservation(this.observation!, '$index.txt');
 
                     Navigator.pop(context, [this.observation, this._image]);
-                  } else {
-                    print('Edit');
-                  }
+                  } else if (this.mode == 'me') {
+                    print('Update');
 
+                    String state = await DatabaseService(uid: user!.uid).updateObservation(this.observation!);
+
+                    if (state == "success"){
+                      final snackBar = SnackBar(content: Text('Success'));
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else {
+                      print('Error from image repo ${state.toString()}');
+                      throw ('This file is not an image');
+                    }
+
+                    // Back to previous page
+                    Navigator.pop(context);
+                  }
                 },
               ),
             ],

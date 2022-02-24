@@ -39,7 +39,7 @@ class DatabaseService {
       );
     }
     obsMap['status'] = observation.status ?? 'Observe';
-    obsMap['confidence'] = observation.status ?? 'Keep secret';
+    obsMap['confidentiality'] = observation.confidentiality ?? 'Keep private';
     obsMap['url'] = observation.url ?? 'None';
 
     return obsMap;
@@ -110,6 +110,22 @@ class DatabaseService {
     return states;
   }
 
+  // Update existing observation
+  Future<String> updateObservation(Observation observation) async {
+
+    Map<String, dynamic> obsMap = _getMapFromObs(observation);
+    String state = 'fail';
+
+    // Update existing observation on CloudStore
+    await observationCollection
+        .doc(observation.documentID)
+        .update(obsMap)
+        .then((_) => state='success')
+        .catchError((error) => state='fail');;
+
+    return state;
+  }
+
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots (QuerySnapshot snapshot) {
     return snapshot.docs.map((doc){
@@ -126,7 +142,7 @@ class DatabaseService {
           LatLng(doc.data()['location'].latitude, doc.data()['location'].longitude):
           LatLng(0,0),
         status: doc.data()['status'] ?? 'Observe',
-        confidence: doc.data()['confidence'] ?? 'Keep secret',
+        confidentiality: doc.data()['confidentiality'] ?? 'Keep secret',
         url: doc.data()['url'],
       );
     }).toList();

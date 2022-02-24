@@ -60,10 +60,10 @@ class _UploadPageState extends State<UploadPage>{
                           PhotoMeta photoMeta = await extractLocationAndTime(_imageFile!);
 
                           Navigator.push(
-                              context, MaterialPageRoute(
-                              builder: (context) =>
-                                  ObservationPage(file: _imageFile!, mode:'single', photoMeta: photoMeta)
-                          )
+                            context, MaterialPageRoute(
+                            builder: (context) =>
+                                ObservationPage(file: _imageFile!, mode:'single', photoMeta: photoMeta)
+                            )
                           );
                         }
                       }
@@ -81,7 +81,7 @@ class _UploadPageState extends State<UploadPage>{
                               context, MaterialPageRoute(
                               builder: (context) =>
                                   ObservationPage(file: _imageFile!, mode:'single', photoMeta: photoMeta)
-                          )
+                              )
                           );
                         }
                       }
