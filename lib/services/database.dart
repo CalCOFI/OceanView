@@ -126,6 +126,21 @@ class DatabaseService {
     return state;
   }
 
+
+  // Delete observation
+  Future<String> deleteObservation(Observation observation) async {
+    String state = 'Null';
+
+    await observationCollection
+      .doc(observation.documentID)
+      .delete()
+      .then((value) => state = 'Observation deleted')
+      .catchError((error) => state = 'Unable to delete observation');
+
+    return state;
+  }
+
+
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots (QuerySnapshot snapshot) {
     return snapshot.docs.map((doc){

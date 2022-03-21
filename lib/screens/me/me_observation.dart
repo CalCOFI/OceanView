@@ -2,11 +2,14 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/services/database.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:uri_to_file/uri_to_file.dart';
 
 import '../observation_page.dart';
@@ -57,6 +60,9 @@ class MeObservation extends StatelessWidget {
     print('length: ${observation.length}');
     print('weight: ${observation.weight}');
 
+    // Get user info
+    final user = Provider.of<User?>(context);
+
     String _printLocation(LatLng position) {
       String lat = position.latitude.toStringAsFixed(2);
       String lng = position.longitude.toStringAsFixed(2);
@@ -102,8 +108,19 @@ class MeObservation extends StatelessWidget {
             style: TextButton.styleFrom(
               primary: Colors.red,
             ),
-            onPressed: () {
+            onPressed: () async {
               print('Delete observation');
+              String state = await DatabaseService(uid: user!.uid).deleteObservation(this.observation!);
+
+              if (state == 'Observation deleted'){
+                final snackBar = SnackBar(content: Text(state));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              } else {
+                throw (state);
+              }
+
+              // Back to previous page
+              Navigator.pop(context);
             },
           ),
         ],
