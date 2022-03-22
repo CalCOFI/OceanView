@@ -8,9 +8,20 @@ import 'package:firebase_core/firebase_core.dart';
 import './providers/pictures.dart';
 import 'notification_library.dart' as notification;
 
-Future<void> main() async{
-  notification.initializeNotification();
+import 'dart:io';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+Future<void> main() async {
+  notification.initializeNotification();
+  HttpOverrides.global = new MyHttpOverrides();
   // Initialize firebase
   WidgetsFlutterBinding.ensureInitialized();
   final FirebaseApp app = await Firebase.initializeApp();
@@ -22,18 +33,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return  MultiProvider(
-        providers: [
-          ChangeNotifierProvider<Pictures>(create: (_) => Pictures()),
-          StreamProvider<User?>(
-            create: (_) => AuthService().user,
-            initialData: null,
-          ),
-        ],
-        child: MaterialApp(
-          home: Wrapper(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<Pictures>(create: (_) => Pictures()),
+        StreamProvider<User?>(
+          create: (_) => AuthService().user,
+          initialData: null,
         ),
+      ],
+      child: MaterialApp(
+        home: Wrapper(),
+      ),
     );
   }
 }
-

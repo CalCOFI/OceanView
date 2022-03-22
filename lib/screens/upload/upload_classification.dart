@@ -10,21 +10,21 @@ import 'package:path/path.dart' as path;
 
 class UploadClassification extends StatefulWidget {
   final File imageFile;
-  const UploadClassification({required Key key, required this.imageFile}) : super(key:key);
+  const UploadClassification({required Key key, required this.imageFile})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _UploadClassificationState();
 }
 
-class _UploadClassificationState extends State<UploadClassification>{
-
+class _UploadClassificationState extends State<UploadClassification> {
   var _prediction;
   late List<Result> _results;
   bool loading = true;
 
-  Map<String,String> headers = {
-    'x-rapidapi-key':'5b2f443d6cmsh9e04ef3014bde3dp176b6ajsnea7f884ff2e9',
-    'x-rapidapi-host':'visionapi.p.rapidapi.com'
+  Map<String, String> headers = {
+    'x-rapidapi-key': '5b2f443d6cmsh9e04ef3014bde3dp176b6ajsnea7f884ff2e9',
+    'x-rapidapi-host': 'visionapi.p.rapidapi.com'
   };
   String apiUrl = "https://visionapi.p.rapidapi.com/v1/rapidapi/score_image";
 
@@ -38,11 +38,12 @@ class _UploadClassificationState extends State<UploadClassification>{
 
     var request = new http.MultipartRequest("POST", uri);
 
-    Map<String,String> mapContent = {"content-type":"mutipart/form-data"};
+    Map<String, String> mapContent = {"content-type": "mutipart/form-data"};
     request.headers.addAll(headers);
     request.headers.addAll(mapContent);
     var multipartFile = new http.MultipartFile('image', stream, length,
-        filename: path.basename(widget.imageFile.path),contentType: MediaType.parse("multipart/form-data"));
+        filename: path.basename(widget.imageFile.path),
+        contentType: MediaType.parse("multipart/form-data"));
 
     request.files.add(multipartFile);
     var response = await request.send();
@@ -54,7 +55,7 @@ class _UploadClassificationState extends State<UploadClassification>{
       jsonText = value;
     });
 
-    setState (() {
+    setState(() {
       _prediction = Prediction.fromJson(json.decode(jsonText));
       _results = _prediction.results;
       loading = false;
@@ -65,15 +66,16 @@ class _UploadClassificationState extends State<UploadClassification>{
     Result model = _results[position];
     return Card(
       child: new InkWell(
-        onTap: (){
+        onTap: () {
           print("Tap ${model.taxon.preferredCommonName}");
-          Navigator.pop(context, model.taxon.preferredCommonName);
+          //Navigator.pop(context, model.taxon.name);
+          Navigator.pop(context, model.taxon);
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              model.taxon.preferredCommonName,
+              model.taxon.preferredCommonName + ' (' + model.taxon.name + ')',
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
           ],
@@ -86,47 +88,47 @@ class _UploadClassificationState extends State<UploadClassification>{
   @override
   Widget build(BuildContext context) {
     // Only upload once when entering this page
-    if (loading)
-      upload();
-    return loading? Loading() : Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context, "None"),
-          ),
-          title: Text("Species suggestions"),
-        ),
-        body:
-        Container(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(40),
-                  child: Image.asset(
-                    'assets/images/iNaturalist.png',
-                  ),
-                ),
-                SizedBox(height: 40,),
-                (_prediction==null)?
-                  Text(
-                    'Cannot find corresponding species',
-                    style: TextStyle(
-                      fontSize: 20,
+    if (loading) upload();
+    return loading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pop(context, "None"),
+              ),
+              title: Text("Species suggestions"),
+            ),
+            body: Container(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Image.asset(
+                        'assets/images/iNaturalist.png',
+                      ),
                     ),
-                  ):
-                  ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: _prediction.results.length,
-                    itemBuilder: (context, index) {
-                      return getCard(context, index);
-                    },
-                  ),
-              ]
-          ),
-        )
-    );
+                    SizedBox(
+                      height: 40,
+                    ),
+                    (_prediction == null)
+                        ? Text(
+                            'Cannot find corresponding species',
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          )
+                        : ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: _prediction.results.length,
+                            itemBuilder: (context, index) {
+                              return getCard(context, index);
+                            },
+                          ),
+                  ]),
+            ));
   }
 }

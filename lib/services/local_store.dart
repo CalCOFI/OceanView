@@ -4,13 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:cross_file/cross_file.dart';
 
 import 'package:ocean_view/models/picture.dart';
 import 'package:ocean_view/providers/pictures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStoreService {
-
   // Get local path
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -18,7 +18,8 @@ class LocalStoreService {
   }
 
   // Save Image File
-  Future saveImage(BuildContext context, File imageFile, String fileName) async {
+  Future saveImage(
+      BuildContext context, File imageFile, String fileName) async {
     final path = await _localPath;
 
     print('Save image $imageFile in $path/$fileName');
@@ -37,7 +38,7 @@ class LocalStoreService {
   }
 
   // Load Image File
-  Future<File> loadImage (String fileName) async {
+  Future<File> loadImage(String fileName) async {
     final path = await _localPath;
 
     File imageFile = File('$path/$fileName');
@@ -46,6 +47,4 @@ class LocalStoreService {
 
     return imageFile;
   }
-
-
 }
