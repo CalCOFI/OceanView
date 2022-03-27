@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/src/extract_exif.dart';
-import 'package:ocean_view/src/json_parse.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -54,10 +53,10 @@ class ObservationPage extends StatefulWidget {
   int? index; // Index for observation in session
   ObservationPage(
       {required this.file,
-      required this.mode,
-      this.observation,
-      this.photoMeta,
-      this.index});
+        required this.mode,
+        this.observation,
+        this.photoMeta,
+        this.index});
 
   @override
   _ObservationPageState createState() => _ObservationPageState(
@@ -144,10 +143,10 @@ class _ObservationPageState extends State<ObservationPage> {
         showTitleActions: true,
         minTime: DateTime(2000, 1, 1),
         maxTime: DateTime.now(), onChanged: (date) {
-      print('change $date');
-    }, onConfirm: (date) {
-      print('confirm $date');
-    }, currentTime: selectedDate!, locale: LocaleType.en);
+          print('change $date');
+        }, onConfirm: (date) {
+          print('confirm $date');
+        }, currentTime: selectedDate!, locale: LocaleType.en);
     if (picked != null) {
       setState(() {
         selectedDate = picked;
@@ -203,15 +202,15 @@ class _ObservationPageState extends State<ObservationPage> {
                             prefixIcon: IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () => {
-                                      _nameController.clear(),
-                                      _nameController2.clear()
-                                    }),
+                                  _nameController.clear(),
+                                  _nameController2.clear()
+                                }),
                           ),
                           textAlign: TextAlign.center,
                           onChanged: (String value) => {
-                                this.observation!.name = value,
-                                _nameController2.clear(),
-                              }),
+                            this.observation!.name = value,
+                            _nameController2.clear(),
+                          }),
                     ),
                     IconButton(
                         iconSize: 20,
@@ -253,7 +252,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           textAlign: TextAlign.center,
                           enabled: false,
                           onChanged: (String value) =>
-                              this.observation!.latinName = value,
+                          this.observation!.latinName = value,
                         ),
                       ),
                     ],
@@ -268,7 +267,7 @@ class _ObservationPageState extends State<ObservationPage> {
                     child: TextFormField(
                       textAlign: TextAlign.center,
                       onChanged: (String value) =>
-                          this.observation!.length = double.parse(value),
+                      this.observation!.length = double.parse(value),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -289,7 +288,7 @@ class _ObservationPageState extends State<ObservationPage> {
                     child: TextField(
                       textAlign: TextAlign.center,
                       onChanged: (String value) =>
-                          this.observation!.weight = double.parse(value),
+                      this.observation!.weight = double.parse(value),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -310,10 +309,10 @@ class _ObservationPageState extends State<ObservationPage> {
                   ),
                   Expanded(
                       child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                        "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
-                  )),
+                        alignment: Alignment.center,
+                        child: Text(
+                            "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
+                      )),
                   const SizedBox(width: 10.0),
                   ElevatedButton(
                     onPressed: () => _selectDate(context),
@@ -464,7 +463,7 @@ class _ObservationPageState extends State<ObservationPage> {
                   if (this.mode == 'single') {
                     TaskState state = await DatabaseService(uid: user!.uid)
                         .addObservation(
-                            this.observation!, File(widget.file.path));
+                        this.observation!, File(widget.file.path));
 
                     if (state == TaskState.success) {
                       final snackBar = SnackBar(content: Text('Success'));

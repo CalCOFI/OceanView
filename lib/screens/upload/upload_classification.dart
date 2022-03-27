@@ -64,22 +64,30 @@ class _UploadClassificationState extends State<UploadClassification> {
 
   getCard(BuildContext context, int position) {
     Result model = _results[position];
+    String commonName = model.taxon.preferredCommonName ?? 'None';
     return Card(
       child: new InkWell(
         onTap: () {
-          print("Tap ${model.taxon.preferredCommonName}");
+          print("Tap ${commonName}");
           //Navigator.pop(context, model.taxon.name);
           Navigator.pop(context, model.taxon);
         },
-        child: Row(
+        child: FittedBox(
+          fit: BoxFit.fitWidth,
+          child: Text(commonName + ' (' + model.taxon.name + ')'),
+        )
+        /*
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              model.taxon.preferredCommonName + ' (' + model.taxon.name + ')',
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
+            FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Text(commonName + ' (' + model.taxon.name + ')'),
+            )
           ],
         ),
+
+         */
       ),
       margin: EdgeInsets.all(5),
     );
