@@ -89,14 +89,14 @@ class AphiaSearch {
                 .firstWhere(
                     (element) =>
                         element.langCode == 'eng' &&
-                        element.vname.contains(svalue),
+                        element.vname.toLowerCase().contains(svalue),
                     orElse: () => AphiaVernacular())
                 .langCode;
             record[ii].vname = vrecord
                 .firstWhere(
                     (element) =>
                         element.langCode == 'eng' &&
-                        element.vname.contains(svalue),
+                        element.vname.toLowerCase().contains(svalue),
                     orElse: () => AphiaVernacular())
                 .vname;
           }

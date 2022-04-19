@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/src/extract_exif.dart';
-import 'package:ocean_view/src/json_parse.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -20,12 +19,12 @@ import 'package:ocean_view/screens/upload/upload_classification.dart';
 import 'package:ocean_view/services/database.dart';
 
 String namehelp =
-    'If you think you have a clear, identifiable image of your observation, use image search.  Otherwise, you can enter your guess for a full or partial name and use text search.  This will perform a search of the World Register of Marine Species (https://www.marinespecies.org) database and display a list of possible matches.';
+    'If you think you have a clear, identifiable image of your observation, use image search.  Otherwise, you can type in your guess for a full or partial name and use text search.  This will perform a search of the World Register of Marine Species (https://www.marinespecies.org) database and display a list of possible matches.';
 
 // Define the help dialog popup
-Widget _buildPopupDialog(BuildContext context, String msg) {
+Widget _buildPopupDialog(BuildContext context, String wtitle, String msg) {
   return new AlertDialog(
-    title: const Text('Confidence Level'),
+    title: Text(wtitle),
     content: new Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +72,7 @@ class _ObservationPageState extends State<ObservationPage> {
   final _nameController2 = TextEditingController();
   String statusValue = 'Observe';
   String _imageListText = "What did you see?";
-  int _confidence = 5;
+  int _confidence = 2;
 
   // From previous widget
   late Image _image;
@@ -233,7 +232,8 @@ class _ObservationPageState extends State<ObservationPage> {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) =>
-                                _buildPopupDialog(context, namehelp),
+                                _buildPopupDialog(
+                                    context, 'Search Options', namehelp),
                           );
                         },
                         icon: Icon(Icons.help_rounded)),
@@ -277,12 +277,7 @@ class _ObservationPageState extends State<ObservationPage> {
                   ),
                   const SizedBox(width: 10),
                   const Text("inches"),
-                ]),
-              ),
-              Padding(
-                padding: EdgeInsets.all(4),
-                child: Row(children: <Widget>[
-                  // Row for Weight entry
+                  SizedBox(width: 10),
                   const Text('Weight: '),
                   const SizedBox(width: 10),
                   Expanded(
@@ -339,89 +334,74 @@ class _ObservationPageState extends State<ObservationPage> {
                 color: Colors.black,
               ),
               Padding(
-                padding: EdgeInsets.all(4),
-                child: Row(children: [
-                  const Text('Confidence level:'),
-                  IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) => _buildPopupDialog(
-                              context,
-                              'Specify how confident you are in your identification of this species.  1 is least confident, 5 is most confident.'),
-                        );
-                      },
-                      icon: Icon(Icons.help_rounded))
-                ]),
-              ),
+                  padding: EdgeInsets.all(2),
+                  child: Row(
+                    children: [
+                      SizedBox(width: 170, height: 2),
+                      Text('Low', style: TextStyle(fontSize: 12)),
+                      SizedBox(width: 10, height: 2),
+                      Text('Medium', style: TextStyle(fontSize: 12)),
+                      SizedBox(width: 10, height: 2),
+                      Text('High', style: TextStyle(fontSize: 12))
+                    ],
+                  )),
               Padding(
-                padding: EdgeInsets.all(4),
+                padding: EdgeInsets.all(2),
                 child: Row(
-                  // Row for Confidence Radio buttons
-                  children: <Widget>[
+                  children: [
+                    const Text('Confidence level:'),
+                    IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => _buildPopupDialog(
+                                context,
+                                'Confidence Level',
+                                'Specify how confident you are in your identification of this species.  1 is least confident, 3 is most confident.'),
+                          );
+                        },
+                        icon: Icon(Icons.help_rounded)),
                     Radio(
                       value: 1,
                       groupValue: _confidence,
                       onChanged: (val) {
                         setState(() {
                           _confidence = 1;
-                          this.observation!.confidence = _confidence;
+                          this.observation!.confidence = 1;
                         });
                       },
                     ),
-                    const Text('1'),
+                    //const Text('1'),
                     Radio(
                       value: 2,
                       groupValue: _confidence,
                       onChanged: (val) {
                         setState(() {
                           _confidence = 2;
-                          this.observation!.confidence = _confidence;
+                          this.observation!.confidence = 2;
                         });
                       },
                     ),
-                    const Text('2'),
+                    //const Text('2'),
                     Radio(
                       value: 3,
                       groupValue: _confidence,
                       onChanged: (val) {
                         setState(() {
                           _confidence = 3;
-                          this.observation!.confidence = _confidence;
+                          this.observation!.confidence = 3;
                         });
                       },
                     ),
-                    const Text('3'),
-                    Radio(
-                      value: 4,
-                      groupValue: _confidence,
-                      onChanged: (val) {
-                        setState(() {
-                          _confidence = 4;
-                          this.observation!.confidence = _confidence;
-                        });
-                      },
-                    ),
-                    const Text('4'),
-                    Radio(
-                      value: 5,
-                      groupValue: _confidence,
-                      onChanged: (val) {
-                        setState(() {
-                          _confidence = 5;
-                          this.observation!.confidence = _confidence;
-                        });
-                      },
-                    ),
-                    const Text('5'),
+                    //const Text('3'),
                   ],
                 ),
               ),
-              Divider(
-                color: Colors.black,
-              ),
+              //Divider(
+              //  color: Colors.black,
+              //),
               Padding(
-                  padding: EdgeInsets.all(4),
+                  padding: EdgeInsets.all(2),
                   child: Row(
                     // Row for Status Entry
                     children: [
@@ -457,10 +437,13 @@ class _ObservationPageState extends State<ObservationPage> {
                           ))
                     ],
                   )),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               ElevatedButton(
                 child: Text(this.buttonName),
                 onPressed: () async {
+                  this.observation!.name = _nameController.text;
+                  this.observation!.latinName = _nameController2.text;
+                  this.observation!.confidence = _confidence;
                   if (this.mode == 'single') {
                     TaskState state = await DatabaseService(uid: user!.uid)
                         .addObservation(
@@ -524,7 +507,7 @@ class _ObservationPageState extends State<ObservationPage> {
         context,
         MaterialPageRoute(
           builder: (context) => AphiaParseDemo(
-            svalue: _nameController.text,
+            svalue: _nameController.text.toLowerCase(),
             which: Kingdoms.Animalia,
           ),
         ));

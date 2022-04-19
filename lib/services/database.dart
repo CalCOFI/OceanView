@@ -32,6 +32,7 @@ class DatabaseService {
           observation.location!.latitude, observation.location!.longitude);
     }
     obsMap['status'] = observation.status ?? 'Observe';
+    obsMap['confidence'] = observation.confidence ?? 2;
     obsMap['url'] = observation.url ?? 'None';
 
     return obsMap;
@@ -108,6 +109,7 @@ class DatabaseService {
         latinName: doc.data()['latinName'],
         length: doc.data()['length'],
         weight: doc.data()['weight'],
+        confidence: doc.data()['confidence'],
         time: (doc.data()['time'] != null)
             ? DateTime.fromMillisecondsSinceEpoch(
                 doc.data()['time'].seconds * 1000)
