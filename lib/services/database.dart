@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/shared/constants.dart';
 
 import 'local_store.dart';
 
@@ -15,7 +16,8 @@ import 'local_store.dart';
 class DatabaseService {
 
   String uid;
-  DatabaseService({required this.uid});
+  Observation observation = Observation();
+  DatabaseService({required this.uid, observation});
 
   // collection reference
   final CollectionReference observationCollection = FirebaseFirestore.instance.collection('observations');
@@ -38,8 +40,8 @@ class DatabaseService {
         observation.location!.longitude
       );
     }
-    obsMap['status'] = observation.status ?? 'Observe';
-    obsMap['confidentiality'] = observation.confidentiality ?? 'Keep private';
+    obsMap['status'] = observation.status ?? STATUS;
+    obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['url'] = observation.url ?? 'None';
 
     return obsMap;
@@ -156,16 +158,53 @@ class DatabaseService {
         location: (doc.data()['location']!=null)?
           LatLng(doc.data()['location'].latitude, doc.data()['location'].longitude):
           LatLng(0,0),
-        status: doc.data()['status'] ?? 'Observe',
-        confidentiality: doc.data()['confidentiality'] ?? 'Keep secret',
+        status: doc.data()['status'] ?? STATUS,
+        confidentiality: doc.data()['confidentiality'] ?? CONFIDENTIALITY,
         url: doc.data()['url'],
       );
     }).toList();
   }
 
-  // get observations stream
-  Stream<List<Observation>> get observations {
+  // Query current users' observations
+  Stream<List<Observation>> get meObs {
     return observationCollection.where('uid', isEqualTo: this.uid)
         .snapshots().map(_observationsFromSnapshots);
+  }
+
+  // Query related observations for statistics
+  Stream<List<Observation>> get statisticsObs {
+    print('In get statisticsObs: ${this.observation.name}');
+    return observationCollection
+        .where('name', isEqualTo: this.observation.name)
+        .where('confidentiality', isEqualTo: CONFIDENTIALITY)
+        .snapshots().map(_observationsFromSnapshots);
+  }
+
+  // Query data for statistics
+  Map<String, List<double>> queryStatistics(Observation curObs) {
+    Map<String, List<double>> mapValues = {
+      'length': [],
+      'weight': [],
+    };
+
+    print('Start query');
+    // Query with restrictions
+    // TODO: Add more restrictions, e.g. high confidence level
+    Stream<QuerySnapshot> snapshots = observationCollection
+      .where('name', isEqualTo: curObs.name)
+      .where('confidentiality', isEqualTo: curObs.confidentiality)
+      .snapshots();
+
+    print('Start extracting');
+    // Extract needed fields from documents
+    snapshots.forEach((snapshot) {
+      snapshot.docs.forEach((doc) {
+        mapValues.forEach((key, value) {
+          mapValues[key]!.add(doc.data()[key]);
+        });
+      });
+    });
+
+    return mapValues;
   }
 }

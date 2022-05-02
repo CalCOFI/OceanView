@@ -70,3 +70,12 @@ Map<String, List<Image>> MPA_type_icon = {
     get_mpa_image('assets/images/No_Collecting.png'),
   ],
 };
+
+// Default value of properties of observations
+String STATUS = 'Observe';
+String CONFIDENTIALITY = 'Share with scientists';
+
+Map<String, String> descriptionMap = {
+  'length': 'longer',
+  'weight': 'heavier'
+};

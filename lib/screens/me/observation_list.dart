@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
   in two columns
  */
 class ObservationList extends StatefulWidget {
-  const ObservationList({Key? key}) : super(key: key);
+
   @override
   _ObservationListState createState() => _ObservationListState();
 }

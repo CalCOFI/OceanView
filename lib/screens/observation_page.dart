@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -50,8 +51,8 @@ class _ObservationPageState extends State<ObservationPage> {
   late File _imageFile;
   late String mode;           // single, session, me
   late String buttonName;     // Upload, Add    , Update
-  String statusValue = 'Observe';
-  String confidentialityValue = 'Share with scientists';
+  String statusValue = STATUS;
+  String confidentialityValue = CONFIDENTIALITY;
   Observation? observation;
   DateTime? selectedDate;
   int index = 0;
@@ -339,7 +340,8 @@ class _ObservationPageState extends State<ObservationPage> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 confidentialityValue = newValue!;
-                                // this.observation!.status = statusValue;
+                                this.observation!.confidentiality =
+                                    confidentialityValue;
                               });
                             },
                             items: <String>['Share with scientists', 'Keep private']

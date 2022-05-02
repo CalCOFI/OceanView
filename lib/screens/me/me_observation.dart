@@ -7,7 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/screens/me/me_statistics.dart';
 import 'package:ocean_view/services/database.dart';
+import 'package:ocean_view/shared/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uri_to_file/uri_to_file.dart';
@@ -18,7 +20,7 @@ import '../observation_page.dart';
   A page showing one observation
  */
 class MeObservation extends StatelessWidget {
-  const MeObservation({Key? key, required this.observation}) : super(key: key);
+  MeObservation({required this.observation});
   //Create an observation object to store the data passed from the onTap() function from
   //observation_list.dart
   final Observation observation;
@@ -88,13 +90,13 @@ class MeObservation extends StatelessWidget {
               print('Edit observation');
               File _imageFile = await urlToFile(imageURL);
               Navigator.push(
-                  context, MaterialPageRoute(
-                  builder: (context) =>
-                      ObservationPage(
-                        file: _imageFile,
-                        mode:'me',
-                        observation: observation,
-                      )
+                context, MaterialPageRoute(
+                builder: (context) =>
+                    ObservationPage(
+                      file: _imageFile,
+                      mode:'me',
+                      observation: observation,
+                    )
                 )
               );
               print('End Edit');
@@ -130,7 +132,7 @@ class MeObservation extends StatelessWidget {
       Padding(
         padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
 
             Container(
@@ -145,7 +147,6 @@ class MeObservation extends StatelessWidget {
               ),
             ),
             Divider(
-
               color: Colors.black,
             ),
             Text(
@@ -266,6 +267,22 @@ class MeObservation extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 )
             ),
+            (this.observation.confidentiality==CONFIDENTIALITY)
+              ?ElevatedButton(
+                child: Text('See statistics'),
+                onPressed: () {
+                  print('See statistics');
+                  print('Observation: ${this.observation.name}');
+                  // Go to page with statistics
+                  Navigator.push(
+                      context, MaterialPageRoute(
+                      builder: (context) => MeStatistics(user: user!,
+                          observation: this.observation),
+                    )
+                  );
+                },
+              )
+              : SizedBox(),
           ],
         ),
       ),

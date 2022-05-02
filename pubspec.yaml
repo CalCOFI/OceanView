@@ -70,6 +70,9 @@ dependencies:
   # uri to file
   uri_to_file: ^0.2.0
 
+  # Histogram
+  charts_flutter: ^0.12.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

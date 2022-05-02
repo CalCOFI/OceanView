@@ -23,4 +23,12 @@ class Observation {
     this.length, this.weight, this.time, this.location,
     this.status, this.url, this.stopwatchStart, this.confidentiality} );
 
+  // Getter of observation
+  Map<String, dynamic> get map {
+    return {
+      'length': length,
+      'weight': weight,
+    };
+  }
+
 }
