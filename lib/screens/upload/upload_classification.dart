@@ -8,6 +8,10 @@ import 'package:ocean_view/shared/loading.dart';
 import 'package:ocean_view/src/prediction.dart';
 import 'package:path/path.dart' as path;
 
+/*
+  A page sends the image to VisionAPI and shows ten suggestions from VisionAPI
+ */
+
 class UploadClassification extends StatefulWidget {
   final File imageFile;
   const UploadClassification({required Key key, required this.imageFile})
@@ -29,7 +33,7 @@ class _UploadClassificationState extends State<UploadClassification> {
   String apiUrl = "https://visionapi.p.rapidapi.com/v1/rapidapi/score_image";
 
   // Send request to VisionAPI
-  upload() async {
+  uploadToVisionAPI() async {
     var stream = new http.ByteStream(widget.imageFile.openRead().cast());
     var length = await widget.imageFile.length();
     print(length);
@@ -62,20 +66,27 @@ class _UploadClassificationState extends State<UploadClassification> {
     });
   }
 
+  // Run once when this widget is added to widget tree
+  @override
+  void initState() {
+    super.initState();
+
+    uploadToVisionAPI();
+  }
+
   getCard(BuildContext context, int position) {
     Result model = _results[position];
     return Card(
       child: new InkWell(
         onTap: () {
           print("Tap ${model.taxon.preferredCommonName}");
-          //Navigator.pop(context, model.taxon.name);
-          Navigator.pop(context, model.taxon);
+          Navigator.pop(context, model.taxon.preferredCommonName);
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              model.taxon.preferredCommonName + ' (' + model.taxon.name + ')',
+              model.taxon.preferredCommonName,
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
           ],
@@ -87,8 +98,6 @@ class _UploadClassificationState extends State<UploadClassification> {
 
   @override
   Widget build(BuildContext context) {
-    // Only upload once when entering this page
-    if (loading) upload();
     return loading
         ? Loading()
         : Scaffold(
