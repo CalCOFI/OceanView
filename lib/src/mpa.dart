@@ -6,6 +6,15 @@ import 'dart:convert';
 part 'mpa.g.dart';
 
 /*
+  Hard-coded serialization code for extracting information of MPAs saved in geojson file
+
+  4 classes define data formats of features including name, type and location.
+  getMPAs() returns information of MPAs in a list of features.
+  getMPARegulations() returns specific regulations for each MPA.
+ */
+
+/*
+// Copy this part to mpa.g.dart after initializing mpa.g.dart
 // Design specific GeometryFromJson to include polygon and multipolygon
 Geometry _$GeometryFromJson(Map<String, dynamic> json) {
   String type = json['type'] as String;
@@ -105,4 +114,13 @@ Future<MPAs> getMPAs() async {
       .loadString('assets/jsons/California_Marine_Protected_Areas_[ds582].geojson');
 
   return MPAs.fromJson(json.decode(jsonText));
+}
+
+Future<Map<String, dynamic>> getMPARegulations() async {
+  final jsonText = await rootBundle
+      .loadString('assets/jsons/mpa_regulations.json');
+
+  Map<String, dynamic> regulations = jsonDecode(jsonText);
+
+  return regulations;
 }

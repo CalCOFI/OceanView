@@ -42,6 +42,7 @@ class _AphiaParseDemoState extends State<AphiaParseDemo> {
         });
       });
     });
+    print('Number of records: ${_record.length}');
   }
 
   @override
@@ -54,7 +55,7 @@ class _AphiaParseDemoState extends State<AphiaParseDemo> {
       ),
       body: Container(
         color: Colors.white,
-        child: null == _record
+        child: _record == null
             ? Text(
                 'No items found',
               )

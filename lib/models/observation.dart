@@ -1,7 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+/*
+  Implementation of observation containing information of
+  species, photo and database
+ */
 class Observation {
+
   String? documentID;
   String? uid;
   String? name;
@@ -16,6 +21,7 @@ class Observation {
 
   // stopwatch time
   dynamic stopwatchStart; // Record timestamp of stopwatch start
+
 
   Observation(
       {this.documentID,

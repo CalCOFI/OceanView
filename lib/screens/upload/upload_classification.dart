@@ -76,13 +76,19 @@ class _UploadClassificationState extends State<UploadClassification> {
 
   getCard(BuildContext context, int position) {
     Result model = _results[position];
+    String commonName = model.taxon.preferredCommonName;
     return Card(
       child: new InkWell(
-        onTap: () {
-          print("Tap ${model.taxon.preferredCommonName}");
-          Navigator.pop(context, model.taxon.preferredCommonName);
-        },
-        child: Row(
+          onTap: () {
+            print("Tap ${model.taxon.preferredCommonName}");
+            Navigator.pop(context, model.taxon.preferredCommonName);
+          },
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Text(commonName + ' (' + model.taxon.name + ')'),
+          )
+          /*
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
@@ -91,7 +97,9 @@ class _UploadClassificationState extends State<UploadClassification> {
             ),
           ],
         ),
-      ),
+
+         */
+          ),
       margin: EdgeInsets.all(5),
     );
   }

@@ -397,9 +397,9 @@ class _ObservationPageState extends State<ObservationPage> {
                   ],
                 ),
               ),
-              //Divider(
-              //  color: Colors.black,
-              //),
+              Divider(
+                color: Colors.black,
+              ),
               Padding(
                   padding: EdgeInsets.all(2),
                   child: Row(

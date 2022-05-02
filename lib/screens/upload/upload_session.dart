@@ -10,6 +10,16 @@ import 'package:ocean_view/screens/observation_page.dart';
 import 'package:ocean_view/screens/upload/upload_timeline.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 
+/*
+  Root page for record session
+
+  It shows the stopwatch on the top that user can start the record session or stop it.
+  Start button triggers UploadStopwatch while stop button ends the session and goes to UploadTimeline
+  Below are observations shown with images that organized in GradView.
+
+  New observation can be added by pressing the plus button and goes to the path of
+  single observation by camera.
+ */
 class UploadSession extends StatefulWidget {
   @override
   _UploadSessionState createState() => _UploadSessionState();

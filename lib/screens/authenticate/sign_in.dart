@@ -3,6 +3,9 @@ import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/loading.dart';
 import 'package:flutter/material.dart';
 
+/*
+  SignIn page that user can sign in with registered email and password
+ */
 class SignIn extends StatefulWidget {
   final Function toggleView;
   SignIn({required this.toggleView});
