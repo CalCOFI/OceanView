@@ -5,6 +5,9 @@ import 'package:ocean_view/screens/upload/upload_page.dart';
 import 'package:ocean_view/screens/activity_page.dart';
 import 'package:ocean_view/screens/me/me_page.dart';
 
+/*
+  Root widget for managing navigating through different pages
+ */
 class Home extends StatefulWidget {
   Home({required Key key, required this.title}) : super(key: key);
 

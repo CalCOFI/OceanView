@@ -3,6 +3,10 @@ import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/loading.dart';
 import 'package:flutter/material.dart';
 
+/*
+  Register page that user can register the account on Firebase
+  User will automatically sign in after successfully registering
+ */
 class Register extends StatefulWidget {
 
   final Function toggleView;

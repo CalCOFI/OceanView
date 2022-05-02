@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/src/pin_information.dart';
 
+/*
+  Regulation page showing complete regulation of one MPA
+ */
 class RegulationPage extends StatelessWidget {
 
   final PinInformation pinInformation;

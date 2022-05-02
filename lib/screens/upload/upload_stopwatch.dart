@@ -2,6 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+/*
+  Widget for stopwatch in UploadSession
+
+  Start button starts the timerStream to count time lapsed.
+  Stop button stops this timerStream.
+  Both of them triggers the callback to send information back to UploadSession.
+ */
+
 class UploadStopwatch extends StatefulWidget {
 
   final Function() startCallback;

@@ -4,6 +4,10 @@ import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/me/me_observation.dart';
 import 'package:provider/provider.dart';
 
+/*
+  A page showing user's past observations with only images organized
+  in two columns
+ */
 class ObservationList extends StatefulWidget {
   const ObservationList({Key? key}) : super(key: key);
   @override
@@ -64,8 +68,6 @@ class _ObservationListState extends State<ObservationList> {
               )
           );
         },
-
-
       ),
     );
   }

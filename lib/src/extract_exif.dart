@@ -2,6 +2,13 @@ import 'dart:io';
 import 'package:exif/exif.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+/*
+  File for extracting meta data from an image
+
+  Two classes for defining data formats of meta data
+  One method for returning meta data given the image file
+ */
+
 class Location {
   // Represent them in decimal degrees
   // Positive for N and E, Negative for S and W

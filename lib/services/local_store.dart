@@ -10,6 +10,11 @@ import 'package:ocean_view/models/picture.dart';
 import 'package:ocean_view/providers/pictures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/*
+  Class for accessing data in local device including save image, load image,
+  save observation (Unfinished), load observation (Unfinished)
+ */
+
 class LocalStoreService {
   // Get local path
   Future<String> get _localPath async {

@@ -1,6 +1,10 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
-class Picture with ChangeNotifier{ 
+import 'package:flutter/material.dart';
+
+/*
+  Implementation of picture as element in pictures
+ */
+class Picture with ChangeNotifier {
   final File picName;
 
   Picture({

@@ -9,6 +9,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/observation_page.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 
+/*
+  Initial upload page that user can select three modes of observation,
+  single observation by camera, single observation by camera roll,
+  multiple observations by camera (record session)
+ */
 class UploadPage extends StatefulWidget {
   const UploadPage({required Key key}) : super(key: key);
 

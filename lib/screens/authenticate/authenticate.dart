@@ -2,6 +2,9 @@ import 'package:ocean_view/screens/authenticate/sign_in.dart';
 import 'package:ocean_view/screens/authenticate/register.dart';
 import 'package:flutter/material.dart';
 
+/*
+  A wrapper widget for showing SignIn page or Register page
+ */
 class Authenticate extends StatefulWidget {
   const Authenticate({Key? key}) : super(key: key);
 

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/*
+  File for saving constants that will be used in different files
+ */
+
 const textInputDecoration = InputDecoration(
   hintText: 'Email',
   fillColor: Colors.white,

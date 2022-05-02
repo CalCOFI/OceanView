@@ -8,6 +8,10 @@ import 'package:ocean_view/shared/loading.dart';
 import 'package:ocean_view/src/prediction.dart';
 import 'package:path/path.dart' as path;
 
+/*
+  A page sends the image to VisionAPI and shows ten suggestions from VisionAPI
+ */
+
 class UploadClassification extends StatefulWidget {
   final File imageFile;
   const UploadClassification({required Key key, required this.imageFile})
@@ -29,7 +33,7 @@ class _UploadClassificationState extends State<UploadClassification> {
   String apiUrl = "https://visionapi.p.rapidapi.com/v1/rapidapi/score_image";
 
   // Send request to VisionAPI
-  upload() async {
+  uploadToVisionAPI() async {
     var stream = new http.ByteStream(widget.imageFile.openRead().cast());
     var length = await widget.imageFile.length();
     print(length);
@@ -60,6 +64,14 @@ class _UploadClassificationState extends State<UploadClassification> {
       _results = _prediction.results;
       loading = false;
     });
+  }
+
+  // Run once when this widget is added to widget tree
+  @override
+  void initState() {
+    super.initState();
+
+    uploadToVisionAPI();
   }
 
   getCard(BuildContext context, int position) {
@@ -95,28 +107,32 @@ class _UploadClassificationState extends State<UploadClassification> {
 
   @override
   Widget build(BuildContext context) {
-    // Only upload once when entering this page
-    if (loading) upload();
-    return loading
-        ? Loading()
-        : Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context, "None"),
-              ),
-              title: Text("Species suggestions"),
-            ),
-            body: Container(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(40),
-                      child: Image.asset(
-                        'assets/images/iNaturalist.png',
-                      ),
+    return loading? Loading() : Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context, "None"),
+          ),
+          title: Text("Species suggestions"),
+        ),
+        body:
+        Container(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(40),
+                  child: Image.asset(
+                    'assets/images/iNaturalist.png',
+                  ),
+                ),
+                SizedBox(height: 40,),
+                (_prediction==null)?
+                  Text(
+                    'Cannot find corresponding species',
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
                     SizedBox(
                       height: 40,

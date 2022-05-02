@@ -13,10 +13,14 @@ import 'package:ocean_view/shared/constants.dart';
 
 import 'package:ocean_view/src/mpa.dart' as mpa;
 import 'package:geofencing/geofencing.dart';
-import 'package:ocean_view/src/mpa_regulation.dart';
 import 'package:ocean_view/src/pin_information.dart';
 import '../../notification_library.dart' as notification;
 
+/*
+  Map page showing GoogleMap with MPA regions and unfinished Geofence
+  User can click on any MAP regions to show the brief description of that
+  MPA and link to complete regulation for it.
+ */
 class MapPage extends StatelessWidget{
 
   const MapPage({required Key key}) : super(key: key);
@@ -91,25 +95,6 @@ class _HomePageState extends State<HomePage> {
   PinInformation pinInformation = PinInformation('None', 'None', [], 'None');
 
   @override
-  void initState(){
-    super.initState();
-
-    notification.requestPermissions();
-    notification.configureDidReceiveLocalNotificationSubject(context);
-    notification.configureSelectNotificationSubject(context);
-
-    IsolateNameServer.registerPortWithName(
-        port.sendPort, 'geofencing_send_port');
-    port.listen((dynamic data) {
-      print('Event: $data');
-      setState(() {
-        geofenceState = data;
-      });
-    });
-    //initPlatformState();
-  }
-
-  @override
   void dispose() {
     notification.dispose();
     mapController = null;
@@ -132,7 +117,7 @@ class _HomePageState extends State<HomePage> {
     final MPAs = await mpa.getMPAs();
 
     // Load MPA regulations
-    final mpaRegulations = await getMPARegulations();
+    final mpaRegulations = await mpa.getMPARegulations();
     String generalRegulation = '';    // General regulation in certain type
 
     setState(() {
@@ -258,7 +243,7 @@ class _HomePageState extends State<HomePage> {
                   markers: _markers.values.toSet(),
                   myLocationEnabled: true,
                 ),
-                AnimatedPositioned(
+                AnimatedPositioned(    // Float window of MPA description and link to regulation page
                   bottom: _pinPillPosition, right: 0, left: 0,
                   duration: Duration(microseconds: 200),
                   child: Align(
@@ -336,6 +321,25 @@ class _HomePageState extends State<HomePage> {
 
   /*
   // --- Geofence code (Unfinished) ---
+
+  @override
+  void initState(){
+    super.initState();
+
+    notification.requestPermissions();
+    notification.configureDidReceiveLocalNotificationSubject(context);
+    notification.configureSelectNotificationSubject(context);
+
+    IsolateNameServer.registerPortWithName(
+        port.sendPort, 'geofencing_send_port');
+    port.listen((dynamic data) {
+      print('Event: $data');
+      setState(() {
+        geofenceState = data;
+      });
+    });
+    //initPlatformState();
+  }
 
   // Callback for entering or leaving geofence
   static void callback(List<String> ids, Location l, GeofenceEvent e) async {

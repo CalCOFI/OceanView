@@ -18,32 +18,22 @@ import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/upload/upload_classification.dart';
 import 'package:ocean_view/services/database.dart';
 
+
 String namehelp =
     'If you think you have a clear, identifiable image of your observation, use image search.  Otherwise, you can enter your guess for a full or partial name and use text search.  This will perform a search of the World Register of Marine Species (https://www.marinespecies.org) database and display a list of possible matches.';
 
 // Define the help dialog popup
-Widget _buildPopupDialog(BuildContext context, String msg) {
-  return new AlertDialog(
-    title: const Text('Confidence Level'),
-    content: new Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(msg),
-      ],
-    ),
-    actions: <Widget>[
-      new ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        child: const Text('Close'),
-      ),
-    ],
-  );
-}
+Widget _buildPopupDialog(BuildContext context, String msg) { =======
+/*
+  Page for editing all the information of one specific observation
 
-// Define a custom Form widget.
+  It loads the meta data of the image (shot time, location) when building the widget.
+  Image classification button navigates to the page for recommending species name
+  by utilizing VisionAPI.
+  Other information, such as size and status can be typed or selected based on
+  data formats.
+ */
+
 
 class ObservationPage extends StatefulWidget {
   final XFile file;

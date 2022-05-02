@@ -1,14 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ocean_view/providers/pictures.dart';
 import 'package:ocean_view/screens/wrapper.dart';
 import 'package:ocean_view/services/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import './providers/pictures.dart';
 import 'notification_library.dart' as notification;
 
-import 'dart:io';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
