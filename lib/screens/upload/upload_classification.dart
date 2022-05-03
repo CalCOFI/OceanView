@@ -76,8 +76,8 @@ class _UploadClassificationState extends State<UploadClassification> {
 
   getCard(BuildContext context, int position) {
     Result model = _results[position];
-    String commonName = model.taxon.preferredCommonName ?? 'None';
-    String scientificName = model.taxon.name ?? 'None';
+    String commonName = model.taxon.preferredCommonName ?? 'Unknown';
+    String scientificName = model.taxon.name ?? 'Unknown';
     return Card(
       child: new InkWell(
           onTap: () {
