@@ -76,16 +76,17 @@ class _UploadClassificationState extends State<UploadClassification> {
 
   getCard(BuildContext context, int position) {
     Result model = _results[position];
-    String commonName = model.taxon.preferredCommonName;
+    String commonName = model.taxon.preferredCommonName ?? 'None';
+    String scientificName = model.taxon.name ?? 'None';
     return Card(
       child: new InkWell(
           onTap: () {
-            print("Tap ${model.taxon.preferredCommonName}");
-            Navigator.pop(context, model.taxon.preferredCommonName);
+            print("Tap ${commonName}");
+            Navigator.pop(context, model.taxon);
           },
           child: FittedBox(
             fit: BoxFit.fitWidth,
-            child: Text(commonName + ' (' + model.taxon.name + ')'),
+            child: Text(commonName + ' (' + scientificName + ')'),
           )
           /*
         Row(
@@ -112,7 +113,7 @@ class _UploadClassificationState extends State<UploadClassification> {
             appBar: AppBar(
               leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context, "None"),
+                onPressed: () => Navigator.pop(context, null),
               ),
               title: Text("Species suggestions"),
             ),

@@ -495,10 +495,12 @@ class _ObservationPageState extends State<ObservationPage> {
     );
 
     // After the UploadClassification Screen returns a result, change text of TextButton
-    setState(() {
-      _nameController.text = result.preferredCommonName;
-      _nameController2.text = result.name;
-    });
+    if (result != null) {
+      setState(() {
+        _nameController.text = result.preferredCommonName;
+        _nameController2.text = result.name;
+      });
+    }
   }
 
   void _navigateAndTextSearch(BuildContext context) async {
