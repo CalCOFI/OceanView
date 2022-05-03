@@ -21,10 +21,10 @@ class _HomeState extends State<Home> {
   int _currentIndex = 2;
 
   List<Widget> _widgetOptions = <Widget>[
-    MapPage(key:UniqueKey()),
-    UploadPage(key:UniqueKey()),
-    ActivityPage(key:UniqueKey()),
-    MePage(key:UniqueKey()),
+    MapPage(key: UniqueKey()),
+    UploadPage(key: UniqueKey()),
+    ActivityPage(key: UniqueKey()),
+    MePage(key: UniqueKey()),
   ];
 
   void _onNavBarTapped(int index) {

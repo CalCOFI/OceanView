@@ -14,24 +14,51 @@ class MeObservation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //Create objects to store detailed information of the observation
-    String speciesName ='';
-    double length =0.0;
-    double weight =0.0;
+    String speciesName = '';
+    String scientificName = '';
+    double length = 0.0;
+    double weight = 0.0;
     dynamic time = [];
     String status = '';
     String imageURL = '';
+    String confidence = 'High';
 
     //Assign values for all objects
     speciesName = observation.name!;
+    scientificName = observation.latinName!;
     length = observation.length!;
     weight = observation.weight!;
     time = observation.time!;
     status = observation.status!;
     imageURL = observation.url!;
+    switch (observation.confidence) {
+      case (1):
+        {
+          confidence = 'Low';
+        }
+        break;
+      case (2):
+        {
+          confidence = 'Medium';
+        }
+        break;
+      case (3):
+        {
+          confidence = 'High';
+        }
+        break;
+      default:
+        {
+          confidence = 'Unknown';
+        }
+        break;
+    }
+
     print('documentID: ${observation.documentID}');
     print('uid: ${observation.uid}');
     print('length: ${observation.length}');
     print('weight: ${observation.weight}');
+    print('Confidence: ${observation.confidence}');
 
     String _printLocation(LatLng position) {
       String lat = position.latitude.toStringAsFixed(2);
@@ -45,133 +72,131 @@ class MeObservation extends StatelessWidget {
         title: Text('Observation Details'),
       ),
       //Layout for all information
-      body:
-      Padding(
+      body: Padding(
         padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-
             Container(
               margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
               child: Center(
                 child: Image(
-                  image:NetworkImage(imageURL),
+                  image: NetworkImage(imageURL),
                   height: 250,
                   width: 180,
                 ),
               ),
             ),
             Divider(
-
               color: Colors.black,
             ),
-            Text(
-                'Species Name:',
+            Text('Common Name:',
                 style: TextStyle(
                   color: Colors.grey,
                   letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                '$speciesName',
+                )),
+            Text('$speciesName',
                 style: TextStyle(
                   color: Colors.black54,
                   letterSpacing: 2.0,
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                )
-            ),
-            SizedBox(height:10.0),
-            Text(
-                'Length(feet):',
+                )),
+            SizedBox(height: 10.0),
+            Text('Scientific Name:',
                 style: TextStyle(
-                  color:Colors.grey,
+                  color: Colors.grey,
                   letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                '$length',
+                )),
+            Text('$scientificName',
                 style: TextStyle(
-                  color:Colors.black54,
+                  color: Colors.black54,
                   letterSpacing: 2.0,
-                  fontSize:18.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                )
-            ),
-            SizedBox(height:10.0),
-            Text(
-                'Weight(lb):',
+                )),
+            SizedBox(height: 10.0),
+            Text('Confidence Level:',
                 style: TextStyle(
-                  color:Colors.grey,
+                  color: Colors.grey,
                   letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                '$weight',
+                )),
+            Text('$confidence',
                 style: TextStyle(
-                  color:Colors.black54,
+                  color: Colors.black54,
                   letterSpacing: 2.0,
-                  fontSize:18.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                )
-            ),
-            SizedBox(height:10.0),
-            Text(
-                'Time:',
+                )),
+            SizedBox(height: 10.0),
+            Text('Length(feet):',
                 style: TextStyle(
-                  color:Colors.grey,
+                  color: Colors.grey,
                   letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                time.toString(),
+                )),
+            Text('$length',
                 style: TextStyle(
-                  color:Colors.black54,
+                  color: Colors.black54,
                   letterSpacing: 2.0,
-                  fontSize:18.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                )
-            ),
-            SizedBox(height:10.0),
-            Text(
-                'Location: ',
+                )),
+            SizedBox(height: 10.0),
+            Text('Weight(lb):',
                 style: TextStyle(
-                  color:Colors.grey,
+                  color: Colors.grey,
                   letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                _printLocation(observation.location!),
+                )),
+            Text('$weight',
                 style: TextStyle(
-                  color:Colors.black54,
+                  color: Colors.black54,
                   letterSpacing: 2.0,
-                  fontSize:18.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                )
-            ),
-            SizedBox(height:10.0),
-            Text(
-                'Status',
+                )),
+            SizedBox(height: 10.0),
+            Text('Time:',
                 style: TextStyle(
-                  color:Colors.grey,
+                  color: Colors.grey,
                   letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                '$status',
+                )),
+            Text(time.toString(),
                 style: TextStyle(
-                  color:Colors.black54,
+                  color: Colors.black54,
                   letterSpacing: 2.0,
-                  fontSize:18.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.bold,
-                )
-            ),
+                )),
+            SizedBox(height: 10.0),
+            Text('Location: ',
+                style: TextStyle(
+                  color: Colors.grey,
+                  letterSpacing: 2.0,
+                )),
+            Text(_printLocation(observation.location!),
+                style: TextStyle(
+                  color: Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                )),
+            SizedBox(height: 10.0),
+            Text('Status',
+                style: TextStyle(
+                  color: Colors.grey,
+                  letterSpacing: 2.0,
+                )),
+            Text('$status',
+                style: TextStyle(
+                  color: Colors.black54,
+                  letterSpacing: 2.0,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                )),
           ],
         ),
       ),
     );
   }
-
 }

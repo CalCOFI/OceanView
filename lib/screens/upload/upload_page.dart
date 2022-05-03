@@ -21,84 +21,77 @@ class UploadPage extends StatefulWidget {
   _UploadPageState createState() => _UploadPageState();
 }
 
-class _UploadPageState extends State<UploadPage>{
-  File? _imageFile = null;
+class _UploadPageState extends State<UploadPage> {
+  XFile? _imageFile = null;
 
-  Future<void> _pickImage(ImageSource source) async{
-    _imageFile = await ImagePicker.pickImage(source:source);
+  Future<void> _pickImage(ImageSource source) async {
+    final ImagePicker _picker = ImagePicker();
+    _imageFile = await _picker.pickImage(source: source);
 
-    if (_imageFile==null){
-      return ;
+    if (_imageFile == null) {
+      return;
     }
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-      body:
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: double.infinity,
-                child: Text(
-                  'Single Observation',
-                  textAlign: TextAlign.center,
-                ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: double.infinity,
+              child: Text(
+                'Single Observation',
+                textAlign: TextAlign.center,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                      icon: Icon(Icons.photo_camera),
-                      onPressed:() async {
-                        await _pickImage(ImageSource.camera);
-                        if (_imageFile != null) {
-
-                          // Extract exif data from image file
-                          PhotoMeta photoMeta = await extractLocationAndTime(_imageFile!);
-
-                          Navigator.push(
-                              context, MaterialPageRoute(
-                              builder: (context) =>
-                                  ObservationPage(file: _imageFile!, mode:'single', photoMeta: photoMeta)
-                          )
-                          );
-                        }
-                      }
-                  ),
-                  IconButton(
-                      icon:Icon(Icons.photo_library),
-                      onPressed: () async {
-                        await _pickImage(ImageSource.gallery);
-                        if (_imageFile != null) {
-
-                          // Extract exif data from image file
-                          PhotoMeta photoMeta = await extractLocationAndTime(_imageFile!);
-
-                          Navigator.push(
-                              context, MaterialPageRoute(
-                              builder: (context) =>
-                                  ObservationPage(file: _imageFile!, mode:'single', photoMeta: photoMeta)
-                          )
-                          );
-                        }
-                      }
-                  ),
-                ]
-              ),
-              Text('Record Session'),
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
               IconButton(
-                icon: Icon(Icons.not_started_outlined),
-                onPressed: () => Navigator.push(
-                    context, MaterialPageRoute(
-                    builder: (context) => UploadSession()
-                )
-                ),
-              ),
-            ],
-          )
-    );
+                  icon: Icon(Icons.photo_camera),
+                  onPressed: () async {
+                    await _pickImage(ImageSource.camera);
+                    if (_imageFile != null) {
+                      // Extract exif data from image file
+                      PhotoMeta photoMeta =
+                      await extractLocationAndTime(File(_imageFile!.path));
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ObservationPage(
+                                  file: _imageFile!,
+                                  mode: 'single',
+                                  photoMeta: photoMeta)));
+                    }
+                  }),
+              IconButton(
+                  icon: Icon(Icons.photo_library),
+                  onPressed: () async {
+                    await _pickImage(ImageSource.gallery);
+                    if (_imageFile != null) {
+                      // Extract exif data from image file
+                      PhotoMeta photoMeta =
+                      await extractLocationAndTime(_imageFile! as File);
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ObservationPage(
+                                  file: _imageFile!,
+                                  mode: 'single',
+                                  photoMeta: photoMeta)));
+                    }
+                  }),
+            ]),
+            Text('Record Session'),
+            IconButton(
+              icon: Icon(Icons.not_started_outlined),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => UploadSession())),
+            ),
+          ],
+        ));
   }
 }
