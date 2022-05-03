@@ -58,9 +58,6 @@ class MeObservation extends StatelessWidget {
     confidentiality = observation.confidentiality!;
     imageURL = observation.url!;
     print('documentID: ${observation.documentID}');
-    print('uid: ${observation.uid}');
-    print('length: ${observation.length}');
-    print('weight: ${observation.weight}');
 
     // Get user info
     final user = Provider.of<User?>(context);
@@ -87,7 +84,6 @@ class MeObservation extends StatelessWidget {
               primary: Colors.white,
             ),
             onPressed: () async {
-              print('Edit observation');
               File _imageFile = await urlToFile(imageURL);
               Navigator.push(
                 context, MaterialPageRoute(
@@ -99,7 +95,6 @@ class MeObservation extends StatelessWidget {
                     )
                 )
               );
-              print('End Edit');
             },
           ),
           TextButton(
@@ -111,7 +106,6 @@ class MeObservation extends StatelessWidget {
               primary: Colors.red,
             ),
             onPressed: () async {
-              print('Delete observation');
               String state = await DatabaseService(uid: user!.uid).deleteObservation(this.observation!);
 
               if (state == 'Observation deleted'){
@@ -271,8 +265,6 @@ class MeObservation extends StatelessWidget {
               ?ElevatedButton(
                 child: Text('See statistics'),
                 onPressed: () {
-                  print('See statistics');
-                  print('Observation: ${this.observation.name}');
                   // Go to page with statistics
                   Navigator.push(
                       context, MaterialPageRoute(

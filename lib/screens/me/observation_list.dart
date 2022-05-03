@@ -20,17 +20,7 @@ class _ObservationListState extends State<ObservationList> {
     //pull all observation data from firebase of the user
     //and stored the observation data in observations
     final observations = Provider.of<List<Observation>?>(context) ?? [];
-    //Create an String object to store image url of each observation
-    String imageURL = '';
-    int index = 0;
-    //A function that runs through observations which contains
-    // all observation of the user
-    observations.forEach((observation) {
-      print('$index');
-      imageURL = observation.url!;
-      index += 1;
-      print('$imageURL');
-    });
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       // A child Widget that show the images in a grid view

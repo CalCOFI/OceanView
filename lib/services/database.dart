@@ -167,17 +167,15 @@ class DatabaseService {
 
   // Query current users' observations
   Stream<List<Observation>> get meObs {
-    print('In get meObs: ${this.uid}');
     return observationCollection.where('uid', isEqualTo: this.uid)
         .snapshots().map(_observationsFromSnapshots);
   }
 
   // Query related observations for statistics
   Stream<List<Observation>> get statisticsObs {
-    print('In get statisticsObs: ${this.observation!.name}');
     return observationCollection
         .where('name', isEqualTo: this.observation!.name)
-        // .where('confidentiality', isEqualTo: CONFIDENTIALITY)
+        .where('confidentiality', isEqualTo: CONFIDENTIALITY)
         .snapshots().map(_observationsFromSnapshots);
   }
 }
