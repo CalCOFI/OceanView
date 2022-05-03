@@ -86,7 +86,7 @@ class MeHistogram extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final observations = Provider.of<List<Observation>?>(context) ?? [];
+    List<Observation> observations = Provider.of<List<Observation>?>(context) ?? [];
     String strObs = '';
     int index = 0;
     List<double> fieldList = <double>[];
@@ -103,7 +103,11 @@ class MeHistogram extends StatelessWidget {
       fieldList.add(observation.map[this.field]);
     });
 
-    if (fieldList.length != 0) {
+    if (fieldList.length == 0) {
+      description = 'Loading';
+    } else if (fieldList.length == 1) {
+      description = "You are the first one to upload this observation!";
+    } else {
       print(fieldList);
       result = getHistogram(fieldList);
       description = "${curObs.map[field]} is ${descriptionMap[field]} than "
@@ -127,11 +131,10 @@ class MeHistogram extends StatelessWidget {
                               )
                           ),
                           const SizedBox(height: 20),
-                          (fieldList.length!=0)
+                          (fieldList.length>1)
                           ? Expanded(
                             child: SimpleBarChart(seriesList: result[0]),
-                          ):
-                          Text('Loading'),
+                          ): SizedBox(height: 10),
                           const SizedBox(height: 10),
                           Text(
                             description,
@@ -150,8 +153,8 @@ class MeHistogram extends StatelessWidget {
 
 class SimpleBarChart extends StatelessWidget {
 
-  List<charts.Series<OrdinalFields, String>> seriesList = [];
-  bool animate;
+  final List<charts.Series<OrdinalFields, String>> seriesList;
+  final bool animate;
 
   SimpleBarChart({
     required this.seriesList,
@@ -160,7 +163,6 @@ class SimpleBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
 
     return charts.BarChart(
       seriesList,

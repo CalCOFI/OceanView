@@ -16,8 +16,8 @@ import 'local_store.dart';
 class DatabaseService {
 
   String uid;
-  Observation observation = Observation();
-  DatabaseService({required this.uid, observation});
+  Observation? observation;
+  DatabaseService({required this.uid, this.observation});
 
   // collection reference
   final CollectionReference observationCollection = FirebaseFirestore.instance.collection('observations');
@@ -167,44 +167,17 @@ class DatabaseService {
 
   // Query current users' observations
   Stream<List<Observation>> get meObs {
+    print('In get meObs: ${this.uid}');
     return observationCollection.where('uid', isEqualTo: this.uid)
         .snapshots().map(_observationsFromSnapshots);
   }
 
   // Query related observations for statistics
   Stream<List<Observation>> get statisticsObs {
-    print('In get statisticsObs: ${this.observation.name}');
+    print('In get statisticsObs: ${this.observation!.name}');
     return observationCollection
-        .where('name', isEqualTo: this.observation.name)
-        .where('confidentiality', isEqualTo: CONFIDENTIALITY)
+        .where('name', isEqualTo: this.observation!.name)
+        // .where('confidentiality', isEqualTo: CONFIDENTIALITY)
         .snapshots().map(_observationsFromSnapshots);
-  }
-
-  // Query data for statistics
-  Map<String, List<double>> queryStatistics(Observation curObs) {
-    Map<String, List<double>> mapValues = {
-      'length': [],
-      'weight': [],
-    };
-
-    print('Start query');
-    // Query with restrictions
-    // TODO: Add more restrictions, e.g. high confidence level
-    Stream<QuerySnapshot> snapshots = observationCollection
-      .where('name', isEqualTo: curObs.name)
-      .where('confidentiality', isEqualTo: curObs.confidentiality)
-      .snapshots();
-
-    print('Start extracting');
-    // Extract needed fields from documents
-    snapshots.forEach((snapshot) {
-      snapshot.docs.forEach((doc) {
-        mapValues.forEach((key, value) {
-          mapValues[key]!.add(doc.data()[key]);
-        });
-      });
-    });
-
-    return mapValues;
   }
 }
