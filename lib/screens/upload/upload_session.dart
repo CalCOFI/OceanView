@@ -26,7 +26,7 @@ class UploadSession extends StatefulWidget {
 }
 
 class _UploadSessionState extends State<UploadSession> {
-  XFile? _imageFile = null;
+  File? _imageFile = null;
   DateTime _startTime = DateTime.now();
   List<dynamic> result = []; // observation and image
   List<Observation> observationList = [];
@@ -57,10 +57,10 @@ class _UploadSessionState extends State<UploadSession> {
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
-    _imageFile = await _picker.pickImage(source: source);
+    XFile? tempFile = await _picker.pickImage(source: source);
 
-    if (_imageFile == null) {
-      return;
+    if (tempFile != null) {
+      _imageFile = File(tempFile.path);
     }
   }
 

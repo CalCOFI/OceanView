@@ -141,34 +141,10 @@ class _UploadTimelineState extends State<UploadTimeline> {
                     ],
                   )
                 ),
-
-                // Positioned(   // Dots
-                //   bottom: size.height * 0.108,
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(40.0),
-                //     child: Container(
-                //       height: 20.0,
-                //       width: 20.0,
-                //       decoration: new BoxDecoration(
-                //         color: Colors.blue,
-                //         borderRadius: BorderRadius.circular(20),
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ],
             );
           },
         )
-    /*
-      ElevatedButton(
-        onPressed: () {
-          // Pop to the main page
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        },
-        child: Text('back'),
-      )
-       */
     );
     }
   }

@@ -74,6 +74,7 @@ Map<String, List<Image>> MPA_type_icon = {
 // Default value of properties of observations
 String STATUS = 'Observe';
 String CONFIDENTIALITY = 'Share with scientists';
+int CONFIDENCE = 2;
 
 Map<String, String> descriptionMap = {
   'length': 'longer',
