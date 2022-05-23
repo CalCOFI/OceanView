@@ -75,6 +75,11 @@ Map<String, List<Image>> MPA_type_icon = {
 String STATUS = 'Observe';
 String CONFIDENTIALITY = 'Share with scientists';
 int CONFIDENCE = 2;
+Map<int,String> CONFIDENCE_MAP = {
+  1: 'Low',
+  2: 'Medium',
+  3: 'High',
+};
 
 Map<String, String> descriptionMap = {
   'length': 'longer',

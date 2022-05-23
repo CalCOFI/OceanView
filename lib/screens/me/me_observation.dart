@@ -49,7 +49,7 @@ class MeObservation extends StatelessWidget {
     String status = '';
     String confidentiality = '';
     String imageURL = '';
-    String confidence = 'High';
+    String? confidence = 'High';
 
     //Assign values for all objects
     speciesName = observation.name!;
@@ -60,28 +60,9 @@ class MeObservation extends StatelessWidget {
     status = observation.status!;
     confidentiality = observation.confidentiality!;
     imageURL = observation.url!;
-    switch (observation.confidence) {
-      case (1):
-        {
-          confidence = 'Low';
-        }
-        break;
-      case (2):
-        {
-          confidence = 'Medium';
-        }
-        break;
-      case (3):
-        {
-          confidence = 'High';
-        }
-        break;
-      default:
-        {
-          confidence = 'Unknown';
-        }
-        break;
-    }
+    confidence = (CONFIDENCE_MAP.containsKey(observation.confidence))
+      ? CONFIDENCE_MAP[observation.confidence]
+      : 'Unknown';
 
     print('documentID: ${observation.documentID}');
 
@@ -172,144 +153,89 @@ class MeObservation extends StatelessWidget {
             Divider(
               color: Colors.black,
             ),
-            Text('Common Name:',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text('$speciesName',
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: 10.0),
-            Text('Scientific Name:',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text('$scientificName',
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: 10.0),
-            Text('Confidence Level:',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text('$confidence',
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: 10.0),
-            Text('Length(feet):',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text('$length',
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: 10.0),
-            Text('Weight(lb):',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text('$weight',
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: 10.0),
-            Text('Time:',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text(time.toString(),
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )),
-            SizedBox(height: 10.0),
-            Text('Location: ',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text(_printLocation(observation.location!),
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )
+            Expanded(
+              child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                  child: Column(
+                    children: [
+                      FieldWithValue(field: 'Common Name', value: speciesName),
+                      SizedBox(height: 10.0),
+                      FieldWithValue(field: 'Scientific Name',
+                          value: scientificName),
+                      SizedBox(height: 10.0),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children:[
+                            FieldWithValue(field: 'Length (feet)',
+                                value: length.toStringAsFixed(2)),
+                            FieldWithValue(field: 'Weight (lbs)',
+                                value: weight.toStringAsFixed(2)),
+                          ]
+                      ),
+                      SizedBox(height: 10.0),
+                      FieldWithValue(field: 'Time', value: time.toString()),
+                      SizedBox(height: 10.0),
+                      FieldWithValue(field: 'Location',
+                          value: _printLocation(observation.location!)),
+                      SizedBox(height: 10.0),
+                      FieldWithValue(field: 'Confidence Level', value: confidence!),
+                      SizedBox(height: 10.0),
+                      FieldWithValue(field: 'Confidentiality',
+                          value: confidentiality),
+                      SizedBox(height: 10.0),
+                      FieldWithValue(field: 'Status', value: status),
+                      SizedBox(height: 10.0),
+                      (this.observation.confidentiality==CONFIDENTIALITY)
+                          ?ElevatedButton(
+                        child: Text('See statistics'),
+                        onPressed: () {
+                          // Go to page with statistics
+                          Navigator.push(
+                              context, MaterialPageRoute(
+                            builder: (context) => MeStatistics(user: user!,
+                                observation: this.observation),
+                          )
+                          );
+                        },
+                      )
+                          : SizedBox(),
+                    ],
+                  )
+              ),
             ),
-            SizedBox(height:10.0),
-            Text(
-                'Confidentiality',
-                style: TextStyle(
-                  color:Colors.grey,
-                  letterSpacing: 2.0,
-                )
-            ),
-            Text(
-                '$confidentiality',
-                style: TextStyle(
-                  color:Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize:18.0,
-                  fontWeight: FontWeight.bold,
-                )
-            ),
-            SizedBox(height: 10.0),
-            Text('Status',
-                style: TextStyle(
-                  color: Colors.grey,
-                  letterSpacing: 2.0,
-                )),
-            Text('$status',
-                style: TextStyle(
-                  color: Colors.black54,
-                  letterSpacing: 2.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                )),
-            (this.observation.confidentiality==CONFIDENTIALITY)
-                ?ElevatedButton(
-              child: Text('See statistics'),
-              onPressed: () {
-                // Go to page with statistics
-                Navigator.push(
-                    context, MaterialPageRoute(
-                  builder: (context) => MeStatistics(user: user!,
-                      observation: this.observation),
-                )
-                );
-              },
-            )
-                : SizedBox(),
           ],
         ),
       ),
+    );
+  }
+}
+
+class FieldWithValue extends StatelessWidget {
+  // Widget that combines field and value
+  final String field;
+  final String value;
+
+  FieldWithValue({required this.field, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(field,
+            style: TextStyle(
+              color: Colors.grey,
+              letterSpacing: 2.0,
+            )
+        ),
+        Text(value,
+            style: TextStyle(
+              color: Colors.black54,
+              letterSpacing: 2.0,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            )
+        ),
+      ]
     );
   }
 }
