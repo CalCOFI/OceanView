@@ -20,7 +20,7 @@ class MePage extends StatelessWidget {
     final user = Provider.of<User?>(context);
 
     return StreamProvider<List<Observation>?>.value (
-      value: DatabaseService(uid: user!.uid).observations,
+      value: DatabaseService(uid: user!.uid).meObs,
       initialData: null,
       child: Scaffold(
         backgroundColor: Colors.brown[50],

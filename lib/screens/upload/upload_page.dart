@@ -22,14 +22,14 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  XFile? _imageFile = null;
+  File? _imageFile = null;
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
-    _imageFile = await _picker.pickImage(source: source);
+    XFile? tempFile = await _picker.pickImage(source: source);
 
-    if (_imageFile == null) {
-      return;
+    if (tempFile != null) {
+      _imageFile = File(tempFile.path);
     }
   }
 

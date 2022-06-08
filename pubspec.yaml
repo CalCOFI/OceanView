@@ -64,6 +64,15 @@ dependencies:
   # Local notifications
   flutter_local_notifications: ^6.0.0
 
+  # Launch browser through url
+  url_launcher: ^6.0.18
+
+  # uri to file
+  uri_to_file: ^0.2.0
+
+  # Histogram
+  charts_flutter: ^0.12.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -36,10 +36,7 @@ class _UploadClassificationState extends State<UploadClassification> {
   uploadToVisionAPI() async {
     var stream = new http.ByteStream(widget.imageFile.openRead().cast());
     var length = await widget.imageFile.length();
-    print(length);
-
     var uri = Uri.parse(apiUrl);
-
     var request = new http.MultipartRequest("POST", uri);
 
     Map<String, String> mapContent = {"content-type": "mutipart/form-data"};

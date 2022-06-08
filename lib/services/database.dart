@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/shared/constants.dart';
 
 import 'local_store.dart';
 
@@ -14,11 +15,12 @@ import 'local_store.dart';
 
 class DatabaseService {
   String uid;
-  DatabaseService({required this.uid});
+  Observation? observation;
+  DatabaseService({required this.uid, this.observation});
 
   // collection reference
   final CollectionReference observationCollection =
-      FirebaseFirestore.instance.collection('observations');
+  FirebaseFirestore.instance.collection('observations');
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // Create map from observation
@@ -36,8 +38,9 @@ class DatabaseService {
       obsMap['location'] = GeoPoint(
           observation.location!.latitude, observation.location!.longitude);
     }
-    obsMap['status'] = observation.status ?? 'Observe';
-    obsMap['confidence'] = observation.confidence ?? 2;
+    obsMap['status'] = observation.status ?? STATUS;
+    obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
+    obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
     obsMap['url'] = observation.url ?? 'None';
 
     return obsMap;
@@ -104,6 +107,37 @@ class DatabaseService {
     return states;
   }
 
+  // Update existing observation
+  Future<String> updateObservation(Observation observation) async {
+
+    Map<String, dynamic> obsMap = _getMapFromObs(observation);
+    String state = 'fail';
+
+    // Update existing observation on CloudStore
+    await observationCollection
+        .doc(observation.documentID)
+        .update(obsMap)
+        .then((_) => state='success')
+        .catchError((error) => state='fail');;
+
+    return state;
+  }
+
+
+  // Delete observation
+  Future<String> deleteObservation(Observation observation) async {
+    String state = 'Null';
+
+    await observationCollection
+        .doc(observation.documentID)
+        .delete()
+        .then((value) => state = 'Observation deleted')
+        .catchError((error) => state = 'Unable to delete observation');
+
+    return state;
+  }
+
+
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
@@ -111,29 +145,35 @@ class DatabaseService {
         documentID: doc.id,
         uid: doc.data()['uid'],
         name: doc.data()['name'],
-        latinName: doc.data()['latinName'],
+        latinName: doc.data()['latinName'] ?? 'Unknown',
         length: doc.data()['length'],
         weight: doc.data()['weight'],
-        confidence: doc.data()['confidence'],
         time: (doc.data()['time'] != null)
             ? DateTime.fromMillisecondsSinceEpoch(
-                doc.data()['time'].seconds * 1000)
+            doc.data()['time'].seconds * 1000)
             : 'None',
-        location: (doc.data()['location'] != null)
-            ? LatLng(doc.data()['location'].latitude,
-                doc.data()['location'].longitude)
-            : LatLng(0, 0),
-        status: doc.data()['status'],
+        location: (doc.data()['location']!=null)?
+        LatLng(doc.data()['location'].latitude, doc.data()['location'].longitude):
+        LatLng(0,0),
+        status: doc.data()['status'] ?? STATUS,
+        confidentiality: doc.data()['confidentiality'] ?? CONFIDENTIALITY,
+        confidence: doc.data()['confidence'] ?? CONFIDENCE,
         url: doc.data()['url'],
       );
     }).toList();
   }
 
-  // get observations stream
-  Stream<List<Observation>> get observations {
+  // Query current users' observations
+  Stream<List<Observation>> get meObs {
+    return observationCollection.where('uid', isEqualTo: this.uid)
+        .snapshots().map(_observationsFromSnapshots);
+  }
+
+  // Query related observations for statistics
+  Stream<List<Observation>> get statisticsObs {
     return observationCollection
-        .where('uid', isEqualTo: this.uid)
-        .snapshots()
-        .map(_observationsFromSnapshots);
+        .where('name', isEqualTo: this.observation!.name)
+        .where('confidentiality', isEqualTo: CONFIDENTIALITY)
+        .snapshots().map(_observationsFromSnapshots);
   }
 }
