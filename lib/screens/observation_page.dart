@@ -495,7 +495,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                     _confidentialityValue;
                               });
                             },
-                            items: <String>['Share with scientists', 'Keep private']
+                            items: <String>['Share with community', 'Keep private']
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
