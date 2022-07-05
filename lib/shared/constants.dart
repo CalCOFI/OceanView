@@ -75,6 +75,7 @@ Map<String, List<Image>> MPA_type_icon = {
 String STATUS = 'Observe';
 String CONFIDENTIALITY = 'Share with community';
 int CONFIDENCE = 2;
+String STOPWATCHSTART = 'None';
 Map<int,String> CONFIDENCE_MAP = {
   1: 'Low',
   2: 'Medium',

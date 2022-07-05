@@ -42,6 +42,7 @@ class DatabaseService {
     obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
     obsMap['url'] = observation.url ?? 'None';
+    obsMap['stopwatchStart'] = observation.stopwatchStart ?? STOPWATCHSTART;
 
     return obsMap;
   }
@@ -159,6 +160,7 @@ class DatabaseService {
         confidentiality: doc.data()['confidentiality'] ?? CONFIDENTIALITY,
         confidence: doc.data()['confidence'] ?? CONFIDENCE,
         url: doc.data()['url'],
+        stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
       );
     }).toList();
   }

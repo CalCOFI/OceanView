@@ -52,12 +52,13 @@ class ObservationPage extends StatefulWidget {
   Observation? observation;
   PhotoMeta? photoMeta;
   int? index; // Index for observation in session
-  ObservationPage(
-      {required this.file,
-        required this.mode,
-        this.observation,
-        this.photoMeta,
-        this.index});
+  ObservationPage({
+    required this.file,
+    required this.mode,
+    this.observation,
+    this.photoMeta,
+    this.index
+  });
 
   @override
   _ObservationPageState createState() => _ObservationPageState();
@@ -104,7 +105,6 @@ class _ObservationPageState extends State<ObservationPage> {
     this._latinNameController = (this.observation!.latinName!=null)
         ? TextEditingController(text: this.observation!.latinName)
         : TextEditingController(text: '');
-    this.mode = mode;
     this.observation = (observation != null) ? observation : Observation();
     try {
       switch (this.mode) {
