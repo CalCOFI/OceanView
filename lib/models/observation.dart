@@ -13,13 +13,13 @@ class Observation {
   String? latinName;        // Scientific name of species
   double? length;           // Length of species
   double? weight;           // Weight of species
-  dynamic time;             // Timestamp from the picture (None: not showing)
+  dynamic time;             // Datetime from the picture (None: not showing)
   LatLng? location;         // LatLng from picture (None: not showing)
   String? status;           // Observe / Release / Catch
   String? confidentiality;  // Share with scientists / Keep private
   int? confidence;          // 1-3
   String? url;              // Url of photo on Firebase, generated when uploading
-  dynamic stopwatchStart;   // Timestamp of stopwatch start
+  dynamic stopwatchStart;   // Datetime of stopwatch start
 
   Observation( {this.documentID, this.uid, this.name, this.latinName,
     this.length, this.weight, this.time, this.location, this.confidence,

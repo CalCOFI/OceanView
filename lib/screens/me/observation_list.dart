@@ -10,6 +10,7 @@ import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/me/me_observation.dart';
 
 import '../../shared/constants.dart';
+import '../timeline_page.dart';
 
 
 /*
@@ -41,14 +42,14 @@ class _ObservationListState extends State<ObservationList> {
 
   List<List<Observation>> extractCollections(List<Observation> observations) {
 
-    Map<Timestamp, List<Observation>> mapCollections = {};
+    Map<DateTime, List<Observation>> mapCollections = {};
     if (observations.length == 0)
       return [];
 
     // Extract collection from observations whose stopwatchStart is not None
     for (Observation observation in observations) {
       if (observation.stopwatchStart.toString() != STOPWATCHSTART) {
-        Timestamp startTime = observation.stopwatchStart;
+        DateTime startTime = observation.stopwatchStart;
         if (!mapCollections.containsKey(startTime))
           mapCollections[startTime] = [observation];
         else
@@ -57,10 +58,10 @@ class _ObservationListState extends State<ObservationList> {
     }
 
     // Sort list of collections according to stopwatchStart
-    List<Timestamp> listStartTime = mapCollections.keys.toList();
+    List<DateTime> listStartTime = mapCollections.keys.toList();
     List<List<Observation>> listCollections = [];
     listStartTime.sort();
-    for (Timestamp startTime in listStartTime) {
+    for (DateTime startTime in listStartTime) {
       listCollections.add(mapCollections[startTime]!);
     }
 
@@ -132,25 +133,49 @@ class _ObservationListState extends State<ObservationList> {
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (cxt, index) {
-                List<String> images = [];
                 List<Observation> collection = listCollections[index];
+                List<String> imageUrls = [];
+                List<Image> images = [];
                 for (Observation observation in collection) {
-                  images.add(observation.url!);
+                  imageUrls.add(observation.url!);
+                  images.add(Image.network(observation.url!));
                 };
-                DateTime startTime = collection[0].stopwatchStart.toDate();
+
                 return Container(
                     alignment: Alignment.center,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(DateFormat('yyyy-MM-dd, HH:mm').format(startTime)),
+                        Text(
+                            DateFormat('yyyy-MM-dd, HH:mm').format(
+                                collection[0].stopwatchStart
+                            )
+                        ),
                         GestureDetector(
                             onTap: () {
+                              // TODO: Timeline doesn't have a return button now
                               print('Press $index stack');
+                              // Navigator.pushReplacement(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => TimelinePage(
+                              //             observationList: collection,
+                              //             imageList: images,
+                              //             mode: 'me'
+                              //         )));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                    TimelinePage(
+                                      observationList: collection,
+                                      imageList: images,
+                                      mode: 'me'
+                                  )));
                             },
                             //Image Widget which displays the image
                             child: ImageStack(
-                              imageList: images,
+                              imageList: imageUrls,
                               totalCount: collection.length,
                               imageRadius: 50,
                               imageCount: 3,

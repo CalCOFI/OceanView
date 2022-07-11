@@ -160,7 +160,11 @@ class DatabaseService {
         confidentiality: doc.data()['confidentiality'] ?? CONFIDENTIALITY,
         confidence: doc.data()['confidence'] ?? CONFIDENCE,
         url: doc.data()['url'],
-        stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
+        // stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
+        stopwatchStart: (doc.data()['stopwatchStart'] != null)
+            ? DateTime.fromMillisecondsSinceEpoch(
+            doc.data()['stopwatchStart'].seconds * 1000)
+            : STOPWATCHSTART,
       );
     }).toList();
   }

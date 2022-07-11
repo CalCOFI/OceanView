@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/upload/upload_stopwatch.dart';
 import 'package:ocean_view/screens/observation_page.dart';
-import 'package:ocean_view/screens/upload/upload_timeline.dart';
+import 'package:ocean_view/screens/timeline_page.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 
 /*
@@ -51,8 +51,11 @@ class _UploadSessionState extends State<UploadSession> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => UploadTimeline(
-                observationList: observationList, imageList: imageList)));
+            builder: (context) => TimelinePage(
+              observationList: observationList,
+              imageList: imageList,
+              mode: 'session'
+            )));
   }
 
   Future<void> _pickImage(ImageSource source) async {

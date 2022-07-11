@@ -15,18 +15,21 @@ import 'package:provider/provider.dart';
   Upload button batched writes all the observations to Firebase.
  */
 
-class UploadTimeline extends StatefulWidget {
+class TimelinePage extends StatefulWidget {
 
   final List<Observation> observationList;
   final List<Image> imageList;
+  final String mode;    // 'session' or 'me'
 
-  UploadTimeline({required this.observationList, required this.imageList});
+  TimelinePage({
+    required this.observationList, required this.imageList, required this.mode
+  });
 
   @override
-  _UploadTimelineState createState() => _UploadTimelineState();
+  _TimelinePageState createState() => _TimelinePageState();
 }
 
-class _UploadTimelineState extends State<UploadTimeline> {
+class _TimelinePageState extends State<TimelinePage> {
 
   List<dynamic> result = [];  // observation and image
 
@@ -54,35 +57,42 @@ class _UploadTimelineState extends State<UploadTimeline> {
       appBar: AppBar(
         title: Text('Timeline'),
         centerTitle: true,
-        actions: <Widget>[
-          TextButton.icon(
-            style: TextButton.styleFrom(
-              primary: Colors.white
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions:
+          (widget.mode == 'session')
+          ? <Widget>[
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                primary: Colors.white
+              ),
+              icon: Icon(Icons.upload_sharp),
+              label: Text('Upload'),
+              onPressed: () async {
+                print('Upload');
+
+                // Batched write all the observations to Firebase
+                List<TaskState> states = await DatabaseService(uid: user!.uid)
+                  .batchedWriteObservations(widget.observationList);
+
+                String snackBarText = 'Upload:';
+                for (int i=0; i<states.length; i++) {
+                  snackBarText += ' $i,';
+                }
+
+                final snackBar = SnackBar(content: Text(snackBarText));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                // Delete images in local directory
+
+                // pop to the main page
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
             ),
-            icon: Icon(Icons.upload_sharp),
-            label: Text('Upload'),
-            onPressed: () async {
-              print('Upload');
-
-              // Batched write all the observations to Firebase
-              List<TaskState> states = await DatabaseService(uid: user!.uid)
-                .batchedWriteObservations(widget.observationList);
-
-              String snackBarText = 'Upload:';
-              for (int i=0; i<states.length; i++) {
-                snackBarText += ' $i,';
-              }
-
-              final snackBar = SnackBar(content: Text(snackBarText));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-              // Delete images in local directory
-
-              // pop to the main page
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-          ),
-        ],
+          ]
+        : null,
         automaticallyImplyLeading: false,
       ),
       body:
@@ -126,12 +136,17 @@ class _UploadTimelineState extends State<UploadTimeline> {
                             File imageFile = await LocalStoreService().loadImage('$i.png');
                             print('$imageFile');
 
+                            print('Mode: ${widget.mode}');
                             // Modify the observation
                             result = await Navigator.push(
                                 context, MaterialPageRoute(
                                 builder: (context) =>
-                                    ObservationPage(file: imageFile, mode:'session',
-                                        observation: widget.observationList[i], index: i)
+                                    ObservationPage(
+                                        file: imageFile,
+                                        mode:widget.mode,
+                                        observation: widget.observationList[i],
+                                        index: i
+                                    )
                               )
                             );
                           },
