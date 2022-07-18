@@ -128,7 +128,7 @@ class MeObservation extends StatelessWidget {
               }
 
               // Back to previous page
-              Navigator.pop(context);
+              Navigator.pop(context, ['Delete']);
             },
           ),
         ],

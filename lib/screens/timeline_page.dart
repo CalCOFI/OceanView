@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/screens/me/me_observation.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/screens/observation_page.dart';
@@ -138,17 +139,33 @@ class _TimelinePageState extends State<TimelinePage> {
 
                             print('Mode: ${widget.mode}');
                             // Modify the observation
-                            result = await Navigator.push(
-                                context, MaterialPageRoute(
-                                builder: (context) =>
-                                    ObservationPage(
-                                        file: imageFile,
-                                        mode:widget.mode,
-                                        observation: widget.observationList[i],
-                                        index: i
+                            result = (widget.mode == 'session')
+                                ? await Navigator.push(
+                                    context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          ObservationPage(
+                                              file: imageFile,
+                                              mode:widget.mode,
+                                              observation: widget.observationList[i],
+                                              index: i
+                                          )
                                     )
-                              )
-                            );
+                                )
+                                : await Navigator.push(
+                                    context, MaterialPageRoute(
+                                      builder: (context) =>
+                                        MeObservation(
+                                          observation: widget.observationList[i]
+                                        )
+                                    )
+                                );
+
+                            // Remove observation if it is deleted
+                            setState(() {
+                              if (result[0] is String && result[0] == 'Delete'){
+                                widget.observationList.removeAt(i);
+                              }
+                            });
                           },
                           child: widget.imageList[i],
                         ),
