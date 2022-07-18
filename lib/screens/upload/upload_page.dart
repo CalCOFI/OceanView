@@ -5,9 +5,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ocean_view/screens/upload/upload_session.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ocean_view/services/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/observation_page.dart';
+import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/src/extract_exif.dart';
+import 'package:provider/provider.dart';
 
 /*
   Initial upload page that user can select three modes of observation,
@@ -15,7 +19,8 @@ import 'package:ocean_view/src/extract_exif.dart';
   multiple observations by camera (record session)
  */
 class UploadPage extends StatefulWidget {
-  const UploadPage({required Key key}) : super(key: key);
+  User? currentUser;
+  UploadPage({required Key key, this.currentUser}) : super(key: key);
 
   @override
   _UploadPageState createState() => _UploadPageState();
@@ -23,6 +28,7 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   File? _imageFile = null;
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
@@ -34,9 +40,21 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    this.currentUser = currentUser;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
+    final user = Provider.of<User?>(context);
+    final userSt = Provider.of<UserStats?>(context);
+    print('YYYYYYY FOUND USER ${userSt?.email} YYYYY');
+    return StreamProvider<List<UserStats>?>.value(
+        value: DatabaseService(uid: user!.uid).meStats,
+        initialData: null,
+        child: Scaffold(
+            body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -55,7 +73,7 @@ class _UploadPageState extends State<UploadPage> {
                     if (_imageFile != null) {
                       // Extract exif data from image file
                       PhotoMeta photoMeta =
-                      await extractLocationAndTime(File(_imageFile!.path));
+                          await extractLocationAndTime(File(_imageFile!.path));
 
                       Navigator.push(
                           context,
@@ -63,6 +81,7 @@ class _UploadPageState extends State<UploadPage> {
                               builder: (context) => ObservationPage(
                                   file: _imageFile!,
                                   mode: 'single',
+                                  uStats: Provider.of<UserStats?>(context),
                                   photoMeta: photoMeta)));
                     }
                   }),
@@ -73,7 +92,7 @@ class _UploadPageState extends State<UploadPage> {
                     if (_imageFile != null) {
                       // Extract exif data from image file
                       PhotoMeta photoMeta =
-                      await extractLocationAndTime(_imageFile! as File);
+                          await extractLocationAndTime(_imageFile! as File);
 
                       Navigator.push(
                           context,
@@ -81,6 +100,7 @@ class _UploadPageState extends State<UploadPage> {
                               builder: (context) => ObservationPage(
                                   file: _imageFile!,
                                   mode: 'single',
+                                  uStats: Provider.of<UserStats?>(context),
                                   photoMeta: photoMeta)));
                     }
                   }),
@@ -92,6 +112,6 @@ class _UploadPageState extends State<UploadPage> {
                   MaterialPageRoute(builder: (context) => UploadSession())),
             ),
           ],
-        ));
+        )));
   }
 }

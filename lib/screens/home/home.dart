@@ -4,6 +4,7 @@ import 'package:ocean_view/screens/map/map_page.dart';
 import 'package:ocean_view/screens/upload/upload_page.dart';
 import 'package:ocean_view/screens/activity_page.dart';
 import 'package:ocean_view/screens/me/me_page.dart';
+import 'package:ocean_view/screens/me/profile_page.dart';
 
 /*
   Root widget for managing navigating through different pages
@@ -24,6 +25,7 @@ class _HomeState extends State<Home> {
     MapPage(key: UniqueKey()),
     UploadPage(key: UniqueKey()),
     ActivityPage(key: UniqueKey()),
+    UserPage(key: UniqueKey()),
     MePage(key: UniqueKey()),
   ];
 
@@ -51,6 +53,10 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),
             label: 'Activity',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profile',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.verified_user),

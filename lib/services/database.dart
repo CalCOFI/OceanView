@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/shared/constants.dart';
 
 import 'local_store.dart';
@@ -16,12 +17,27 @@ import 'local_store.dart';
 class DatabaseService {
   String uid;
   Observation? observation;
-  DatabaseService({required this.uid, this.observation});
+  UserStats? stats;
+  DatabaseService({required this.uid, this.observation, this.stats});
 
-  // collection reference
+  // collection references
   final CollectionReference observationCollection =
-  FirebaseFirestore.instance.collection('observations');
+      FirebaseFirestore.instance.collection('observations');
+  final CollectionReference userstatsCollection =
+      FirebaseFirestore.instance.collection('userstats');
   final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // Create map from user stats
+  Map<String, dynamic> _getMapFromUserStats(UserStats stats) {
+    Map<String, dynamic> statMap = Map<String, dynamic>();
+    statMap['uid'] = stats.uid ?? uid;
+    statMap['name'] = stats.name ?? '';
+    statMap['email'] = stats.email ?? '';
+    statMap['share'] = stats.share ?? 'Y';
+    statMap['numobs'] = stats.numobs ?? 0;
+
+    return statMap;
+  }
 
   // Create map from observation
   Map<String, dynamic> _getMapFromObs(Observation observation) {
@@ -44,6 +60,36 @@ class DatabaseService {
     obsMap['url'] = observation.url ?? 'None';
 
     return obsMap;
+  }
+
+  Future addUserStats(UserStats stats) async {
+    stats.uid = uid;
+    Map<String, dynamic> statsMap = _getMapFromUserStats(stats);
+    await userstatsCollection.add(statsMap);
+  }
+
+  Future<String> updateUserStats(UserStats stats) async {
+    Map<String, dynamic> statMap = _getMapFromUserStats(stats);
+    String state = 'fail';
+
+    QuerySnapshot snapshot =
+        await userstatsCollection.where('uid', isEqualTo: uid).get();
+    if (snapshot.size == 0) {
+      addUserStats(stats);
+    } else {
+      stats.documentID = snapshot.docs.first.id;
+      print('DOCUMENT ID IS ${stats.documentID}');
+    }
+
+    // Update existing observation on CloudStore
+    await userstatsCollection
+        .doc(stats.documentID)
+        .update(statMap)
+        .then((_) => state = 'success')
+        .catchError((error) => state = 'fail');
+    ;
+
+    return state;
   }
 
   // Upload image to Firebase Storage
@@ -109,7 +155,6 @@ class DatabaseService {
 
   // Update existing observation
   Future<String> updateObservation(Observation observation) async {
-
     Map<String, dynamic> obsMap = _getMapFromObs(observation);
     String state = 'fail';
 
@@ -117,12 +162,12 @@ class DatabaseService {
     await observationCollection
         .doc(observation.documentID)
         .update(obsMap)
-        .then((_) => state='success')
-        .catchError((error) => state='fail');;
+        .then((_) => state = 'success')
+        .catchError((error) => state = 'fail');
+    ;
 
     return state;
   }
-
 
   // Delete observation
   Future<String> deleteObservation(Observation observation) async {
@@ -137,7 +182,6 @@ class DatabaseService {
     return state;
   }
 
-
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
@@ -150,11 +194,12 @@ class DatabaseService {
         weight: doc.data()['weight'],
         time: (doc.data()['time'] != null)
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.data()['time'].seconds * 1000)
+                doc.data()['time'].seconds * 1000)
             : 'None',
-        location: (doc.data()['location']!=null)?
-        LatLng(doc.data()['location'].latitude, doc.data()['location'].longitude):
-        LatLng(0,0),
+        location: (doc.data()['location'] != null)
+            ? LatLng(doc.data()['location'].latitude,
+                doc.data()['location'].longitude)
+            : LatLng(0, 0),
         status: doc.data()['status'] ?? STATUS,
         confidentiality: doc.data()['confidentiality'] ?? CONFIDENTIALITY,
         confidence: doc.data()['confidence'] ?? CONFIDENCE,
@@ -163,10 +208,31 @@ class DatabaseService {
     }).toList();
   }
 
+  List<UserStats> _userstatsFromSnapshots(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return UserStats(
+          documentID: doc.id,
+          uid: doc.data()['uid'],
+          name: doc.data()['name'],
+          email: doc.data()['email'],
+          share: doc.data()['share'],
+          numobs: doc.data()['numobs']);
+    }).toList();
+  }
+
   // Query current users' observations
   Stream<List<Observation>> get meObs {
-    return observationCollection.where('uid', isEqualTo: this.uid)
-        .snapshots().map(_observationsFromSnapshots);
+    return observationCollection
+        .where('uid', isEqualTo: this.uid)
+        .snapshots()
+        .map(_observationsFromSnapshots);
+  }
+
+  Stream<List<UserStats>> get meStats {
+    return userstatsCollection
+        .where('uid', isEqualTo: this.uid)
+        .snapshots()
+        .map(_userstatsFromSnapshots);
   }
 
   // Query related observations for statistics
@@ -174,6 +240,7 @@ class DatabaseService {
     return observationCollection
         .where('name', isEqualTo: this.observation!.name)
         .where('confidentiality', isEqualTo: CONFIDENTIALITY)
-        .snapshots().map(_observationsFromSnapshots);
+        .snapshots()
+        .map(_observationsFromSnapshots);
   }
 }

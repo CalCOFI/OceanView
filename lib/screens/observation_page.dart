@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
@@ -49,15 +50,17 @@ Widget _buildPopupDialog(BuildContext context, String wtitle, String msg) {
 class ObservationPage extends StatefulWidget {
   final File file;
   final String mode;
+  UserStats? uStats;
   Observation? observation;
   PhotoMeta? photoMeta;
   int? index; // Index for observation in session
   ObservationPage(
       {required this.file,
-        required this.mode,
-        this.observation,
-        this.photoMeta,
-        this.index});
+      required this.mode,
+      this.uStats,
+      this.observation,
+      this.photoMeta,
+      this.index});
 
   @override
   _ObservationPageState createState() => _ObservationPageState();
@@ -74,14 +77,15 @@ class _ObservationPageState extends State<ObservationPage> {
   // From previous widget
   late Image _image;
   late File _imageFile;
-  late String mode;           // single, session, me
-  late String buttonName;     // Upload, Add    , Update
+  late String mode; // single, session, me
+  late String buttonName; // Upload, Add    , Update
 
   String _statusValue = STATUS;
   int _confidence = CONFIDENCE;
   String _confidentialityValue = CONFIDENTIALITY;
   String _imageListText = "What did you see?";
   Observation? observation;
+  UserStats? uStats;
   DateTime? selectedDate;
   int index = 0;
 
@@ -97,15 +101,17 @@ class _ObservationPageState extends State<ObservationPage> {
       fit: BoxFit.contain,
     );
     this.mode = widget.mode;
-    this.observation = (widget.observation!=null)? widget.observation:Observation();
-    this._nameController = (this.observation!.name!=null)
+    this.observation =
+        (widget.observation != null) ? widget.observation : Observation();
+    this._nameController = (this.observation!.name != null)
         ? TextEditingController(text: this.observation!.name)
         : TextEditingController(text: '');
-    this._latinNameController = (this.observation!.latinName!=null)
+    this._latinNameController = (this.observation!.latinName != null)
         ? TextEditingController(text: this.observation!.latinName)
         : TextEditingController(text: '');
     this.mode = mode;
     this.observation = (observation != null) ? observation : Observation();
+    this.uStats = (uStats != null) ? uStats : UserStats();
     try {
       switch (this.mode) {
         case 'single':
@@ -131,7 +137,7 @@ class _ObservationPageState extends State<ObservationPage> {
     } catch (e) {
       print(e.toString());
     }
-    this.index = ((widget.index==null)? 0 : widget.index)!;
+    this.index = ((widget.index == null) ? 0 : widget.index)!;
 
     // Only load meta data when adding observation
     if (this.mode == 'single' || this.mode == 'session') {
@@ -148,7 +154,6 @@ class _ObservationPageState extends State<ObservationPage> {
       } else {
         this.observation!.location = widget.photoMeta!.location.getLatLng();
       }
-
     } else {
       selectedDate = this.observation!.time;
       _confidence = this.observation!.confidence!;
@@ -163,10 +168,10 @@ class _ObservationPageState extends State<ObservationPage> {
         showTitleActions: true,
         minTime: DateTime(2000, 1, 1),
         maxTime: DateTime.now(), onChanged: (date) {
-          print('change $date');
-        }, onConfirm: (date) {
-          print('confirm $date');
-        }, currentTime: selectedDate!, locale: LocaleType.en);
+      print('change $date');
+    }, onConfirm: (date) {
+      print('confirm $date');
+    }, currentTime: selectedDate!, locale: LocaleType.en);
     if (picked != null) {
       setState(() {
         selectedDate = picked;
@@ -193,6 +198,8 @@ class _ObservationPageState extends State<ObservationPage> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
+    UserStats? userSt = this.uStats;
+    print('XXXXX READING USER ${userSt?.name} XXXXXX');
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -222,15 +229,15 @@ class _ObservationPageState extends State<ObservationPage> {
                             prefixIcon: IconButton(
                                 icon: Icon(Icons.close),
                                 onPressed: () => {
-                                  _nameController.clear(),
-                                  _latinNameController.clear()
-                                }),
+                                      _nameController.clear(),
+                                      _latinNameController.clear()
+                                    }),
                           ),
                           textAlign: TextAlign.center,
                           onChanged: (String value) => {
-                            this.observation!.name = value,
-                            _latinNameController.clear(),
-                          }),
+                                this.observation!.name = value,
+                                _latinNameController.clear(),
+                              }),
                     ),
                     IconButton(
                         iconSize: 20,
@@ -276,7 +283,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           textAlign: TextAlign.center,
                           enabled: false,
                           onChanged: (String value) =>
-                          this.observation!.latinName = value,
+                              this.observation!.latinName = value,
                         ),
                       ),
                     ],
@@ -294,7 +301,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           : this.observation!.length.toString(),
                       textAlign: TextAlign.center,
                       onChanged: (String value) =>
-                      this.observation!.length = double.parse(value),
+                          this.observation!.length = double.parse(value),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -313,7 +320,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           : this.observation!.weight.toString(),
                       textAlign: TextAlign.center,
                       onChanged: (String value) =>
-                      this.observation!.weight = double.parse(value),
+                          this.observation!.weight = double.parse(value),
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -334,10 +341,10 @@ class _ObservationPageState extends State<ObservationPage> {
                   ),
                   Expanded(
                       child: Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                            "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
-                      )),
+                    alignment: Alignment.center,
+                    child: Text(
+                        "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
+                  )),
                   const SizedBox(width: 10.0),
                   ElevatedButton(
                     onPressed: () => _selectDate(context),
@@ -465,8 +472,7 @@ class _ObservationPageState extends State<ObservationPage> {
                             }).toList(),
                           ))
                     ],
-                  )
-              ),
+                  )),
               Divider(
                 color: Colors.black,
               ),
@@ -475,7 +481,9 @@ class _ObservationPageState extends State<ObservationPage> {
                   child: Row(
                     children: [
                       const Text("Confidentiality: "),
-                      const SizedBox(width: 10.0,),
+                      const SizedBox(
+                        width: 10.0,
+                      ),
                       Container(
                           alignment: Alignment.center,
                           child: DropdownButton<String>(
@@ -495,18 +503,18 @@ class _ObservationPageState extends State<ObservationPage> {
                                     _confidentialityValue;
                               });
                             },
-                            items: <String>['Share with community', 'Keep private']
-                                .map<DropdownMenuItem<String>>((String value) {
+                            items: <String>[
+                              'Share with community',
+                              'Keep private'
+                            ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value),
                               );
                             }).toList(),
-                          )
-                      )
+                          ))
                     ],
-                  )
-              ),
+                  )),
               const SizedBox(height: 10),
               ElevatedButton(
                   child: Text(this.buttonName),
@@ -516,10 +524,14 @@ class _ObservationPageState extends State<ObservationPage> {
                     if (this.mode == 'single') {
                       TaskState state = await DatabaseService(uid: user!.uid)
                           .addObservation(
-                          this.observation!, File(widget.file.path));
+                              this.observation!, File(widget.file.path));
 
                       if (state == TaskState.success) {
                         final snackBar = SnackBar(content: Text('Success'));
+                        userSt?.numobs = userSt.numobs! + 1;
+                        print('Updating User Stats for {$userSt.email}');
+                        DatabaseService(uid: user.uid)
+                            .updateUserStats(userSt as UserStats);
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else {
                         print('Error from image repo ${state.toString()}');
@@ -558,8 +570,7 @@ class _ObservationPageState extends State<ObservationPage> {
                       // Back to previous page
                       Navigator.pop(context);
                     }
-                  }
-              ),
+                  }),
             ],
           )),
     );
