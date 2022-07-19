@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/models/userstats.dart';
+import 'package:ocean_view/screens/authenticate/verify.dart';
+import 'package:ocean_view/screens/home/home.dart';
+import 'package:ocean_view/screens/map/map_page.dart';
 import 'package:provider/provider.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/services/database.dart';
@@ -49,7 +52,12 @@ class _ProfilePageState extends State<ProfilePage> {
         : currentUser?.metadata.creationTime.toString();
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: buildAppBar(context),
+        appBar: AppBar(
+          title: Text('Profile Page: ${currentUser!.displayName}'),
+          centerTitle: true,
+          backgroundColor: Colors.blue,
+          elevation: 0.0,
+        ),
         body: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
           child: Column(children: <Widget>[
@@ -100,6 +108,33 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ]),
             ),
+            Padding(
+                padding: EdgeInsets.all(1),
+                child: Row(children: [
+                  Text(
+                    'Email verified: ',
+                    style: TextStyle(color: Colors.blue, fontSize: 20),
+                  ),
+                  Text(
+                    currentUser!.emailVerified ? 'Yes   ' : 'No   ',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                  ),
+                  currentUser!.emailVerified
+                      ? Text(' ')
+                      : ElevatedButton(
+                          onPressed: () {
+                            print('Verifying User');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => VerifyScreen()),
+                            );
+                          },
+                          child: Text('Verify')),
+                ])),
             Padding(
               padding: EdgeInsets.all(1),
               child: Row(children: [
@@ -168,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         user.name = _pnameController.text;
                         user.email = currentUser?.email;
                         user.share = 'Y';
-                        user.numobs = 3;
+                        user.numobs = 0;
                         DatabaseService(uid: currentUser!.uid)
                             .updateUserStats(user);
                       },
@@ -183,7 +218,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
 AppBar buildAppBar(BuildContext context) {
   return AppBar(
-    leading: BackButton(),
     elevation: 0,
     backgroundColor: Colors.blue,
     title: Text('User Profile'),
