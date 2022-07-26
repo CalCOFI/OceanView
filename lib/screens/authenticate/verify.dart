@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ocean_view/screens/home/home.dart';
 import 'dart:async';
 import 'package:ocean_view/screens/me/profile_page.dart';
 
 class VerifyScreen extends StatefulWidget {
-  const VerifyScreen({Key? key}) : super(key: key);
-
   @override
-  State<VerifyScreen> createState() => _VerifyScreenState();
+  _VerifyScreenState createState() => _VerifyScreenState();
 }
 
 class _VerifyScreenState extends State<VerifyScreen> {
@@ -27,6 +26,12 @@ class _VerifyScreenState extends State<VerifyScreen> {
   }
 
   @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
@@ -34,12 +39,6 @@ class _VerifyScreenState extends State<VerifyScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
   }
 
   Future<void> checkEmailVerified() async {
@@ -50,7 +49,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
       if (verified) {
         timer?.cancel();
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => UserPage()));
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    Home(title: 'OceanView Home Page', key: UniqueKey())));
       }
     }
   }

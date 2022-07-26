@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/aphia_record.dart';
+import 'package:ocean_view/shared/loading.dart';
 
 enum Kingdoms { Animalia, Plantae }
 
@@ -48,32 +49,35 @@ class _AphiaParseDemoState extends State<AphiaParseDemo> {
   @override
   Widget build(BuildContext context) {
     print(widget.svalue);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_loading ? 'Loading...' : 'Species Lookup from WoRMS'),
-        elevation: 0,
-      ),
-      body: Container(
-        color: Colors.white,
-        child: _record == null
-            ? Text(
-                'No items found',
-              )
-            : ListView.builder(
-                //itemCount: null == _fish ? 0 : _fish.length,
-                itemCount: null == _record ? 0 : _record.length,
-                itemBuilder: (context, index) {
-                  AphiaRecord record = _record[index];
-                  return ListTile(
-                    title: Text(record.vname ?? ''),
-                    subtitle: Text(record.scientificName ?? ''),
-                    onTap: () {
-                      print('Selected ${record.scientificName}');
-                      Navigator.pop(context, record);
-                    },
-                  );
-                }),
-      ),
-    );
+    return _loading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              title:
+                  Text(_loading ? 'Loading...' : 'Species Lookup from WoRMS'),
+              elevation: 0,
+            ),
+            body: Container(
+              color: Colors.white,
+              child: _record == null
+                  ? Text(
+                      'No items found',
+                    )
+                  : ListView.builder(
+                      //itemCount: null == _fish ? 0 : _fish.length,
+                      itemCount: null == _record ? 0 : _record.length,
+                      itemBuilder: (context, index) {
+                        AphiaRecord record = _record[index];
+                        return ListTile(
+                          title: Text(record.vname ?? ''),
+                          subtitle: Text(record.scientificName ?? ''),
+                          onTap: () {
+                            print('Selected ${record.scientificName}');
+                            Navigator.pop(context, record);
+                          },
+                        );
+                      }),
+            ),
+          );
   }
 }

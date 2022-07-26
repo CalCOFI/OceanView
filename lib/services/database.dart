@@ -1,4 +1,5 @@
-import 'dart:io';
+//import 'dart:html';
+import 'dart:io' as io;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -62,38 +63,18 @@ class DatabaseService {
     return obsMap;
   }
 
-  Future addUserStats(UserStats stats) async {
-    stats.uid = uid;
-    Map<String, dynamic> statsMap = _getMapFromUserStats(stats);
-    await userstatsCollection.add(statsMap);
-  }
+  //Future addUserStats(UserStats stats) async {
+  //  stats.uid = uid;
+  //  Map<String, dynamic> statsMap = _getMapFromUserStats(stats);
+  //  await userstatsCollection.add(statsMap);
+  //}
 
-  Future<String> updateUserStats(UserStats stats) async {
-    Map<String, dynamic> statMap = _getMapFromUserStats(stats);
-    String state = 'fail';
-
-    QuerySnapshot snapshot =
-        await userstatsCollection.where('uid', isEqualTo: uid).get();
-    if (snapshot.size == 0) {
-      addUserStats(stats);
-    } else {
-      stats.documentID = snapshot.docs.first.id;
-      print('DOCUMENT ID IS ${stats.documentID}');
-    }
-
-    // Update existing observation on CloudStore
-    await userstatsCollection
-        .doc(stats.documentID)
-        .update(statMap)
-        .then((_) => state = 'success')
-        .catchError((error) => state = 'fail');
-    ;
-
-    return state;
+  Future<void> updateUserStats(UserStats stats) async {
+    return await userstatsCollection.doc(uid).set(_getMapFromUserStats(stats));
   }
 
   // Upload image to Firebase Storage
-  Future<List<dynamic>> _uploadImage(File file) async {
+  Future<List<dynamic>> _uploadImage(io.File file) async {
     String filePath = 'images/${uid}/${DateTime.now()}.png';
 
     // Upload image to Storage
@@ -104,7 +85,8 @@ class DatabaseService {
   }
 
   // Add single new observation
-  Future<TaskState> addObservation(Observation observation, File file) async {
+  Future<TaskState> addObservation(
+      Observation observation, io.File file) async {
     List<dynamic> messages = await _uploadImage(file);
 
     if (messages[0] == TaskState.success) {
@@ -126,7 +108,7 @@ class DatabaseService {
     final WriteBatch writeBatch = FirebaseFirestore.instance.batch();
     List<dynamic> messages;
     List<TaskState> states = [];
-    File file;
+    io.File file;
     DocumentReference documentReference;
 
     // Loop over each observations
@@ -208,16 +190,14 @@ class DatabaseService {
     }).toList();
   }
 
-  List<UserStats> _userstatsFromSnapshots(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) {
-      return UserStats(
-          documentID: doc.id,
-          uid: doc.data()['uid'],
-          name: doc.data()['name'],
-          email: doc.data()['email'],
-          share: doc.data()['share'],
-          numobs: doc.data()['numobs']);
-    }).toList();
+  UserStats _userstatsFromSnapshots(DocumentSnapshot snapshot) {
+    return UserStats(
+        documentID: snapshot.id,
+        uid: snapshot.data()?['uid'],
+        name: snapshot.data()?['name'],
+        email: snapshot.data()?['email'],
+        share: snapshot.data()?['share'],
+        numobs: snapshot.data()?['numobs']);
   }
 
   // Query current users' observations
@@ -228,9 +208,9 @@ class DatabaseService {
         .map(_observationsFromSnapshots);
   }
 
-  Stream<List<UserStats>> get meStats {
+  Stream<UserStats> get meStats {
     return userstatsCollection
-        .where('uid', isEqualTo: this.uid)
+        .doc(uid)
         .snapshots()
         .map(_userstatsFromSnapshots);
   }

@@ -1,5 +1,6 @@
 import 'package:ocean_view/screens/authenticate/verify.dart';
 import 'package:ocean_view/services/auth.dart';
+import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/loading.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,8 @@ class _RegisterState extends State<Register> {
                                 loading = false;
                               });
                             } else {
-                              Navigator.push(
+                              print('GOING TO VERIFY SCREEN');
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => VerifyScreen()),

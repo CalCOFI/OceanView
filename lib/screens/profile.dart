@@ -40,11 +40,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget build(BuildContext context) {
-    UserStats user = UserStats();
-    final uStats = Provider.of<List<UserStats>?>(context);
-    if (uStats!.length > 0) {
-      user = uStats.first;
-    }
+    final uStats = Provider.of<UserStats>(context);
+    UserStats user = uStats;
     print('XXXXX USER ${user.name} HAS ${user.numobs} OBSERVATIONS');
     String? u_email = currentUser == null ? '' : currentUser?.email;
     String? u_date = currentUser == null

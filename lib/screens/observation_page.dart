@@ -50,14 +50,12 @@ Widget _buildPopupDialog(BuildContext context, String wtitle, String msg) {
 class ObservationPage extends StatefulWidget {
   final File file;
   final String mode;
-  UserStats? uStats;
   Observation? observation;
   PhotoMeta? photoMeta;
   int? index; // Index for observation in session
   ObservationPage(
       {required this.file,
       required this.mode,
-      this.uStats,
       this.observation,
       this.photoMeta,
       this.index});
@@ -197,9 +195,9 @@ class _ObservationPageState extends State<ObservationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User?>(context);
-    UserStats? userSt = this.uStats;
-    print('XXXXX READING USER ${userSt?.name} XXXXXX');
+    final user = Provider.of<User>(context);
+    final userSt = Provider.of<UserStats>(context);
+    print('FFFFF FOUND USER ${userSt.name} FFFFF');
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -522,16 +520,19 @@ class _ObservationPageState extends State<ObservationPage> {
                     this.observation!.name = _nameController.text;
                     this.observation!.latinName = _latinNameController.text;
                     if (this.mode == 'single') {
-                      TaskState state = await DatabaseService(uid: user!.uid)
+                      TaskState state = await DatabaseService(uid: user.uid)
                           .addObservation(
                               this.observation!, File(widget.file.path));
 
                       if (state == TaskState.success) {
+                        userSt.numobs = userSt.numobs! + 1;
+                        print('0000 NUMOBS IS ${userSt.numobs} 0000');
+                        await DatabaseService(uid: user.uid)
+                            .updateUserStats(userSt);
                         final snackBar = SnackBar(content: Text('Success'));
-                        userSt?.numobs = userSt.numobs! + 1;
-                        print('Updating User Stats for {$userSt.email}');
-                        DatabaseService(uid: user.uid)
-                            .updateUserStats(userSt as UserStats);
+                        //userSt?.numobs = userSt.numobs! + 1;
+                        //DatabaseService(uid: user.uid)
+                        //.updateUserStats(userSt as UserStats);
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else {
                         print('Error from image repo ${state.toString()}');
@@ -555,7 +556,6 @@ class _ObservationPageState extends State<ObservationPage> {
                       Navigator.pop(context, [this.observation, this._image]);
                     } else if (this.mode == 'me') {
                       print('Update');
-
                       String state = await DatabaseService(uid: user!.uid)
                           .updateObservation(this.observation!);
 

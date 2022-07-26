@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/models/userstats.dart';
+import 'package:ocean_view/screens/observation_page.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:provider/provider.dart';
+import 'package:ocean_view/src/extract_exif.dart';
 
 import 'package:ocean_view/screens/profile.dart';
 
@@ -11,8 +15,19 @@ import 'package:ocean_view/screens/profile.dart';
   A wrapper widget fetching user's observations from Firebase
   and show the ObservationList
  */
-class UserPage extends StatelessWidget {
-  const UserPage({Key? key}) : super(key: key);
+class ObservationStream extends StatelessWidget {
+  final File file;
+  final String mode;
+
+  Observation? observation;
+  PhotoMeta? photoMeta;
+  int? index; // Index for observation in session
+  ObservationStream(
+      {required this.file,
+      required this.mode,
+      this.observation,
+      this.photoMeta,
+      this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +38,8 @@ class UserPage extends StatelessWidget {
       initialData: UserStats(),
       child: Scaffold(
         backgroundColor: Colors.brown[50],
-        //Run ProfilePage() from profile.dart
-        body: ProfilePage(),
+        //Run ObservationPage() from observation_page.dart
+        body: ObservationPage(file: file, mode: 'single', photoMeta: photoMeta),
       ),
     );
   }

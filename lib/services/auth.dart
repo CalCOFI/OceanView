@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/models/userstats.dart';
+import 'package:ocean_view/services/database.dart';
 
 /*
   Class for all the user authentication services including sign in, register,
@@ -57,9 +58,20 @@ class AuthService {
           email: email, password: password);
 
       // create the document for the user with the uid
-      // await DatabaseService(uid: result.user!.uid).updateUserData('0', 'new crew members', 100);
-
-      return result.user;
+      String userID = result.user?.uid ?? '';
+      String userEmail = result.user?.email ?? '';
+      await result.user?.updateDisplayName('Ocean Observer');
+      if (userID != '') {
+        UserStats stats = UserStats();
+        stats.uid = userID;
+        stats.name = 'Ocean Observer';
+        stats.email = userEmail;
+        stats.numobs = 0;
+        stats.share = 'Y';
+        await DatabaseService(uid: userID).updateUserStats(stats);
+        print(' RETURNING USER ${userEmail}');
+        return result.user;
+      }
     } catch (e) {
       print(e.toString());
       return null;
