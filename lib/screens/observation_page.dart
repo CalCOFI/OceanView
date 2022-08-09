@@ -197,7 +197,6 @@ class _ObservationPageState extends State<ObservationPage> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     final userSt = Provider.of<UserStats>(context);
-    print('FFFFF FOUND USER ${userSt.name} FFFFF');
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -483,34 +482,14 @@ class _ObservationPageState extends State<ObservationPage> {
                         width: 10.0,
                       ),
                       Container(
-                          alignment: Alignment.center,
-                          child: DropdownButton<String>(
-                            value: _confidentialityValue,
-                            icon: const Icon(Icons.arrow_downward),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: const TextStyle(color: Colors.deepPurple),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.black26,
-                            ),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _confidentialityValue = newValue!;
-                                this.observation!.confidentiality =
-                                    _confidentialityValue;
-                              });
-                            },
-                            items: <String>[
-                              'Share with community',
-                              'Keep private'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ))
+                        alignment: Alignment.center,
+                        child: Text(
+                          userSt.share == 'Y'
+                              ? 'Share with community'
+                              : 'Do not share',
+                          style: const TextStyle(color: Colors.deepPurple),
+                        ),
+                      ),
                     ],
                   )),
               const SizedBox(height: 10),
@@ -526,7 +505,6 @@ class _ObservationPageState extends State<ObservationPage> {
 
                       if (state == TaskState.success) {
                         userSt.numobs = userSt.numobs! + 1;
-                        print('0000 NUMOBS IS ${userSt.numobs} 0000');
                         await DatabaseService(uid: user.uid)
                             .updateUserStats(userSt);
                         final snackBar = SnackBar(content: Text('Success'));
