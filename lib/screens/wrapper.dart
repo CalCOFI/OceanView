@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/screens/authenticate/authenticate.dart';
 import 'package:flutter/material.dart';
 

@@ -1,16 +1,12 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/screens/authenticate/verify.dart';
-import 'package:ocean_view/screens/home/home.dart';
-import 'package:ocean_view/screens/map/map_page.dart';
+import 'package:ocean_view/shared/constants.dart';
+import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/shared/loading.dart';
 import 'package:provider/provider.dart';
-import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/services/database.dart';
 
 class sharingForm extends StatefulWidget {
@@ -174,156 +170,165 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: Text('Profile Page: ${currentUser!.displayName}'),
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: topBarColor,
           elevation: 0.0,
         ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
-          child: Column(children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(1),
-              child: Row(
-                children: [
-                  Text(
-                    'Name: ',
-                    style: TextStyle(color: Colors.blue, fontSize: 20),
+        body: Container(
+          //SingleChildScrollView(
+          //padding: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 0.0),
+          decoration: blueBoxDecoration,
+          child: Stack(
+            children: [
+              CustomPainterWidgets.buildTopShape(),
+              Column(children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 50, 10, 10),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Name: ',
+                        style: TextStyle(color: Colors.blue, fontSize: 20),
+                      ),
+                      Expanded(
+                        child: Text(
+                          uStats.name as String,
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Text(
-                      uStats.name as String,
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
+                  child: Row(children: [
+                    Text(
+                      'User: ',
+                      style: TextStyle(color: Colors.blue, fontSize: 20),
+                    ),
+                    Text(
+                      //user.email,
+                      u_email as String,
                       style: TextStyle(
-                          color: Colors.green,
+                          color: Colors.black,
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(1),
-              child: Row(children: [
-                Text(
-                  'User: ',
-                  style: TextStyle(color: Colors.blue, fontSize: 20),
+                  ]),
                 ),
-                Text(
-                  //user.email,
-                  u_email as String,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
+                Padding(
+                    padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
+                    child: Row(children: [
+                      Text(
+                        'Email verified: ',
+                        style: TextStyle(color: Colors.blue, fontSize: 20),
+                      ),
+                      Text(
+                        currentUser!.emailVerified ? 'Yes   ' : 'No   ',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
+                      ),
+                      currentUser!.emailVerified
+                          ? Text(' ')
+                          : ElevatedButton(
+                              onPressed: () {
+                                print('Verifying User');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => VerifyScreen()),
+                                );
+                              },
+                              child: Text('Verify')),
+                    ])),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
+                  child: Row(children: [
+                    Text(
+                      'Member since:',
+                      style: TextStyle(color: Colors.blue, fontSize: 20),
+                    ),
+                    Text(
+                      u_date as String,
+                    )
+                  ]),
+                ),
+                Divider(
+                  color: Colors.black,
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
+                  child: Row(
+                    //mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sharing: ',
+                        style: TextStyle(color: Colors.blue, fontSize: 20),
+                      ),
+                      Text(
+                        user.share == null
+                            ? 'Nothing yet'
+                            : user.share as String,
+                        style: TextStyle(
+                            color: Colors.green,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      //IconButton(
+                      //    onPressed: () => _showSharingPanel(),
+                      //    iconSize: 20,
+                      //    icon: Icon(Icons.edit)),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Number of Observations: ',
+                        style: TextStyle(color: Colors.blue, fontSize: 20),
+                      ),
+                      Text(
+                        user.numobs == null ? '0' : user.numobs.toString(),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: Colors.black,
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
+                  child: Row(
+                    children: [
+                      ElevatedButton(
+                          onPressed: () => _showSharingPanel(),
+                          // {
+                          //  nameEnabled = false;
+                          //  print('Saving...');
+                          //  currentUser?.updateDisplayName(_pnameController.text);
+                          //  user.uid = currentUser?.uid;
+                          //  user.name = _pnameController.text;
+                          //  user.email = currentUser?.email;
+                          //  DatabaseService(uid: currentUser!.uid)
+                          //      .updateUserStats(user);
+                          //},
+                          child: Text('Update Profile')),
+                    ],
+                  ),
                 ),
               ]),
-            ),
-            Padding(
-                padding: EdgeInsets.all(1),
-                child: Row(children: [
-                  Text(
-                    'Email verified: ',
-                    style: TextStyle(color: Colors.blue, fontSize: 20),
-                  ),
-                  Text(
-                    currentUser!.emailVerified ? 'Yes   ' : 'No   ',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18),
-                  ),
-                  currentUser!.emailVerified
-                      ? Text(' ')
-                      : ElevatedButton(
-                          onPressed: () {
-                            print('Verifying User');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => VerifyScreen()),
-                            );
-                          },
-                          child: Text('Verify')),
-                ])),
-            Padding(
-              padding: EdgeInsets.all(1),
-              child: Row(children: [
-                Text(
-                  'Member since:',
-                  style: TextStyle(color: Colors.blue, fontSize: 20),
-                ),
-                Text(
-                  u_date as String,
-                )
-              ]),
-            ),
-            Divider(
-              color: Colors.black,
-            ),
-            Padding(
-              padding: EdgeInsets.all(1),
-              child: Row(
-                //mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sharing: ',
-                    style: TextStyle(color: Colors.blue, fontSize: 20),
-                  ),
-                  Text(
-                    user.share == null ? 'Nothing yet' : user.share as String,
-                    style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  //IconButton(
-                  //    onPressed: () => _showSharingPanel(),
-                  //    iconSize: 20,
-                  //    icon: Icon(Icons.edit)),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(1),
-              child: Row(
-                children: [
-                  Text(
-                    'Number of Observations: ',
-                    style: TextStyle(color: Colors.blue, fontSize: 20),
-                  ),
-                  Text(
-                    user.numobs == null ? '0' : user.numobs.toString(),
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-            ),
-            Divider(
-              color: Colors.black,
-            ),
-            Padding(
-              padding: EdgeInsets.all(1),
-              child: Row(
-                children: [
-                  ElevatedButton(
-                      onPressed: () => _showSharingPanel(),
-                      // {
-                      //  nameEnabled = false;
-                      //  print('Saving...');
-                      //  currentUser?.updateDisplayName(_pnameController.text);
-                      //  user.uid = currentUser?.uid;
-                      //  user.name = _pnameController.text;
-                      //  user.email = currentUser?.email;
-                      //  DatabaseService(uid: currentUser!.uid)
-                      //      .updateUserStats(user);
-                      //},
-                      child: Text('Update Profile')),
-                ],
-              ),
-            ),
-          ]),
+            ],
+          ),
         ));
   }
 }

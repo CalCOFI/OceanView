@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
-import 'package:ocean_view/screens/me/me_observation.dart';
 import 'package:ocean_view/services/database.dart';
+import 'package:ocean_view/shared/constants.dart';
+import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'observation_list.dart';
@@ -16,23 +17,27 @@ class MePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final user = Provider.of<User?>(context);
 
-    return StreamProvider<List<Observation>?>.value (
+    return StreamProvider<List<Observation>?>.value(
       value: DatabaseService(uid: user!.uid).meObs,
       initialData: null,
       child: Scaffold(
-        backgroundColor: Colors.brown[50],
+        //backgroundColor: Colors.brown[50],
         appBar: AppBar(
-          title: Text('Me Page: ${user.uid.substring(0,5)}'),
+          title: Text('Me Page: ${user.uid.substring(0, 5)}'),
           centerTitle: true,
-          backgroundColor: Colors.brown[400],
+          backgroundColor: topBarColor,
           elevation: 0.0,
-          
         ),
         //Run ObservationList() from observation_list.dart
-        body: ObservationList(),
+        body: Container(
+          decoration: blueBoxDecoration,
+          child: Stack(children: [
+            CustomPainterWidgets.buildTopShape(),
+            ObservationList()
+          ]),
+        ),
       ),
     );
   }

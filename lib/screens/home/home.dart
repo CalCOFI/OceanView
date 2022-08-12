@@ -5,6 +5,7 @@ import 'package:ocean_view/screens/upload/upload_page.dart';
 import 'package:ocean_view/screens/activity_page.dart';
 import 'package:ocean_view/screens/me/me_page.dart';
 import 'package:ocean_view/screens/me/profile_page.dart';
+import 'package:ocean_view/shared/constants.dart';
 
 /*
   Root widget for managing navigating through different pages
@@ -40,6 +41,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: _widgetOptions[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: bottomBarColor, //Colors.teal.shade100,
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -65,7 +67,7 @@ class _HomeState extends State<Home> {
         ],
         currentIndex: _currentIndex,
         onTap: _onNavBarTapped,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.blue.shade900,
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

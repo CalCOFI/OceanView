@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/aphia_record.dart';
+import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/loading.dart';
 
 enum Kingdoms { Animalia, Plantae }
@@ -58,7 +59,8 @@ class _AphiaParseDemoState extends State<AphiaParseDemo> {
               elevation: 0,
             ),
             body: Container(
-              color: Colors.white,
+              //color: Colors.white,
+              decoration: blueBoxDecoration,
               child: _record == null
                   ? Text(
                       'No items found',

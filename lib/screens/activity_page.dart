@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/services/auth.dart';
+import 'package:ocean_view/shared/constants.dart';
+import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/src/mpa.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /*
   Page for activity, not finished
@@ -23,7 +24,7 @@ class _ActivityPageState extends State<ActivityPage> {
       appBar: AppBar(
           title: Text('OceanView'),
           centerTitle: true,
-          backgroundColor: Colors.lightBlueAccent,
+          backgroundColor: topBarColor, //Colors.lightBlueAccent,
           elevation: 0.0,
           actions: <Widget>[
             TextButton.icon(
@@ -31,21 +32,22 @@ class _ActivityPageState extends State<ActivityPage> {
                   await _auth.signOut();
                 },
                 icon: Icon(Icons.person),
-                label: Text('Log out')
-            )
-          ]
-      ),
-      body: Center(
-        // child: Text('This is an activity.'),
+                label: Text('Log out'))
+          ]),
+      body: Container(
+        child: Stack(children: [
+          CustomPainterWidgets.buildTopShape(),
+          Center(
+              // child: Text('This is an activity.'),
 
-        child: ElevatedButton(
-          child: Text('Test'),
-          onPressed: () async {
-            Map<String, dynamic> regulations = await getMPARegulations();
-            print(regulations['111']??'None');
-          }
-        )
-
+              child: ElevatedButton(
+                  child: Text('Test'),
+                  onPressed: () async {
+                    Map<String, dynamic> regulations =
+                        await getMPARegulations();
+                    print(regulations['111'] ?? 'None');
+                  })),
+        ]),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:provider/provider.dart';

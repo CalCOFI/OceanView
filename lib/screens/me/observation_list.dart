@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/me/me_observation.dart';
@@ -9,7 +8,6 @@ import 'package:provider/provider.dart';
   in two columns
  */
 class ObservationList extends StatefulWidget {
-
   @override
   _ObservationListState createState() => _ObservationListState();
 }
@@ -22,7 +20,7 @@ class _ObservationListState extends State<ObservationList> {
     final observations = Provider.of<List<Observation>?>(context) ?? [];
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 50.0, 8.0, 8.0),
       // A child Widget that show the images in a grid view
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -55,8 +53,7 @@ class _ObservationListState extends State<ObservationList> {
                   height: 250,
                   width: 180,
                 ),
-              )
-          );
+              ));
         },
       ),
     );

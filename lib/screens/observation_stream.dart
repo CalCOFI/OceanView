@@ -9,8 +9,6 @@ import 'package:ocean_view/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 
-import 'package:ocean_view/screens/profile.dart';
-
 /*
   A wrapper widget fetching user's observations from Firebase
   and show the ObservationList
@@ -32,14 +30,19 @@ class ObservationStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-
+    index = this.mode == 'single' ? 0 : this.index;
     return StreamProvider<UserStats>.value(
       value: DatabaseService(uid: user!.uid).meStats,
       initialData: UserStats(),
       child: Scaffold(
         backgroundColor: Colors.brown[50],
         //Run ObservationPage() from observation_page.dart
-        body: ObservationPage(file: file, mode: 'single', photoMeta: photoMeta),
+        body: ObservationPage(
+          file: file,
+          mode: this.mode,
+          photoMeta: photoMeta,
+          index: index,
+        ),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
@@ -11,9 +10,9 @@ import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/screens/me/me_statistics.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/shared/constants.dart';
+import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:uri_to_file/uri_to_file.dart';
 
 import '../observation_page.dart';
 
@@ -86,140 +85,159 @@ class MeObservation extends StatelessWidget {
         builder: (context, snapshot) {
           UserStats? uStats = snapshot.hasData ? snapshot.data : UserStats();
           print('USERSTATS NAME: ${uStats?.name}');
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Details'),
-              centerTitle: true,
-              backgroundColor: Colors.lightBlueAccent,
-              actions: <Widget>[
-                TextButton(
-                  child: Text(
-                    'Edit',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  style: TextButton.styleFrom(
-                    primary: Colors.white,
-                  ),
-                  onPressed: () async {
-                    File _imageFile = await urlToFile(imageURL);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ObservationPage(
-                                  file: _imageFile,
-                                  mode: 'me',
-                                  observation: observation,
-                                )));
-                  },
-                ),
-                TextButton(
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  style: TextButton.styleFrom(
-                    primary: Colors.red,
-                  ),
-                  onPressed: () async {
-                    String state = await DatabaseService(uid: user!.uid)
-                        .deleteObservation(this.observation);
-
-                    if (state == 'Observation deleted') {
-                      uStats?.numobs = uStats.numobs! - 1;
-                      await DatabaseService(uid: user.uid)
-                          .updateUserStats(uStats as UserStats);
-                      final snackBar = SnackBar(content: Text(state));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    } else {
-                      throw (state);
-                    }
-
-                    // Back to previous page
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-            //Layout for all information
-            body: Padding(
-              padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-              child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                    child: Center(
-                      child: Image(
-                        image: NetworkImage(imageURL),
-                        height: 250,
-                        width: 180,
-                      ),
+          return Container(
+            decoration: blueBoxDecoration,
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text('Details'),
+                centerTitle: true,
+                elevation: 0.0,
+                backgroundColor: topBarColor,
+                actions: <Widget>[
+                  TextButton(
+                    child: Text(
+                      'Edit',
+                      style: TextStyle(fontSize: 16),
                     ),
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                    ),
+                    onPressed: () async {
+                      File _imageFile = await urlToFile(imageURL);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ObservationPage(
+                                    file: _imageFile,
+                                    mode: 'me',
+                                    observation: observation,
+                                  )));
+                    },
                   ),
-                  Divider(
-                    color: Colors.black,
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                        padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                        child: Column(
-                          children: [
-                            FieldWithValue(
-                                field: 'Common Name', value: speciesName),
-                            SizedBox(height: 10.0),
-                            FieldWithValue(
-                                field: 'Scientific Name',
-                                value: scientificName),
-                            SizedBox(height: 10.0),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  FieldWithValue(
-                                      field: 'Length (feet)',
-                                      value: length.toStringAsFixed(2)),
-                                  FieldWithValue(
-                                      field: 'Weight (lbs)',
-                                      value: weight.toStringAsFixed(2)),
-                                ]),
-                            SizedBox(height: 10.0),
-                            FieldWithValue(
-                                field: 'Time', value: time.toString()),
-                            SizedBox(height: 10.0),
-                            FieldWithValue(
-                                field: 'Location',
-                                value: _printLocation(observation.location!)),
-                            SizedBox(height: 10.0),
-                            FieldWithValue(
-                                field: 'Confidence Level', value: confidence!),
-                            SizedBox(height: 10.0),
-                            FieldWithValue(
-                                field: 'Confidentiality',
-                                value: confidentiality),
-                            SizedBox(height: 10.0),
-                            FieldWithValue(field: 'Status', value: status),
-                            SizedBox(height: 10.0),
-                            (this.observation.confidentiality ==
-                                    CONFIDENTIALITY)
-                                ? ElevatedButton(
-                                    child: Text('See statistics'),
-                                    onPressed: () {
-                                      // Go to page with statistics
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => MeStatistics(
-                                                user: user!,
-                                                observation: this.observation),
-                                          ));
-                                    },
-                                  )
-                                : SizedBox(),
-                          ],
-                        )),
+                  TextButton(
+                    child: Text(
+                      'Delete',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    style: TextButton.styleFrom(
+                      primary: Colors.red,
+                    ),
+                    onPressed: () async {
+                      String state = await DatabaseService(uid: user!.uid)
+                          .deleteObservation(this.observation);
+
+                      if (state == 'Observation deleted') {
+                        uStats?.numobs = uStats.numobs! - 1;
+                        await DatabaseService(uid: user.uid)
+                            .updateUserStats(uStats as UserStats);
+                        final snackBar = SnackBar(content: Text(state));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        throw (state);
+                      }
+
+                      // Back to previous page
+                      Navigator.pop(context);
+                    },
                   ),
                 ],
+              ),
+              //Layout for all information
+              body: Container(
+                decoration: blueBoxDecoration,
+                child: Stack(
+                  children: [
+                    CustomPainterWidgets.buildTopShape(),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 0.0),
+                      child: Column(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                            child: Center(
+                              child: Image(
+                                image: NetworkImage(imageURL),
+                                height: 250 * 0.9,
+                                width: 180 * 0.9,
+                              ),
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.black,
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                                padding:
+                                    EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                                child: Column(
+                                  children: [
+                                    FieldWithValue(
+                                        field: 'Common Name',
+                                        value: speciesName),
+                                    SizedBox(height: 10.0),
+                                    FieldWithValue(
+                                        field: 'Scientific Name',
+                                        value: scientificName),
+                                    SizedBox(height: 10.0),
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          FieldWithValue(
+                                              field: 'Length (feet)',
+                                              value: length.toStringAsFixed(2)),
+                                          FieldWithValue(
+                                              field: 'Weight (lbs)',
+                                              value: weight.toStringAsFixed(2)),
+                                        ]),
+                                    SizedBox(height: 10.0),
+                                    FieldWithValue(
+                                        field: 'Time', value: time.toString()),
+                                    SizedBox(height: 10.0),
+                                    FieldWithValue(
+                                        field: 'Location',
+                                        value: _printLocation(
+                                            observation.location!)),
+                                    SizedBox(height: 10.0),
+                                    FieldWithValue(
+                                        field: 'Confidence Level',
+                                        value: confidence!),
+                                    SizedBox(height: 10.0),
+                                    FieldWithValue(
+                                        field: 'Confidentiality',
+                                        value: confidentiality),
+                                    SizedBox(height: 10.0),
+                                    FieldWithValue(
+                                        field: 'Status', value: status),
+                                    SizedBox(height: 10.0),
+                                    (this.observation.confidentiality ==
+                                            CONFIDENTIALITY)
+                                        ? ElevatedButton(
+                                            child: Text('See statistics'),
+                                            onPressed: () {
+                                              // Go to page with statistics
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MeStatistics(
+                                                            user: user!,
+                                                            observation: this
+                                                                .observation),
+                                                  ));
+                                            },
+                                          )
+                                        : SizedBox(),
+                                  ],
+                                )),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           );

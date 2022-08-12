@@ -9,11 +9,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/shared/constants.dart';
+import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:cross_file/cross_file.dart';
 
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/models/observation.dart';
@@ -200,357 +200,383 @@ class _ObservationPageState extends State<ObservationPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: topBarColor,
         title: Text('Observation'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-          child: Column(
-            children: <Widget>[
-              Padding(padding: EdgeInsets.all(8), child: _image),
-              Divider(
-                color: Colors.black,
-              ),
-              Padding(
-                padding: EdgeInsets.all(1),
-                child: Row(
-                  // Row for Name entry
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('Name:'),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: TextFormField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            prefixIcon: IconButton(
-                                icon: Icon(Icons.close),
-                                onPressed: () => {
-                                      _nameController.clear(),
-                                      _latinNameController.clear()
+      body: Container(
+        decoration: blueBoxDecoration,
+        child: Stack(
+          children: [
+            CustomPainterWidgets.buildTopShape(),
+            SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                child: Column(
+                  children: <Widget>[
+                    Padding(padding: EdgeInsets.all(8), child: _image),
+                    Divider(
+                      color: Colors.black,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(1),
+                      child: Row(
+                        // Row for Name entry
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Text('Name:'),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: TextFormField(
+                                controller: _nameController,
+                                decoration: InputDecoration(
+                                  prefixIcon: IconButton(
+                                      icon: Icon(Icons.close),
+                                      onPressed: () => {
+                                            _nameController.clear(),
+                                            _latinNameController.clear()
+                                          }),
+                                ),
+                                textAlign: TextAlign.center,
+                                onChanged: (String value) => {
+                                      this.observation!.name = value,
+                                      _latinNameController.clear(),
                                     }),
                           ),
-                          textAlign: TextAlign.center,
-                          onChanged: (String value) => {
-                                this.observation!.name = value,
-                                _latinNameController.clear(),
-                              }),
-                    ),
-                    IconButton(
-                        iconSize: 20,
-                        onPressed: () {
-                          _navigateAndDisplaySelection(context);
-                          print(this.observation!.name);
-                        },
-                        // icon: Icon(Icons.arrow_forward_ios),
-                        icon: Icon(Icons.image_search)),
-                    IconButton(
-                        iconSize: 20,
-                        onPressed: () {
-                          _navigateAndTextSearch(context);
-                        },
-                        icon: Icon(Icons.search)),
-                    IconButton(
-                        iconSize: 20,
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) =>
-                                _buildPopupDialog(
-                                    context, 'Search Options', namehelp),
-                          );
-                        },
-                        icon: Icon(Icons.help_rounded)),
-                  ],
-                ),
-              ),
-              Padding(
-                  padding: EdgeInsets.all(4),
-                  child: Row(
-                    // Row for Species entry
-                    children: [
-                      const Text('Species:'),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextFormField(
-                          // initialValue: (this.observation!.latinName==null)
-                          //     ? ''
-                          //     : this.observation!.latinName,
-                          controller: _latinNameController,
-                          textAlign: TextAlign.center,
-                          enabled: false,
-                          onChanged: (String value) =>
-                              this.observation!.latinName = value,
-                        ),
+                          IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                _navigateAndDisplaySelection(context);
+                                print(this.observation!.name);
+                              },
+                              // icon: Icon(Icons.arrow_forward_ios),
+                              icon: Icon(Icons.image_search)),
+                          IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                _navigateAndTextSearch(context);
+                              },
+                              icon: Icon(Icons.search)),
+                          IconButton(
+                              iconSize: 20,
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      _buildPopupDialog(
+                                          context, 'Search Options', namehelp),
+                                );
+                              },
+                              icon: Icon(Icons.help_rounded)),
+                        ],
                       ),
-                    ],
-                  )),
-              Padding(
-                padding: EdgeInsets.all(4),
-                child: Row(children: <Widget>[
-                  // Row for Length entry
-                  const Text('Length: '),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: (this.observation!.length == null)
-                          ? ''
-                          : this.observation!.length.toString(),
-                      textAlign: TextAlign.center,
-                      onChanged: (String value) =>
-                          this.observation!.length = double.parse(value),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                      ],
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text("inches"),
-                  SizedBox(width: 10),
-                  const Text('Weight: '),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: (this.observation!.weight == null)
-                          ? ''
-                          : this.observation!.weight.toString(),
-                      textAlign: TextAlign.center,
-                      onChanged: (String value) =>
-                          this.observation!.weight = double.parse(value),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text("lb"),
-                ]),
-              ),
-              Padding(
-                padding: EdgeInsets.all(4),
-                child: Row(children: <Widget>[
-                  //Row for Time entry
-                  const Text("Time: "),
-                  const SizedBox(
-                    width: 10.0,
-                  ),
-                  Expanded(
-                      child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                        "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
-                  )),
-                  const SizedBox(width: 10.0),
-                  ElevatedButton(
-                    onPressed: () => _selectDate(context),
-                    child: Icon(Icons.date_range),
-                  ),
-                ]),
-              ),
-              Padding(
-                padding: EdgeInsets.all(4),
-                child: Row(children: <Widget>[
-                  // Row for Location entry
-                  const Text('Location: '),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      _printLocation(this.observation!.location!),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ]),
-              ),
-              Divider(
-                color: Colors.black,
-              ),
-              Padding(
-                  padding: EdgeInsets.all(2),
-                  child: Row(
-                    children: [
-                      SizedBox(width: 170, height: 2),
-                      Text('Low', style: TextStyle(fontSize: 12)),
-                      SizedBox(width: 10, height: 2),
-                      Text('Medium', style: TextStyle(fontSize: 12)),
-                      SizedBox(width: 10, height: 2),
-                      Text('High', style: TextStyle(fontSize: 12))
-                    ],
-                  )),
-              Padding(
-                padding: EdgeInsets.all(2),
-                child: Row(
-                  children: [
-                    const Text('Confidence level:'),
-                    IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) => _buildPopupDialog(
-                                context,
-                                'Confidence Level',
-                                'Specify how confident you are in your identification of this species.  1 is least confident, 3 is most confident.'),
-                          );
-                        },
-                        icon: Icon(Icons.help_rounded)),
-                    Radio(
-                      value: 1,
-                      groupValue: _confidence,
-                      onChanged: (val) {
-                        setState(() {
-                          _confidence = 1;
-                          this.observation!.confidence = 1;
-                        });
-                      },
-                    ),
-                    //const Text('1'),
-                    Radio(
-                      value: 2,
-                      groupValue: _confidence,
-                      onChanged: (val) {
-                        setState(() {
-                          _confidence = 2;
-                          this.observation!.confidence = 2;
-                        });
-                      },
-                    ),
-                    //const Text('2'),
-                    Radio(
-                      value: 3,
-                      groupValue: _confidence,
-                      onChanged: (val) {
-                        setState(() {
-                          _confidence = 3;
-                          this.observation!.confidence = 3;
-                        });
-                      },
-                    ),
-                    //const Text('3'),
-                  ],
-                ),
-              ),
-              Divider(
-                color: Colors.black,
-              ),
-              Padding(
-                  padding: EdgeInsets.all(2),
-                  child: Row(
-                    // Row for Status Entry
-                    children: [
-                      const Text("Status: "),
-                      const SizedBox(
-                        width: 10.0,
-                      ),
-                      Container(
-                          alignment: Alignment.center,
-                          child: DropdownButton<String>(
-                            value: _statusValue,
-                            icon: const Icon(Icons.arrow_downward),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: const TextStyle(color: Colors.deepPurple),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.black26,
+                    Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Row(
+                          // Row for Species entry
+                          children: [
+                            const Text('Species:'),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextFormField(
+                                // initialValue: (this.observation!.latinName==null)
+                                //     ? ''
+                                //     : this.observation!.latinName,
+                                controller: _latinNameController,
+                                textAlign: TextAlign.center,
+                                enabled: false,
+                                onChanged: (String value) =>
+                                    this.observation!.latinName = value,
+                              ),
                             ),
-                            onChanged: (String? newValue) {
+                          ],
+                        )),
+                    Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Row(children: <Widget>[
+                        // Row for Length entry
+                        const Text('Length: '),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            initialValue: (this.observation!.length == null)
+                                ? ''
+                                : this.observation!.length.toString(),
+                            textAlign: TextAlign.center,
+                            onChanged: (String value) =>
+                                this.observation!.length = double.parse(value),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]')),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text("inches"),
+                        SizedBox(width: 10),
+                        const Text('Weight: '),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            initialValue: (this.observation!.weight == null)
+                                ? ''
+                                : this.observation!.weight.toString(),
+                            textAlign: TextAlign.center,
+                            onChanged: (String value) =>
+                                this.observation!.weight = double.parse(value),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]')),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text("lb"),
+                      ]),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Row(children: <Widget>[
+                        //Row for Time entry
+                        const Text("Time: "),
+                        const SizedBox(
+                          width: 10.0,
+                        ),
+                        Expanded(
+                            child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                              "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
+                        )),
+                        const SizedBox(width: 10.0),
+                        ElevatedButton(
+                          onPressed: () => _selectDate(context),
+                          child: Icon(Icons.date_range),
+                        ),
+                      ]),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Row(children: <Widget>[
+                        // Row for Location entry
+                        const Text('Location: '),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            _printLocation(this.observation!.location!),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ]),
+                    ),
+                    Divider(
+                      color: Colors.black,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(2),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 170, height: 2),
+                            Text('Low', style: TextStyle(fontSize: 12)),
+                            SizedBox(width: 10, height: 2),
+                            Text('Medium', style: TextStyle(fontSize: 12)),
+                            SizedBox(width: 10, height: 2),
+                            Text('High', style: TextStyle(fontSize: 12))
+                          ],
+                        )),
+                    Padding(
+                      padding: EdgeInsets.all(2),
+                      child: Row(
+                        children: [
+                          const Text('Confidence level:'),
+                          IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      _buildPopupDialog(
+                                          context,
+                                          'Confidence Level',
+                                          'Specify how confident you are in your identification of this species.  1 is least confident, 3 is most confident.'),
+                                );
+                              },
+                              icon: Icon(Icons.help_rounded)),
+                          Radio(
+                            value: 1,
+                            groupValue: _confidence,
+                            onChanged: (val) {
                               setState(() {
-                                _statusValue = newValue!;
-                                this.observation!.status = _statusValue;
+                                _confidence = 1;
+                                this.observation!.confidence = 1;
                               });
                             },
-                            items: <String>['Observe', 'Release', 'Catch']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ))
-                    ],
-                  )),
-              Divider(
-                color: Colors.black,
-              ),
-              Padding(
-                  padding: EdgeInsets.all(4),
-                  child: Row(
-                    children: [
-                      const Text("Confidentiality: "),
-                      const SizedBox(
-                        width: 10.0,
+                          ),
+                          //const Text('1'),
+                          Radio(
+                            value: 2,
+                            groupValue: _confidence,
+                            onChanged: (val) {
+                              setState(() {
+                                _confidence = 2;
+                                this.observation!.confidence = 2;
+                              });
+                            },
+                          ),
+                          //const Text('2'),
+                          Radio(
+                            value: 3,
+                            groupValue: _confidence,
+                            onChanged: (val) {
+                              setState(() {
+                                _confidence = 3;
+                                this.observation!.confidence = 3;
+                              });
+                            },
+                          ),
+                          //const Text('3'),
+                        ],
                       ),
-                      Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          userSt.share == 'Y'
-                              ? 'Share with community'
-                              : 'Do not share',
-                          style: const TextStyle(color: Colors.deepPurple),
-                        ),
-                      ),
-                    ],
-                  )),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                  child: Text(this.buttonName),
-                  onPressed: () async {
-                    this.observation!.name = _nameController.text;
-                    this.observation!.latinName = _latinNameController.text;
-                    if (this.mode == 'single') {
-                      TaskState state = await DatabaseService(uid: user.uid)
-                          .addObservation(
-                              this.observation!, File(widget.file.path));
+                    ),
+                    Divider(
+                      color: Colors.black,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(2),
+                        child: Row(
+                          // Row for Status Entry
+                          children: [
+                            const Text("Status: "),
+                            const SizedBox(
+                              width: 10.0,
+                            ),
+                            Container(
+                                alignment: Alignment.center,
+                                child: DropdownButton<String>(
+                                  value: _statusValue,
+                                  icon: const Icon(Icons.arrow_downward),
+                                  iconSize: 24,
+                                  elevation: 16,
+                                  style:
+                                      const TextStyle(color: Colors.deepPurple),
+                                  underline: Container(
+                                    height: 2,
+                                    color: Colors.black26,
+                                  ),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _statusValue = newValue!;
+                                      this.observation!.status = _statusValue;
+                                    });
+                                  },
+                                  items: <String>['Observe', 'Release', 'Catch']
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ))
+                          ],
+                        )),
+                    Divider(
+                      color: Colors.black,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Row(
+                          children: [
+                            const Text("Confidentiality: "),
+                            const SizedBox(
+                              width: 10.0,
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                userSt.share == 'Y'
+                                    ? 'Share with community'
+                                    : 'Do not share',
+                                style:
+                                    const TextStyle(color: Colors.deepPurple),
+                              ),
+                            ),
+                          ],
+                        )),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                        child: Text(this.buttonName),
+                        onPressed: () async {
+                          this.observation!.name = _nameController.text;
+                          this.observation!.latinName =
+                              _latinNameController.text;
+                          if (this.mode == 'single') {
+                            TaskState state = await DatabaseService(
+                                    uid: user.uid)
+                                .addObservation(
+                                    this.observation!, File(widget.file.path));
 
-                      if (state == TaskState.success) {
-                        userSt.numobs = userSt.numobs! + 1;
-                        await DatabaseService(uid: user.uid)
-                            .updateUserStats(userSt);
-                        final snackBar = SnackBar(content: Text('Success'));
-                        //userSt?.numobs = userSt.numobs! + 1;
-                        //DatabaseService(uid: user.uid)
-                        //.updateUserStats(userSt as UserStats);
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      } else {
-                        print('Error from image repo ${state.toString()}');
-                        throw ('This file is not an image');
-                      }
+                            if (state == TaskState.success) {
+                              userSt.numobs = userSt.numobs! + 1;
+                              await DatabaseService(uid: user.uid)
+                                  .updateUserStats(userSt);
+                              final snackBar =
+                                  SnackBar(content: Text('Success'));
+                              //userSt?.numobs = userSt.numobs! + 1;
+                              //DatabaseService(uid: user.uid)
+                              //.updateUserStats(userSt as UserStats);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            } else {
+                              print(
+                                  'Error from image repo ${state.toString()}');
+                              throw ('This file is not an image');
+                            }
 
-                      // Back to previous page
-                      Navigator.pop(context);
-                    } else if (this.mode == 'session') {
-                      print('Stopwatch: ${this.observation!.stopwatchStart}');
-                      print('Add');
+                            // Back to previous page
+                            Navigator.pop(context);
+                          } else if (this.mode == 'session') {
+                            print(
+                                'Stopwatch: ${this.observation!.stopwatchStart}');
+                            print('Add');
 
-                      // Add image to local directory
-                      await LocalStoreService().saveImage(
-                          context, File(_imageFile.path), '$index.png');
+                            // Add image to local directory
+                            await LocalStoreService().saveImage(
+                                context, File(_imageFile.path), '$index.png');
 
-                      // Add observation to local directory
-                      await LocalStoreService()
-                          .saveObservation(this.observation!, '$index.txt');
+                            // Add observation to local directory
+                            await LocalStoreService().saveObservation(
+                                this.observation!, '$index.txt');
 
-                      Navigator.pop(context, [this.observation, this._image]);
-                    } else if (this.mode == 'me') {
-                      print('Update');
-                      String state = await DatabaseService(uid: user!.uid)
-                          .updateObservation(this.observation!);
+                            Navigator.pop(
+                                context, [this.observation, this._image]);
+                          } else if (this.mode == 'me') {
+                            print('Update');
+                            String state = await DatabaseService(uid: user!.uid)
+                                .updateObservation(this.observation!);
 
-                      if (state == "success") {
-                        final snackBar = SnackBar(content: Text('Success'));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      } else {
-                        print('Error from image repo ${state.toString()}');
-                        throw ('This file is not an image');
-                      }
+                            if (state == "success") {
+                              final snackBar =
+                                  SnackBar(content: Text('Success'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            } else {
+                              print(
+                                  'Error from image repo ${state.toString()}');
+                              throw ('This file is not an image');
+                            }
 
-                      // Back to previous page
-                      Navigator.pop(context);
-                    }
-                  }),
-            ],
-          )),
+                            // Back to previous page
+                            Navigator.pop(context);
+                          }
+                        }),
+                  ],
+                )),
+          ],
+        ),
+      ),
     );
   }
 

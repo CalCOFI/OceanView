@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/screens/home/home.dart';
 import 'dart:async';
-import 'package:ocean_view/screens/me/profile_page.dart';
 
 class VerifyScreen extends StatefulWidget {
   @override
