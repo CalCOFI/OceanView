@@ -228,7 +228,7 @@ class _HomePageState extends State<HomePage> {
       home: Scaffold(
           appBar: AppBar(
             title: Text('Map'),
-            backgroundColor: Colors.green[700],
+            backgroundColor: themeMap['scaffold_appBar_color'],
             centerTitle: true,
           ),
           body: Stack(

@@ -10,6 +10,8 @@ import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/screens/observation_page.dart';
 import 'package:provider/provider.dart';
 
+import '../shared/constants.dart';
+
 /*
   A page to show all the observations and their recording time in current recording session
 
@@ -58,6 +60,7 @@ class _TimelinePageState extends State<TimelinePage> {
       appBar: AppBar(
         title: Text('Timeline'),
         centerTitle: true,
+        backgroundColor: themeMap['scaffold_appBar_color'],
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -94,7 +97,6 @@ class _TimelinePageState extends State<TimelinePage> {
             ),
           ]
         : null,
-        automaticallyImplyLeading: false,
       ),
       body:
         ListView.builder(

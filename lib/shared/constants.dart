@@ -86,3 +86,9 @@ Map<String, String> descriptionMap = {
   'length': 'longer',
   'weight': 'heavier'
 };
+
+// Theme for all pages
+Map<String, Color> themeMap = {
+  'scaffold_appBar_color': Colors.lightBlueAccent,
+  'elevated_button_color': Colors.lightBlueAccent,
+};

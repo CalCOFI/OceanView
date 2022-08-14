@@ -7,6 +7,7 @@ import 'package:ocean_view/screens/upload/upload_session.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/observation_page.dart';
+import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 
 /*
@@ -36,6 +37,11 @@ class _UploadPageState extends State<UploadPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: Text('Upload'),
+          centerTitle: true,
+          backgroundColor: themeMap['scaffold_appBar_color'],
+        ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,

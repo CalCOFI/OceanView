@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/me/me_observation.dart';
 import 'package:ocean_view/services/database.dart';
+import 'package:ocean_view/shared/constants.dart';
 import 'package:provider/provider.dart';
 
 import 'observation_list.dart';
@@ -23,13 +24,16 @@ class MePage extends StatelessWidget {
       value: DatabaseService(uid: user!.uid).meObs,
       initialData: null,
       child: Scaffold(
-        backgroundColor: Colors.brown[50],
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text('Me Page: ${user.uid.substring(0,5)}'),
           centerTitle: true,
-          backgroundColor: Colors.brown[400],
+          backgroundColor: themeMap['scaffold_appBar_color'],
           elevation: 0.0,
-          
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         //Run ObservationList() from observation_list.dart
         body: ObservationList(),

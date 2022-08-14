@@ -84,7 +84,11 @@ class MeObservation extends StatelessWidget {
       appBar: AppBar(
         title: Text('Details'),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: themeMap['scaffold_appBar_color'],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: <Widget>[
           TextButton(
             child: Text(

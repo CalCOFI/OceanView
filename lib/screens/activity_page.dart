@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/services/auth.dart';
+import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/src/mpa.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -23,7 +24,7 @@ class _ActivityPageState extends State<ActivityPage> {
       appBar: AppBar(
           title: Text('OceanView'),
           centerTitle: true,
-          backgroundColor: Colors.lightBlueAccent,
+          backgroundColor: themeMap['scaffold_appBar_color'],
           elevation: 0.0,
           actions: <Widget>[
             TextButton.icon(
