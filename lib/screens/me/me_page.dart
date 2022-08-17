@@ -30,10 +30,6 @@ class MePage extends StatelessWidget {
           centerTitle: true,
           backgroundColor: themeMap['scaffold_appBar_color'],
           elevation: 0.0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
         ),
         //Run ObservationList() from observation_list.dart
         body: ObservationList(),
