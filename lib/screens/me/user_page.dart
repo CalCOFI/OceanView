@@ -4,7 +4,7 @@ import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:provider/provider.dart';
 
-import 'package:ocean_view/screens/profile.dart';
+import 'package:ocean_view/screens/profile_page.dart';
 
 /*
   A wrapper widget fetching user's observations from Firebase
