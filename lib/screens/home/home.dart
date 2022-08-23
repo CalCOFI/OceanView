@@ -4,7 +4,7 @@ import 'package:ocean_view/screens/map/map_page.dart';
 import 'package:ocean_view/screens/upload/upload_page.dart';
 import 'package:ocean_view/screens/activity_page.dart';
 import 'package:ocean_view/screens/me/me_page.dart';
-import 'package:ocean_view/screens/me/profile_page.dart';
+import 'package:ocean_view/screens/me/user_page.dart';
 import 'package:ocean_view/shared/constants.dart';
 
 /*

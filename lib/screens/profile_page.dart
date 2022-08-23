@@ -40,6 +40,8 @@ class _sharingFormState extends State<sharingForm> {
 
   @override
   Widget build(BuildContext context) {
+    String helpText =
+        'If you choose to share your observations with the rest of the OceanView community, your observations will be included in the statistics that other app users can see.  You will also be able to view statistics compiled from observations submitted by other users who have chosen to share.  Your personal information will not be shared. \n\n If you choose not to share your observations, you will not have access to the statistics feature in the app.\n\n Changes to the share setting are not retroactive.  Previously stored observations will retain the setting they were originally saved with.';
     final thisUser = FirebaseAuth.instance.currentUser;
     return StreamBuilder<UserStats>(
         stream: DatabaseService(uid: thisUser?.uid as String).meStats,
@@ -66,18 +68,42 @@ class _sharingFormState extends State<sharingForm> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(50, 1, 50, 1),
-                  child: DropdownButtonFormField(
-                    value: _currentSelection ??
-                        (newStats?.share == 'Y' ? 'Yes' : 'No'),
-                    items: sharing.map((sharesel) {
-                      return DropdownMenuItem(
-                        value: sharesel,
-                        child: Text('$sharesel'),
-                      );
-                    }).toList(),
-                    onChanged: (val) => setState(() => _currentSelection =
-                        val != null ? val as String : 'Yes'),
+                  padding: EdgeInsets.fromLTRB(20, 1, 50, 1),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Share: ',
+                        style: TextStyle(color: Colors.blue, fontSize: 20),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: DropdownButtonFormField(
+                          value: _currentSelection ??
+                              (newStats?.share == 'Y' ? 'Yes' : 'No'),
+                          items: sharing.map((sharesel) {
+                            return DropdownMenuItem(
+                              value: sharesel,
+                              child: Text('$sharesel'),
+                            );
+                          }).toList(),
+                          onChanged: (val) => setState(() => _currentSelection =
+                              val != null ? val as String : 'Yes'),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Sharing your observations'),
+                                content: Text(helpText),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.help_outline))
+                    ],
                   ),
                 ),
                 ElevatedButton(
@@ -122,8 +148,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget build(BuildContext context) {
-    String helpText =
-        'If you choose to share your observations with the rest of the OceanView community, your observations will be included in the statistics that other app users can see.  You will also be able to view statistics compiled from observations submitted by other users who have chosen to share.  Your personal information will not be shared. \n\n If you choose not to share your observations, you will not have access to the statistics feature in the app.\n\n Changes to the share setting are not retroactive.  Previously stored observations will retain the setting they were originally saved with.';
     void _showSharingPanel() {
       showModalBottomSheet(
           context: context,
@@ -138,20 +162,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: 30,
                   ),
                   Text(
-                    'Share observations with community?',
-                    style: TextStyle(color: Colors.blue, fontSize: 20),
+                    'Update Profile Details',
+                    style: TextStyle(color: Colors.black, fontSize: 20),
                   ),
-                  IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Sharing your observations'),
-                            content: Text(helpText),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.help_outline))
                 ],
               ),
               sharingForm()
