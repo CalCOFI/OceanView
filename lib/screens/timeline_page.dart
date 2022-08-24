@@ -4,10 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/screens/me/me_observation.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/screens/observation_page.dart';
 import 'package:provider/provider.dart';
+
+import '../shared/constants.dart';
 
 /*
   A page to show all the observations and their recording time in current recording session
@@ -15,18 +18,21 @@ import 'package:provider/provider.dart';
   Upload button batched writes all the observations to Firebase.
  */
 
-class UploadTimeline extends StatefulWidget {
+class TimelinePage extends StatefulWidget {
 
   final List<Observation> observationList;
   final List<Image> imageList;
+  final String mode;    // 'session' or 'me'
 
-  UploadTimeline({required this.observationList, required this.imageList});
+  TimelinePage({
+    required this.observationList, required this.imageList, required this.mode
+  });
 
   @override
-  _UploadTimelineState createState() => _UploadTimelineState();
+  _TimelinePageState createState() => _TimelinePageState();
 }
 
-class _UploadTimelineState extends State<UploadTimeline> {
+class _TimelinePageState extends State<TimelinePage> {
 
   List<dynamic> result = [];  // observation and image
 
@@ -54,36 +60,43 @@ class _UploadTimelineState extends State<UploadTimeline> {
       appBar: AppBar(
         title: Text('Timeline'),
         centerTitle: true,
-        actions: <Widget>[
-          TextButton.icon(
-            style: TextButton.styleFrom(
-              primary: Colors.white
+        backgroundColor: themeMap['scaffold_appBar_color'],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions:
+          (widget.mode == 'session')
+          ? <Widget>[
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                primary: Colors.white
+              ),
+              icon: Icon(Icons.upload_sharp),
+              label: Text('Upload'),
+              onPressed: () async {
+                print('Upload');
+
+                // Batched write all the observations to Firebase
+                List<TaskState> states = await DatabaseService(uid: user!.uid)
+                  .batchedWriteObservations(widget.observationList);
+
+                String snackBarText = 'Upload:';
+                for (int i=0; i<states.length; i++) {
+                  snackBarText += ' $i,';
+                }
+
+                final snackBar = SnackBar(content: Text(snackBarText));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                // Delete images in local directory
+
+                // pop to the main page
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
             ),
-            icon: Icon(Icons.upload_sharp),
-            label: Text('Upload'),
-            onPressed: () async {
-              print('Upload');
-
-              // Batched write all the observations to Firebase
-              List<TaskState> states = await DatabaseService(uid: user!.uid)
-                .batchedWriteObservations(widget.observationList);
-
-              String snackBarText = 'Upload:';
-              for (int i=0; i<states.length; i++) {
-                snackBarText += ' $i,';
-              }
-
-              final snackBar = SnackBar(content: Text(snackBarText));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-              // Delete images in local directory
-
-              // pop to the main page
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-          ),
-        ],
-        automaticallyImplyLeading: false,
+          ]
+        : null,
       ),
       body:
         ListView.builder(
@@ -126,14 +139,35 @@ class _UploadTimelineState extends State<UploadTimeline> {
                             File imageFile = await LocalStoreService().loadImage('$i.png');
                             print('$imageFile');
 
+                            print('Mode: ${widget.mode}');
                             // Modify the observation
-                            result = await Navigator.push(
-                                context, MaterialPageRoute(
-                                builder: (context) =>
-                                    ObservationPage(file: imageFile, mode:'session',
-                                        observation: widget.observationList[i], index: i)
-                              )
-                            );
+                            result = (widget.mode == 'session')
+                                ? await Navigator.push(
+                                    context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          ObservationPage(
+                                              file: imageFile,
+                                              mode:widget.mode,
+                                              observation: widget.observationList[i],
+                                              index: i
+                                          )
+                                    )
+                                )
+                                : await Navigator.push(
+                                    context, MaterialPageRoute(
+                                      builder: (context) =>
+                                        MeObservation(
+                                          observation: widget.observationList[i]
+                                        )
+                                    )
+                                );
+
+                            // Remove observation if it is deleted
+                            setState(() {
+                              if (result[0] is String && result[0] == 'Delete'){
+                                widget.observationList.removeAt(i);
+                              }
+                            });
                           },
                           child: widget.imageList[i],
                         ),

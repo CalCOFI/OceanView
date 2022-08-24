@@ -75,6 +75,7 @@ Map<String, List<Image>> MPA_type_icon = {
 String STATUS = 'Observe';
 String CONFIDENTIALITY = 'Share with community';
 int CONFIDENCE = 2;
+String STOPWATCHSTART = 'None';
 Map<int,String> CONFIDENCE_MAP = {
   1: 'Low',
   2: 'Medium',
@@ -84,4 +85,10 @@ Map<int,String> CONFIDENCE_MAP = {
 Map<String, String> descriptionMap = {
   'length': 'longer',
   'weight': 'heavier'
+};
+
+// Theme for all pages
+Map<String, Color> themeMap = {
+  'scaffold_appBar_color': Colors.lightBlueAccent,
+  'elevated_button_color': Colors.lightBlueAccent,
 };

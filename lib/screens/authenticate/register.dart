@@ -30,15 +30,17 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return loading ? Loading() : Scaffold(
-        backgroundColor: Colors.brown[100],
         appBar: AppBar(
-          backgroundColor: Colors.brown[400],
+          backgroundColor: themeMap['scaffold_appBar_color'],
           elevation: 0.0,
           title: Text('Sign up to OceanView'),
           actions: <Widget>[
             TextButton.icon(
               icon: Icon(Icons.person),
               label: Text('Sign in'),
+              style: TextButton.styleFrom(
+                primary: Colors.white
+              ),
               onPressed: () {
                 widget.toggleView();
               },
@@ -72,7 +74,7 @@ class _RegisterState extends State<Register> {
                       ElevatedButton(
                         child: Text('Register'),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.pink[400],
+                          primary: themeMap['elevated_button_color'],
                           textStyle: TextStyle(color: Colors.white),
                         ),
                         onPressed: () async {

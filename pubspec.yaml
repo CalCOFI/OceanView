@@ -73,6 +73,9 @@ dependencies:
   # Histogram
   charts_flutter: ^0.12.0
 
+  # Imagestack in MePage
+  image_stack: ^2.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

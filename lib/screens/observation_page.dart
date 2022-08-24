@@ -52,12 +52,13 @@ class ObservationPage extends StatefulWidget {
   Observation? observation;
   PhotoMeta? photoMeta;
   int? index; // Index for observation in session
-  ObservationPage(
-      {required this.file,
-        required this.mode,
-        this.observation,
-        this.photoMeta,
-        this.index});
+  ObservationPage({
+    required this.file,
+    required this.mode,
+    this.observation,
+    this.photoMeta,
+    this.index
+  });
 
   @override
   _ObservationPageState createState() => _ObservationPageState();
@@ -104,7 +105,6 @@ class _ObservationPageState extends State<ObservationPage> {
     this._latinNameController = (this.observation!.latinName!=null)
         ? TextEditingController(text: this.observation!.latinName)
         : TextEditingController(text: '');
-    this.mode = mode;
     this.observation = (observation != null) ? observation : Observation();
     try {
       switch (this.mode) {
@@ -135,7 +135,7 @@ class _ObservationPageState extends State<ObservationPage> {
 
     // Only load meta data when adding observation
     if (this.mode == 'single' || this.mode == 'session') {
-      if (widget.photoMeta!.time == 0) {
+      if (widget.photoMeta==null || widget.photoMeta!.time == 0) {
         selectedDate = DateTime.now();
         this.observation!.time = selectedDate;
       } else {
@@ -143,7 +143,7 @@ class _ObservationPageState extends State<ObservationPage> {
         this.observation!.time = selectedDate;
       }
 
-      if (widget.photoMeta!.location == 0) {
+      if (widget.photoMeta==null || widget.photoMeta!.location == 0) {
         this.observation!.location = LatLng(0, 0);
       } else {
         this.observation!.location = widget.photoMeta!.location.getLatLng();
@@ -198,6 +198,10 @@ class _ObservationPageState extends State<ObservationPage> {
       appBar: AppBar(
         title: Text('Observation'),
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
