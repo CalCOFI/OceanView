@@ -6,10 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/observation_stream.dart';
 import 'package:ocean_view/screens/upload/upload_stopwatch.dart';
-import 'package:ocean_view/screens/upload/upload_timeline.dart';
+//import 'package:ocean_view/screens/upload/upload_timeline.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
+import 'package:ocean_view/screens/timeline_page.dart';
 import 'package:ocean_view/src/extract_exif.dart';
+
+import '../../shared/constants.dart';
 
 /*
   Root page for record session
@@ -52,8 +55,10 @@ class _UploadSessionState extends State<UploadSession> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => UploadTimeline(
-                observationList: observationList, imageList: imageList)));
+            builder: (context) => TimelinePage(
+                observationList: observationList,
+                imageList: imageList,
+                mode: 'session')));
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -71,9 +76,13 @@ class _UploadSessionState extends State<UploadSession> {
       appBar: AppBar(
         title: Text('Recording Session'),
         elevation: 0.0,
-        backgroundColor: topBarColor,
+        //backgroundColor: topBarColor,
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        backgroundColor: themeMap['scaffold_appBar_color'],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Container(
         decoration: blueBoxDecoration,

@@ -24,7 +24,7 @@ class _ActivityPageState extends State<ActivityPage> {
       appBar: AppBar(
           title: Text('OceanView'),
           centerTitle: true,
-          backgroundColor: topBarColor, //Colors.lightBlueAccent,
+          backgroundColor: themeMap['scaffold_appBar_color'],
           elevation: 0.0,
           actions: <Widget>[
             TextButton.icon(
