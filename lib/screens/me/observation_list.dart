@@ -80,7 +80,7 @@ class _ObservationListState extends State<ObservationList> {
             ),
           ))
         : Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.fromLTRB(10, 45, 10, 10),
             child: CustomScrollView(
               slivers: [
                 SliverAppBar(title: Text('Single Observation')),
@@ -115,7 +115,8 @@ class _ObservationListState extends State<ObservationList> {
                                   decoration: BoxDecoration(
                                       image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(listSingleObs[index].url!),
+                                image: NetworkImage(listSingleObs[index].url!,
+                                    scale: 0.7),
                               )))));
                     },
                     childCount: listSingleObs.length,

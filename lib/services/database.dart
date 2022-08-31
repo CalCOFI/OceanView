@@ -168,29 +168,31 @@ class DatabaseService {
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
+      dynamic thisdoc = doc.data();
       return Observation(
         documentID: doc.id,
-        uid: doc.data()['uid'],
-        name: doc.data()['name'],
-        latinName: doc.data()['latinName'] ?? 'Unknown',
-        length: doc.data()['length'],
-        weight: doc.data()['weight'],
-        time: (doc.data()['time'] != null)
+        uid: thisdoc['uid'],
+        name: thisdoc['name'],
+        latinName: thisdoc['latinName'] ?? 'Unknown',
+        length: thisdoc['length'],
+        weight: thisdoc['weight'],
+        time: (thisdoc['time'] != null)
             ? DateTime.fromMillisecondsSinceEpoch(
-                doc.data()['time'].seconds * 1000)
+                thisdoc['time'].seconds * 1000)
             : 'None',
-        location: (doc.data()['location'] != null)
-            ? LatLng(doc.data()['location'].latitude,
-                doc.data()['location'].longitude)
+        location: (thisdoc['location'] != null)
+            ? LatLng(
+                thisdoc['location'].latitude, thisdoc['location'].longitude)
             : LatLng(0, 0),
-        status: doc.data()['status'] ?? STATUS,
-        confidentiality: doc.data()['confidentiality'] ?? CONFIDENTIALITY,
-        confidence: doc.data()['confidence'] ?? CONFIDENCE,
-        url: doc.data()['url'],
+        status: thisdoc['status'] ?? STATUS,
+        confidentiality: thisdoc['confidentiality'] ?? CONFIDENTIALITY,
+        confidence: thisdoc['confidence'] ?? CONFIDENCE,
+        url: thisdoc['url'],
         // stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
-        stopwatchStart: (doc.data()['stopwatchStart'] != null)
+        stopwatchStart: ((thisdoc['stopwatchStart'] != null) &&
+                (thisdoc['stopwatchStart'] != 'None'))
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.data()['stopwatchStart'].seconds * 1000)
+                thisdoc['stopwatchStart'].seconds * 1000)
             : STOPWATCHSTART,
       );
     }).toList();

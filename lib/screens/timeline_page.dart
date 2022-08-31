@@ -95,44 +95,44 @@ class _TimelinePageState extends State<TimelinePage> {
               ]
             : null,
       ),
-      body: Expanded(
-        child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: widget.observationList.length,
-            itemBuilder: (context, i) {
-              return Stack(children: [
-                Positioned(
-                  // Line
-                  left: 49,
-                  child: new Container(
-                    height: size.height * 0.4,
-                    width: 1.0,
-                    color: Colors.grey.shade400,
-                  ),
+      body: ListView.builder(
+          shrinkWrap: true,
+          itemCount: widget.observationList.length,
+          itemBuilder: (context, i) {
+            return Stack(children: [
+              Positioned(
+                // Line
+                left: 49,
+                child: new Container(
+                  height: size.height * 0.4,
+                  width: 1.0,
+                  color: Colors.grey.shade400,
                 ),
-                Padding(
-                  // Padding 2
-                  padding: EdgeInsets.all(40),
-                  child: Row(// Row 2
-                      children: [
-                    Container(
-                      // Dot
-                      height: 20,
-                      width: 20,
-                      decoration: new BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(40),
+                child: Row(children: [
+                  Container(
+                    // Dot
+                    height: 20,
+                    width: 20,
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    SizedBox(width: size.width * 0.1),
-                    SizedBox(
-                      child: Text(_getStringOfDuration(
-                          (widget.observationList[i].time.difference(
-                              widget.observationList[i].stopwatchStart)))),
-                      width: size.width * 0.2,
-                    ),
-                    Expanded(
-                      child: GestureDetector(
+                  ),
+                  SizedBox(width: size.width * 0.01),
+                  SizedBox(
+                    child: Text(_getStringOfDuration(
+                        (widget.observationList[i].time.difference(
+                            widget.observationList[i].stopwatchStart)))),
+                    width: size.width * 0.15,
+                  ),
+                  Flex(
+                    direction: Axis.horizontal,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      GestureDetector(
                         onTap: () async {
                           // Load image file in local storage
                           File imageFile =
@@ -167,32 +167,36 @@ class _TimelinePageState extends State<TimelinePage> {
                         },
                         child: widget.imageList[i],
                       ),
-                    ),
-                    Padding(
-                        // Padding 1
-                        padding: EdgeInsets.all(40),
-                        child: Row(
-                          //Row 1
-                          children: [
-                            Container(
-                              // Dot
-                              height: 20,
-                              width: 20,
-                              decoration: new BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
+                    ],
+                  ),
+                  Padding(
+                      // Padding 1
+                      padding: EdgeInsets.all(40),
+                      child: Row(
+                        //Row 1
+                        children: [
+                          Container(
+                            // Dot
+                            height: 20,
+                            width: 20,
+                            decoration: new BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            SizedBox(width: size.width * 0.1),
-                            SizedBox(
-                              child: Text(_getStringOfDuration((widget
-                                  .observationList[i].time
-                                  .difference(widget
-                                      .observationList[i].stopwatchStart)))),
-                              width: size.width * 0.2,
-                            ),
-                            Expanded(
-                              child: GestureDetector(
+                          ),
+                          SizedBox(width: size.width * 0.01),
+                          SizedBox(
+                            child: Text(_getStringOfDuration((widget
+                                .observationList[i].time
+                                .difference(widget
+                                    .observationList[i].stopwatchStart)))),
+                            width: size.width * 0.1,
+                          ),
+                          Flex(
+                            direction: Axis.horizontal,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              GestureDetector(
                                 onTap: () async {
                                   // Load image file in local storage
                                   File imageFile = await LocalStoreService()
@@ -212,15 +216,15 @@ class _TimelinePageState extends State<TimelinePage> {
                                 },
                                 child: widget.imageList[i],
                               ),
-                            ),
-                          ],
-                        ))
-                  ]),
-                ),
-              ]);
-            } // End of ItemBuilder
-            ),
-      ),
+                            ],
+                          ),
+                        ],
+                      ))
+                ]),
+              ),
+            ]);
+          } // End of ItemBuilder
+          ),
     );
   }
 }
