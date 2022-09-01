@@ -178,6 +178,10 @@ class _ProfilePageState extends State<ProfilePage> {
     String? u_date = currentUser == null
         ? ''
         : currentUser?.metadata.creationTime.toString();
+    if (currentUser != null){
+      // Reload for updating verified state
+      currentUser!.reload();
+    }
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -204,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Expanded(
                         child: Text(
-                          uStats.name as String,
+                          (uStats.name==null)? 'None': uStats.name as String,
                           style: TextStyle(
                               color: Colors.green,
                               fontSize: 18,

@@ -104,13 +104,6 @@ class _RegisterState extends State<Register> {
                                       error = 'Please apply your valid email';
                                       loading = false;
                                     });
-                                  } else {
-                                    print('GOING TO VERIFY SCREEN');
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => VerifyScreen()),
-                                    );
                                   }
                                 }
                               },
