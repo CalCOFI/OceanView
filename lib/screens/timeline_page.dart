@@ -128,11 +128,8 @@ class _TimelinePageState extends State<TimelinePage> {
                             widget.observationList[i].stopwatchStart)))),
                     width: size.width * 0.15,
                   ),
-                  Flex(
-                    direction: Axis.horizontal,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      GestureDetector(
+                  Expanded(
+                    child: GestureDetector(
                         onTap: () async {
                           // Load image file in local storage
                           File imageFile =
@@ -167,59 +164,7 @@ class _TimelinePageState extends State<TimelinePage> {
                         },
                         child: widget.imageList[i],
                       ),
-                    ],
                   ),
-                  Padding(
-                      // Padding 1
-                      padding: EdgeInsets.all(40),
-                      child: Row(
-                        //Row 1
-                        children: [
-                          Container(
-                            // Dot
-                            height: 20,
-                            width: 20,
-                            decoration: new BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          SizedBox(width: size.width * 0.01),
-                          SizedBox(
-                            child: Text(_getStringOfDuration((widget
-                                .observationList[i].time
-                                .difference(widget
-                                    .observationList[i].stopwatchStart)))),
-                            width: size.width * 0.1,
-                          ),
-                          Flex(
-                            direction: Axis.horizontal,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              GestureDetector(
-                                onTap: () async {
-                                  // Load image file in local storage
-                                  File imageFile = await LocalStoreService()
-                                      .loadImage('$i.png');
-                                  print('$imageFile');
-
-                                  // Modify the observation
-                                  result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ObservationPage(
-                                              file: imageFile,
-                                              mode: 'session',
-                                              observation:
-                                                  widget.observationList[i],
-                                              index: i)));
-                                },
-                                child: widget.imageList[i],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ))
                 ]),
               ),
             ]);

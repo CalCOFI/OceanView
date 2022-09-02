@@ -6,6 +6,7 @@ import 'package:ocean_view/screens/authenticate/verify.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/shared/loading.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:ocean_view/services/database.dart';
 
@@ -173,7 +174,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     final uStats = Provider.of<UserStats>(context);
-    UserStats user = uStats;
     String? u_email = currentUser == null ? '' : currentUser?.email;
     String? u_date = currentUser == null
         ? ''
@@ -204,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Expanded(
                         child: Text(
-                          uStats.name as String,
+                          uStats.name ?? '',
                           style: TextStyle(
                               color: Colors.green,
                               fontSize: 18,
@@ -276,25 +276,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
                   child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
                         'Sharing: ',
                         style: TextStyle(color: Colors.blue, fontSize: 20),
                       ),
                       Text(
-                        user.share == null
+                        uStats.share == null
                             ? 'Nothing yet'
-                            : user.share as String,
+                            : uStats.share as String,
                         style: TextStyle(
                             color: Colors.green,
                             fontSize: 18,
                             fontWeight: FontWeight.bold),
                       ),
-                      //IconButton(
-                      //    onPressed: () => _showSharingPanel(),
-                      //    iconSize: 20,
-                      //    icon: Icon(Icons.edit)),
                     ],
                   ),
                 ),
@@ -307,7 +302,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(color: Colors.blue, fontSize: 20),
                       ),
                       Text(
-                        user.numobs == null ? '0' : user.numobs.toString(),
+                        uStats.numobs == null ? '0' : uStats.numobs.toString(),
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 18,
@@ -325,16 +320,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       ElevatedButton(
                           onPressed: () => _showSharingPanel(),
-                          // {
-                          //  nameEnabled = false;
-                          //  print('Saving...');
-                          //  currentUser?.updateDisplayName(_pnameController.text);
-                          //  user.uid = currentUser?.uid;
-                          //  user.name = _pnameController.text;
-                          //  user.email = currentUser?.email;
-                          //  DatabaseService(uid: currentUser!.uid)
-                          //      .updateUserStats(user);
-                          //},
                           child: Text('Update Profile')),
                     ],
                   ),
