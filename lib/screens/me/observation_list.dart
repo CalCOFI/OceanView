@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ocean_view/screens/upload/timeline_stream.dart';
 
 import 'package:provider/provider.dart';
 import 'package:image_stack/image_stack.dart';
@@ -159,10 +160,11 @@ class _ObservationListState extends State<ObservationList> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => TimelinePage(
-                                                observationList: collection,
-                                                imageList: images,
-                                                mode: 'me')));
+                                            builder: (context) =>
+                                                TimelineStream(
+                                                    observationList: collection,
+                                                    imageList: images,
+                                                    mode: 'me')));
                                   },
                                   //Image Widget which displays the image
                                   child: ImageStack(

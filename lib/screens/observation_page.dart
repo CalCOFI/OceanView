@@ -153,9 +153,9 @@ class _ObservationPageState extends State<ObservationPage> {
       }
     } else {
       selectedDate = this.observation!.time;
-      _confidence = this.observation!.confidence!;
-      _statusValue = this.observation!.status!;
-      _confidentialityValue = this.observation!.confidentiality!;
+      _confidence = this.observation!.confidence as int;
+      _statusValue = this.observation!.status as String;
+      _confidentialityValue = this.observation!.confidentiality as String;
     }
   }
 

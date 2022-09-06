@@ -5,6 +5,7 @@ import 'package:ocean_view/models/observation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocean_view/screens/observation_stream.dart';
+import 'package:ocean_view/screens/upload/timeline_stream.dart';
 import 'package:ocean_view/screens/upload/upload_stopwatch.dart';
 //import 'package:ocean_view/screens/upload/upload_timeline.dart';
 import 'package:ocean_view/shared/constants.dart';
@@ -55,7 +56,7 @@ class _UploadSessionState extends State<UploadSession> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => TimelinePage(
+            builder: (context) => TimelineStream(
                 observationList: observationList,
                 imageList: imageList,
                 mode: 'session')));

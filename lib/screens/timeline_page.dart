@@ -5,11 +5,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/me/me_observation.dart';
+import 'package:ocean_view/screens/observation_stream.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/screens/observation_page.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
+import 'package:ocean_view/models/userstats.dart';
 import 'package:provider/provider.dart';
 
 import '../shared/constants.dart';
@@ -45,7 +47,7 @@ class _TimelinePageState extends State<TimelinePage> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-
+    final userSt = Provider.of<UserStats>(context);
     // Screen size
     Size size = MediaQuery.of(context).size;
 
@@ -82,7 +84,9 @@ class _TimelinePageState extends State<TimelinePage> {
                     for (int i = 0; i < states.length; i++) {
                       snackBarText += ' $i,';
                     }
-
+                    userSt.numobs = userSt.numobs! + states.length;
+                    await DatabaseService(uid: user.uid)
+                        .updateUserStats(userSt);
                     final snackBar = SnackBar(content: Text(snackBarText));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
@@ -130,40 +134,39 @@ class _TimelinePageState extends State<TimelinePage> {
                   ),
                   Expanded(
                     child: GestureDetector(
-                        onTap: () async {
-                          // Load image file in local storage
-                          File imageFile =
-                              await LocalStoreService().loadImage('$i.png');
-                          print('$imageFile');
+                      onTap: () async {
+                        // Load image file in local storage
+                        File imageFile =
+                            await LocalStoreService().loadImage('$i.png');
+                        print('$imageFile');
 
-                          print('Mode: ${widget.mode}');
-                          // Modify the observation
-                          result = (widget.mode == 'session')
-                              ? await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ObservationPage(
-                                          file: imageFile,
-                                          mode: widget.mode,
-                                          observation:
-                                              widget.observationList[i],
-                                          index: i)))
-                              : await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MeObservation(
-                                          observation:
-                                              widget.observationList[i])));
+                        print('Mode: ${widget.mode}');
+                        // Modify the observation
+                        result = (widget.mode == 'session')
+                            ? await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ObservationStream(
+                                        file: imageFile,
+                                        mode: widget.mode,
+                                        observation: widget.observationList[i],
+                                        index: i)))
+                            : await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MeObservation(
+                                        observation:
+                                            widget.observationList[i])));
 
-                          // Remove observation if it is deleted
-                          setState(() {
-                            if (result[0] is String && result[0] == 'Delete') {
-                              widget.observationList.removeAt(i);
-                            }
-                          });
-                        },
-                        child: widget.imageList[i],
-                      ),
+                        // Remove observation if it is deleted
+                        setState(() {
+                          if (result[0] is String && result[0] == 'Delete') {
+                            widget.observationList.removeAt(i);
+                          }
+                        });
+                      },
+                      child: widget.imageList[i],
+                    ),
                   ),
                 ]),
               ),

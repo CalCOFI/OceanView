@@ -6,7 +6,6 @@ import 'package:ocean_view/screens/authenticate/verify.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/shared/loading.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:ocean_view/services/database.dart';
 
@@ -28,8 +27,9 @@ class _sharingFormState extends State<sharingForm> {
   @override
   void initState() {
     super.initState();
-    this.thisUser = thisUser;
-    this._pnameController = TextEditingController(text: thisUser?.displayName);
+    this.thisUser = widget.thisUser;
+    this._pnameController =
+        new TextEditingController(text: thisUser?.displayName);
   }
 
   @override
@@ -116,8 +116,9 @@ class _sharingFormState extends State<sharingForm> {
                       print(_currentSelection);
                       newStats?.share = _currentSelection == 'Yes' ? 'Y' : 'N';
                       newStats?.name = _pnameController.text;
-                      DatabaseService(uid: newStats?.uid as String)
+                      await DatabaseService(uid: newStats?.uid as String)
                           .updateUserStats(newStats as UserStats);
+                      await thisUser?.updateDisplayName(newStats.name);
                     }),
               ]),
             );
@@ -168,7 +169,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
-              sharingForm()
+              sharingForm(
+                thisUser: currentUser,
+              )
             ]);
           });
     }

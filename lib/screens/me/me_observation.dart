@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/screens/me/me_statistics.dart';
+import 'package:ocean_view/screens/observation_stream.dart';
 import 'package:ocean_view/services/database.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
@@ -108,7 +109,7 @@ class MeObservation extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ObservationPage(
+                            builder: (context) => ObservationStream(
                                   file: _imageFile,
                                   mode: 'me',
                                   observation: observation,
