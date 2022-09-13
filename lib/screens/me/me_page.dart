@@ -17,7 +17,8 @@ class MePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User?>(context);
+    final user =
+        FirebaseAuth.instance.currentUser; //Provider.of<User?>(context);
     return StreamProvider<List<Observation>?>.value(
       value: DatabaseService(uid: user!.uid).meObs,
       initialData: null,

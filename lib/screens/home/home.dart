@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),
-            label: 'Activity',
+            label: 'Welcome',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
