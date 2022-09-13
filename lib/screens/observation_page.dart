@@ -571,8 +571,13 @@ class _ObservationPageState extends State<ObservationPage> {
                               throw ('This file is not an image');
                             }
 
-                            // Back to previous page
-                            Navigator.pop(context);
+                            // Back to two previous pages
+                            // Since previous page won't update the information,
+                            // second previous page would fetch new observation
+                            // from cloud and get updated information
+                            int count = 0;
+                            Navigator.of(context).popUntil((_) => count++ >= 2);
+                            // Navigator.pop(context);
                           }
                         }),
                   ],

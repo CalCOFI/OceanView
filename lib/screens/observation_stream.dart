@@ -40,6 +40,7 @@ class ObservationStream extends StatelessWidget {
         body: ObservationPage(
           file: file,
           mode: this.mode,
+          observation: observation,
           photoMeta: photoMeta,
           index: index,
         ),
