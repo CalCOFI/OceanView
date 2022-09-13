@@ -158,9 +158,11 @@ class _TimelinePageState extends State<TimelinePage> {
                                         observation:
                                             widget.observationList[i])));
 
+                        print('result: $result');
                         // Remove observation if it is deleted
                         setState(() {
-                          if (result[0] is String && result[0] == 'Delete') {
+                          if (result != null &&
+                              result[0] is String && result[0] == 'Delete') {
                             widget.observationList.removeAt(i);
                           }
                         });
