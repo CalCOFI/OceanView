@@ -11,7 +11,9 @@ import 'package:ocean_view/services/database.dart';
 
 class sharingForm extends StatefulWidget {
   User? thisUser;
-  sharingForm({Key? key, this.thisUser}) : super(key: key);
+  Function updateAppBar;
+  sharingForm({Key? key, this.thisUser, required this.updateAppBar})
+      : super(key: key);
   @override
   _sharingFormState createState() => _sharingFormState();
 }
@@ -119,6 +121,8 @@ class _sharingFormState extends State<sharingForm> {
                       await DatabaseService(uid: newStats?.uid as String)
                           .updateUserStats(newStats as UserStats);
                       await thisUser?.updateDisplayName(newStats.name);
+                      widget.updateAppBar();
+                      Navigator.pop(context);
                     }),
               ]),
             );
@@ -143,14 +147,24 @@ class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController _pnameController;
   bool nameEnabled = false;
   User? currentUser = FirebaseAuth.instance.currentUser;
+  String? AppBarName = FirebaseAuth.instance.currentUser!.displayName;
+  void updateAppBar() {
+    setState(() {
+      print('Updating App Bar');
+      AppBarName = FirebaseAuth.instance.currentUser!.displayName;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     this.currentUser = currentUser;
+    this.AppBarName = AppBarName;
   }
 
   Widget build(BuildContext context) {
-    void _showSharingPanel() {
+    void _showSharingPanel(updateAppBar) {
+      Function updateAppBar;
       showModalBottomSheet(
           context: context,
           builder: (context) {
@@ -171,6 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               sharingForm(
                 thisUser: currentUser,
+                updateAppBar: this.updateAppBar,
               )
             ]);
           });
@@ -181,10 +196,11 @@ class _ProfilePageState extends State<ProfilePage> {
     String? u_date = currentUser == null
         ? ''
         : currentUser?.metadata.creationTime.toString();
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text('Profile Page: ${currentUser!.displayName}'),
+          title: Text('Profile Page: ${AppBarName}'),
           centerTitle: true,
           backgroundColor: topBarColor,
           elevation: 0.0,
@@ -198,7 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
               CustomPainterWidgets.buildTopShape(),
               Column(children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(20, 50, 10, 10),
+                  padding: EdgeInsets.fromLTRB(20, 40, 10, 10),
                   child: Row(
                     children: [
                       Text(
@@ -322,7 +338,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Row(
                     children: [
                       ElevatedButton(
-                          onPressed: () => _showSharingPanel(),
+                          onPressed: () => _showSharingPanel(updateAppBar),
                           child: Text('Update Profile')),
                     ],
                   ),
