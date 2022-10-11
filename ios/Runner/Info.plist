@@ -24,10 +24,6 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Get access to camera</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Required for Flutter Geofencing example events.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Required for Flutter Geofencing example events.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Get access to microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
