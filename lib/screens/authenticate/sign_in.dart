@@ -1,3 +1,4 @@
+import 'package:ocean_view/screens/authenticate/verify.dart';
 import 'package:ocean_view/services/auth.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
@@ -89,7 +90,7 @@ class _SignInState extends State<SignIn> {
                             ElevatedButton(
                               child: Text('Sign in'),
                               style: ElevatedButton.styleFrom(
-                                primary: topBarColor,
+                                backgroundColor: topBarColor,
                                 textStyle: TextStyle(color: Colors.white),
                               ),
                               onPressed: () async {

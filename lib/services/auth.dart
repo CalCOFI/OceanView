@@ -19,13 +19,14 @@ class AuthService {
   // create user stats object based on signed-in user
   UserStats? _userFromFirebaseUser(User? user) {
     return user != null
-        ? UserStats(
-            uid: user.uid,
-            email: user.email,
-            name: user.displayName,
-            share: ' ',
-            numobs: 0)
-        : null;
+      ? UserStats(
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          share: ' ',
+          numobs: 0
+        )
+      : null;
   }
 
   // auth change user screen
@@ -49,7 +50,6 @@ class AuthService {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      //return result.user;
       return _userFromFirebaseUser(result.user);
     } catch (e) {
       print(e.toString());
@@ -97,5 +97,11 @@ class AuthService {
       print(e.toString());
       return null;
     }
+  }
+
+  // reload user information
+  Future reload() async {
+    await currentUser?.reload();
+    currentUser = _auth.currentUser;
   }
 }

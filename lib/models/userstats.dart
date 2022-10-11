@@ -10,10 +10,13 @@ class UserStats with ChangeNotifier {
   int? numobs;
 
   UserStats(
-      {this.documentID,
+    {
+      this.documentID,
       this.uid,
       this.name,
       this.email,
       this.share,
-      this.numobs});
+      this.numobs,
+    }
+  );
 }
