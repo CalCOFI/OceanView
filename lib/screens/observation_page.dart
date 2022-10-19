@@ -107,7 +107,6 @@ class _ObservationPageState extends State<ObservationPage> {
     this._latinNameController = (this.observation!.latinName != null)
         ? TextEditingController(text: this.observation!.latinName)
         : TextEditingController(text: '');
-    this.mode = mode;
     this.observation = (observation != null) ? observation : Observation();
     this.uStats = (uStats != null) ? uStats : UserStats();
     try {
@@ -139,7 +138,7 @@ class _ObservationPageState extends State<ObservationPage> {
 
     // Only load meta data when adding observation
     if (this.mode == 'single' || this.mode == 'session') {
-      if (widget.photoMeta!.time == 0) {
+      if (widget.photoMeta == null || widget.photoMeta!.time == 0) {
         selectedDate = DateTime.now();
         this.observation!.time = selectedDate;
       } else {
@@ -147,16 +146,16 @@ class _ObservationPageState extends State<ObservationPage> {
         this.observation!.time = selectedDate;
       }
 
-      if (widget.photoMeta!.location == 0) {
+      if (widget.photoMeta == null || widget.photoMeta!.location == 0) {
         this.observation!.location = LatLng(0, 0);
       } else {
         this.observation!.location = widget.photoMeta!.location.getLatLng();
       }
     } else {
       selectedDate = this.observation!.time;
-      _confidence = this.observation!.confidence!;
-      _statusValue = this.observation!.status!;
-      _confidentialityValue = this.observation!.confidentiality!;
+      _confidence = this.observation!.confidence as int;
+      _statusValue = this.observation!.status as String;
+      _confidentialityValue = this.observation!.confidentiality as String;
     }
   }
 
@@ -204,6 +203,10 @@ class _ObservationPageState extends State<ObservationPage> {
         backgroundColor: topBarColor,
         title: Text('Observation'),
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Container(
         decoration: blueBoxDecoration,
@@ -554,7 +557,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                 context, [this.observation, this._image]);
                           } else if (this.mode == 'me') {
                             print('Update');
-                            String state = await DatabaseService(uid: user!.uid)
+                            String state = await DatabaseService(uid: user.uid)
                                 .updateObservation(this.observation!);
 
                             if (state == "success") {
@@ -568,8 +571,13 @@ class _ObservationPageState extends State<ObservationPage> {
                               throw ('This file is not an image');
                             }
 
-                            // Back to previous page
-                            Navigator.pop(context);
+                            // Back to two previous pages
+                            // Since previous page won't update the information,
+                            // second previous page would fetch new observation
+                            // from cloud and get updated information
+                            int count = 0;
+                            Navigator.of(context).popUntil((_) => count++ >= 2);
+                            // Navigator.pop(context);
                           }
                         }),
                   ],

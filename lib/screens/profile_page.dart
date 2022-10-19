@@ -10,7 +10,9 @@ import 'package:ocean_view/services/database.dart';
 
 class sharingForm extends StatefulWidget {
   User? thisUser;
-  sharingForm({Key? key, this.thisUser}) : super(key: key);
+  Function updateAppBar;
+  sharingForm({Key? key, this.thisUser, required this.updateAppBar})
+      : super(key: key);
   @override
   _sharingFormState createState() => _sharingFormState();
 }
@@ -26,8 +28,9 @@ class _sharingFormState extends State<sharingForm> {
   @override
   void initState() {
     super.initState();
-    this.thisUser = thisUser;
-    this._pnameController = TextEditingController(text: thisUser?.displayName);
+    this.thisUser = widget.thisUser;
+    this._pnameController =
+        new TextEditingController(text: thisUser?.displayName);
   }
 
   @override
@@ -114,8 +117,11 @@ class _sharingFormState extends State<sharingForm> {
                       print(_currentSelection);
                       newStats?.share = _currentSelection == 'Yes' ? 'Y' : 'N';
                       newStats?.name = _pnameController.text;
-                      DatabaseService(uid: newStats?.uid as String)
+                      await DatabaseService(uid: newStats?.uid as String)
                           .updateUserStats(newStats as UserStats);
+                      await thisUser?.updateDisplayName(newStats.name);
+                      widget.updateAppBar();
+                      Navigator.pop(context);
                     }),
               ]),
             );
@@ -140,14 +146,24 @@ class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController _pnameController;
   bool nameEnabled = false;
   User? currentUser = FirebaseAuth.instance.currentUser;
+  String? AppBarName = FirebaseAuth.instance.currentUser!.displayName;
+  void updateAppBar() {
+    setState(() {
+      print('Updating App Bar');
+      AppBarName = FirebaseAuth.instance.currentUser!.displayName;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     this.currentUser = currentUser;
+    this.AppBarName = AppBarName;
   }
 
   Widget build(BuildContext context) {
-    void _showSharingPanel() {
+    void _showSharingPanel(updateAppBar) {
+      Function updateAppBar;
       showModalBottomSheet(
           context: context,
           builder: (context) {
@@ -166,25 +182,24 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
-              sharingForm()
+              sharingForm(
+                thisUser: currentUser,
+                updateAppBar: this.updateAppBar,
+              )
             ]);
           });
     }
 
     final uStats = Provider.of<UserStats>(context);
-    UserStats user = uStats;
     String? u_email = currentUser == null ? '' : currentUser?.email;
     String? u_date = currentUser == null
         ? ''
         : currentUser?.metadata.creationTime.toString();
-    if (currentUser != null){
-      // Reload for updating verified state
-      currentUser!.reload();
-    }
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text('Profile Page: ${currentUser!.displayName}'),
+          title: Text('Profile Page: ${AppBarName}'),
           centerTitle: true,
           backgroundColor: topBarColor,
           elevation: 0.0,
@@ -198,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
               CustomPainterWidgets.buildTopShape(),
               Column(children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(20, 50, 10, 10),
+                  padding: EdgeInsets.fromLTRB(20, 40, 10, 10),
                   child: Row(
                     children: [
                       Text(
@@ -207,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Expanded(
                         child: Text(
-                          (uStats.name==null)? 'None': uStats.name as String,
+                          uStats.name ?? '',
                           style: TextStyle(
                               color: Colors.green,
                               fontSize: 18,
@@ -267,25 +282,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(20, 1, 1, 10),
                   child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
                         'Sharing: ',
                         style: TextStyle(color: Colors.blue, fontSize: 20),
                       ),
                       Text(
-                        user.share == null
+                        uStats.share == null
                             ? 'Nothing yet'
-                            : user.share as String,
+                            : uStats.share as String,
                         style: TextStyle(
                             color: Colors.green,
                             fontSize: 18,
                             fontWeight: FontWeight.bold),
                       ),
-                      //IconButton(
-                      //    onPressed: () => _showSharingPanel(),
-                      //    iconSize: 20,
-                      //    icon: Icon(Icons.edit)),
                     ],
                   ),
                 ),
@@ -298,7 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(color: Colors.blue, fontSize: 20),
                       ),
                       Text(
-                        user.numobs == null ? '0' : user.numobs.toString(),
+                        uStats.numobs == null ? '0' : uStats.numobs.toString(),
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 18,
@@ -315,17 +325,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Row(
                     children: [
                       ElevatedButton(
-                          onPressed: () => _showSharingPanel(),
-                          // {
-                          //  nameEnabled = false;
-                          //  print('Saving...');
-                          //  currentUser?.updateDisplayName(_pnameController.text);
-                          //  user.uid = currentUser?.uid;
-                          //  user.name = _pnameController.text;
-                          //  user.email = currentUser?.email;
-                          //  DatabaseService(uid: currentUser!.uid)
-                          //      .updateUserStats(user);
-                          //},
+                          onPressed: () => _showSharingPanel(updateAppBar),
                           child: Text('Update Profile')),
                     ],
                   ),

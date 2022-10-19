@@ -17,17 +17,17 @@ class MePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User?>(context);
-
+    final user =
+        FirebaseAuth.instance.currentUser; //Provider.of<User?>(context);
     return StreamProvider<List<Observation>?>.value(
       value: DatabaseService(uid: user!.uid).meObs,
       initialData: null,
       child: Scaffold(
-        //backgroundColor: Colors.brown[50],
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text('Me Page: ${user.uid.substring(0, 5)}'),
+          title: Text('Me Page: ${user.displayName}'),
           centerTitle: true,
-          backgroundColor: topBarColor,
+          backgroundColor: themeMap['scaffold_appBar_color'],
           elevation: 0.0,
         ),
         //Run ObservationList() from observation_list.dart
