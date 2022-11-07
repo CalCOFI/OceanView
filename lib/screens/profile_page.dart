@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ocean_view/models/userstats.dart';
-import 'package:ocean_view/screens/authenticate/verify.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/shared/loading.dart';
@@ -264,18 +263,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),
-                      currentUser!.emailVerified
-                          ? Text(' ')
-                          : ElevatedButton(
-                              onPressed: () {
-                                print('Verifying User');
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => VerifyScreen()),
-                                );
-                              },
-                              child: Text('Verify')),
                     ])),
                 Padding(
                   padding: EdgeInsets.fromLTRB(20, 1, 1, 10),

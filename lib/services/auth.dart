@@ -9,17 +9,24 @@ import 'package:ocean_view/services/database.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late User? currentUser;
+
+  // Constructor
+  AuthService() {
+    currentUser = _auth.currentUser;
+  }
 
   // create user stats object based on signed-in user
   UserStats? _userFromFirebaseUser(User? user) {
     return user != null
-        ? UserStats(
-            uid: user.uid,
-            email: user.email,
-            name: user.displayName,
-            share: ' ',
-            numobs: 0)
-        : null;
+      ? UserStats(
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+          share: ' ',
+          numobs: 0
+        )
+      : null;
   }
 
   // auth change user screen
@@ -43,7 +50,6 @@ class AuthService {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      //return result.user;
       return _userFromFirebaseUser(result.user);
     } catch (e) {
       print(e.toString());
@@ -56,6 +62,11 @@ class AuthService {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
+
+      // Send email verification
+      if (result.user != null) {
+        await result.user!.sendEmailVerification();
+      }
 
       // create the document for the user with the uid
       String userID = result.user?.uid ?? '';
@@ -86,5 +97,11 @@ class AuthService {
       print(e.toString());
       return null;
     }
+  }
+
+  // reload user information
+  Future reload() async {
+    await currentUser?.reload();
+    currentUser = _auth.currentUser;
   }
 }

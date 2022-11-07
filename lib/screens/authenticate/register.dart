@@ -1,4 +1,3 @@
-import 'package:ocean_view/screens/authenticate/verify.dart';
 import 'package:ocean_view/services/auth.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
@@ -90,7 +89,7 @@ class _RegisterState extends State<Register> {
                             ElevatedButton(
                               child: Text('Register'),
                               style: ElevatedButton.styleFrom(
-                                primary: topBarColor,
+                                backgroundColor: topBarColor,
                                 textStyle: TextStyle(color: Colors.white),
                               ),
                               onPressed: () async {
@@ -104,13 +103,6 @@ class _RegisterState extends State<Register> {
                                       error = 'Please apply your valid email';
                                       loading = false;
                                     });
-                                  } else {
-                                    print('GOING TO VERIFY SCREEN');
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => VerifyScreen()),
-                                    );
                                   }
                                 }
                               },
