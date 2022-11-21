@@ -89,7 +89,7 @@ class _RegisterState extends State<Register> {
                             ElevatedButton(
                               child: Text('Register'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: topBarColor,
+                                primary: topBarColor,
                                 textStyle: TextStyle(color: Colors.white),
                               ),
                               onPressed: () async {

@@ -36,6 +36,7 @@ class DatabaseService {
     statMap['email'] = stats.email ?? '';
     statMap['share'] = stats.share ?? 'Y';
     statMap['numobs'] = stats.numobs ?? 0;
+    statMap['firsttime'] = stats.firsttime ?? true;
 
     return statMap;
   }
@@ -63,12 +64,6 @@ class DatabaseService {
 
     return obsMap;
   }
-
-  //Future addUserStats(UserStats stats) async {
-  //  stats.uid = uid;
-  //  Map<String, dynamic> statsMap = _getMapFromUserStats(stats);
-  //  await userstatsCollection.add(statsMap);
-  //}
 
   Future<void> updateUserStats(UserStats stats) async {
     return await userstatsCollection.doc(uid).set(_getMapFromUserStats(stats));
@@ -205,7 +200,8 @@ class DatabaseService {
         name: snapshot.data()?['name'],
         email: snapshot.data()?['email'],
         share: snapshot.data()?['share'],
-        numobs: snapshot.data()?['numobs']);
+        numobs: snapshot.data()?['numobs'],
+        firsttime: snapshot.data()?['firsttime']);
   }
 
   // Query current users' observations

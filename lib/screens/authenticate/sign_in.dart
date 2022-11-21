@@ -90,7 +90,7 @@ class _SignInState extends State<SignIn> {
                             ElevatedButton(
                               child: Text('Sign in'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: topBarColor,
+                                primary: topBarColor,
                                 textStyle: TextStyle(color: Colors.white),
                               ),
                               onPressed: () async {

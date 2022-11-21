@@ -8,15 +8,15 @@ class UserStats with ChangeNotifier {
   String? email;
   String? share;
   int? numobs;
+  bool? firsttime;
 
-  UserStats(
-    {
-      this.documentID,
-      this.uid,
-      this.name,
-      this.email,
-      this.share,
-      this.numobs,
-    }
-  );
+  UserStats({
+    this.documentID,
+    this.uid,
+    this.name,
+    this.email,
+    this.share,
+    this.numobs,
+    this.firsttime,
+  });
 }
