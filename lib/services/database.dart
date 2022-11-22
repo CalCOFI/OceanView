@@ -163,45 +163,46 @@ class DatabaseService {
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
-      dynamic thisdoc = doc.data();
+      dynamic thisDoc = doc.data();
       return Observation(
         documentID: doc.id,
-        uid: thisdoc['uid'],
-        name: thisdoc['name'],
-        latinName: thisdoc['latinName'] ?? 'Unknown',
-        length: thisdoc['length'],
-        weight: thisdoc['weight'],
-        time: (thisdoc['time'] != null)
+        uid: thisDoc['uid'],
+        name: thisDoc['name'],
+        latinName: thisDoc['latinName'] ?? 'Unknown',
+        length: thisDoc['length'],
+        weight: thisDoc['weight'],
+        time: (thisDoc['time'] != null)
             ? DateTime.fromMillisecondsSinceEpoch(
-                thisdoc['time'].seconds * 1000)
+                thisDoc['time'].seconds * 1000)
             : 'None',
-        location: (thisdoc['location'] != null)
+        location: (thisDoc['location'] != null)
             ? LatLng(
-                thisdoc['location'].latitude, thisdoc['location'].longitude)
+                thisDoc['location'].latitude, thisDoc['location'].longitude)
             : LatLng(0, 0),
-        status: thisdoc['status'] ?? STATUS,
-        confidentiality: thisdoc['confidentiality'] ?? CONFIDENTIALITY,
-        confidence: thisdoc['confidence'] ?? CONFIDENCE,
-        url: thisdoc['url'],
+        status: thisDoc['status'] ?? STATUS,
+        confidentiality: thisDoc['confidentiality'] ?? CONFIDENTIALITY,
+        confidence: thisDoc['confidence'] ?? CONFIDENCE,
+        url: thisDoc['url'],
         // stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
-        stopwatchStart: ((thisdoc['stopwatchStart'] != null) &&
-                (thisdoc['stopwatchStart'] != 'None'))
+        stopwatchStart: ((thisDoc['stopwatchStart'] != null) &&
+                (thisDoc['stopwatchStart'] != 'None'))
             ? DateTime.fromMillisecondsSinceEpoch(
-                thisdoc['stopwatchStart'].seconds * 1000)
+                thisDoc['stopwatchStart'].seconds * 1000)
             : STOPWATCHSTART,
       );
     }).toList();
   }
 
   UserStats _userstatsFromSnapshots(DocumentSnapshot snapshot) {
+    Map data = snapshot.data() as Map;
     return UserStats(
         documentID: snapshot.id,
-        uid: snapshot.data()?['uid'],
-        name: snapshot.data()?['name'],
-        email: snapshot.data()?['email'],
-        share: snapshot.data()?['share'],
-        numobs: snapshot.data()?['numobs'],
-        firsttime: snapshot.data()?['firsttime']);
+        uid: data['uid'],
+        name: data['name'],
+        email: data['email'],
+        share: data['share'],
+        numobs: data['numobs'],
+        firsttime: data['firsttime']);
   }
 
   // Query current users' observations

@@ -63,7 +63,7 @@ Future<void> initializeNotification() async{
   /// Note: permissions aren't requested here just to demonstrate that can be
   /// done later
   final initializationSettingsIOS =
-  IOSInitializationSettings(
+  DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
@@ -73,7 +73,7 @@ Future<void> initializeNotification() async{
             id: id, title: title, body: body, payload: payload));
       });
   const initializationSettingsMacOS =
-  MacOSInitializationSettings(
+  DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false);
@@ -81,14 +81,7 @@ Future<void> initializeNotification() async{
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
       macOS: initializationSettingsMacOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: (String? payload) async {
-        if (payload != null) {
-          debugPrint('notification payload: $payload');
-        }
-        selectedNotificationPayload = payload;
-        selectNotificationSubject.add(payload);
-      });
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
 void requestPermissions() {
@@ -152,7 +145,7 @@ void configureSelectNotificationSubject(var context) {
 Future<void> showNotification(String str, List<String> ids) async {
   const androidPlatformChannelSpecifics =
   AndroidNotificationDetails(
-      'your channel id', 'your channel name', 'your channel description',
+      'your channel id', 'your channel name',
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker');
