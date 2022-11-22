@@ -87,10 +87,10 @@ Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
     // Extract location from GPS
     try {
       location = Location(
-          data['GPS GPSLongitude']!.values!,
-          data['GPS GPSLongitudeRef']!.values!,
-          data['GPS GPSLatitude']!.values!,
-          data['GPS GPSLatitudeRef']!.values!
+          [data['GPS GPSLongitude']!.values!],
+          [data['GPS GPSLongitudeRef']!.values!],
+          [data['GPS GPSLatitude']!.values!],
+          [data['GPS GPSLatitudeRef']!.values!]
       );
     } catch (e) {
       print(e);

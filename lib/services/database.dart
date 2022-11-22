@@ -144,26 +144,26 @@ class DatabaseService {
     return snapshot.docs.map((doc) {
       return Observation(
         documentID: doc.id,
-        uid: doc.data()['uid'],
-        name: doc.data()['name'],
-        latinName: doc.data()['latinName'] ?? 'Unknown',
-        length: doc.data()['length'],
-        weight: doc.data()['weight'],
-        time: (doc.data()['time'] != null)
+        uid: doc.get('uid'),
+        name: doc.get('name'),
+        latinName: doc.get('latinName') ?? 'Unknown',
+        length: doc.get('length'),
+        weight: doc.get('weight'),
+        time: (doc.get('time') != null)
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.data()['time'].seconds * 1000)
+            doc.get('time').seconds * 1000)
             : 'None',
-        location: (doc.data()['location']!=null)?
-        LatLng(doc.data()['location'].latitude, doc.data()['location'].longitude):
+        location: (doc.get('location')!=null)?
+        LatLng(doc.get('location').latitude, doc.get('location').longitude):
         LatLng(0,0),
-        status: doc.data()['status'] ?? STATUS,
-        confidentiality: doc.data()['confidentiality'] ?? CONFIDENTIALITY,
-        confidence: doc.data()['confidence'] ?? CONFIDENCE,
-        url: doc.data()['url'],
+        status: doc.get('status') ?? STATUS,
+        confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
+        confidence: doc.get('confidence') ?? CONFIDENCE,
+        url: doc.get('url'),
         // stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
-        stopwatchStart: (doc.data()['stopwatchStart'] != null)
+        stopwatchStart: (doc.get('stopwatchStart') != null)
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.data()['stopwatchStart'].seconds * 1000)
+            doc.get('stopwatchStart').seconds * 1000)
             : STOPWATCHSTART,
       );
     }).toList();
