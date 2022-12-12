@@ -1,12 +1,15 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ocean_view/models/observation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ocean_view/screens/observation_stream.dart';
+import 'package:ocean_view/screens/upload/timeline_stream.dart';
 import 'package:ocean_view/screens/upload/upload_stopwatch.dart';
-import 'package:ocean_view/screens/observation_page.dart';
+//import 'package:ocean_view/screens/upload/upload_timeline.dart';
+import 'package:ocean_view/shared/constants.dart';
+import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/screens/timeline_page.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 
@@ -53,11 +56,10 @@ class _UploadSessionState extends State<UploadSession> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => TimelinePage(
-              observationList: observationList,
-              imageList: imageList,
-              mode: 'session'
-            )));
+            builder: (context) => TimelineStream(
+                observationList: observationList,
+                imageList: imageList,
+                mode: 'session')));
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -74,6 +76,8 @@ class _UploadSessionState extends State<UploadSession> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Recording Session'),
+        elevation: 0.0,
+        //backgroundColor: topBarColor,
         centerTitle: true,
         backgroundColor: themeMap['scaffold_appBar_color'],
         leading: IconButton(
@@ -81,64 +85,87 @@ class _UploadSessionState extends State<UploadSession> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Column(
-        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          UploadStopwatch(
-              startCallback: startCallback, stopCallback: stopCallback),
-          Expanded(
-            child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 3 / 2,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20),
-                itemCount: imageList.length + 1,
-                itemBuilder: (BuildContext ctx, index) {
-                  return (isRecording)
-                      ? (index == imageList.length)
-                          ? IconButton(
-                              icon: Icon(Icons.add_circle_outline),
-                              onPressed: () async {
-                                await _pickImage(ImageSource.camera);
+      body: Container(
+        decoration: blueBoxDecoration,
+        child: Stack(
+          children: [
+            CustomPainterWidgets.buildTopShape(),
+            Column(
+              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                SizedBox(height: 80),
+                Text(
+                  'Click record button (on the left) below to start adding observations to your session.  Recording will continue until you click the cancel button on the right.',
+                  textAlign: TextAlign.center,
+                ),
+                UploadStopwatch(
+                    startCallback: startCallback, stopCallback: stopCallback),
+                Expanded(
+                  child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 200,
+                          childAspectRatio: 3 / 2,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20),
+                      itemCount: imageList.length + 1,
+                      itemBuilder: (BuildContext ctx, index) {
+                        return (isRecording)
+                            ? (index == imageList.length)
+                                ? IconButton(
+                                    tooltip: 'Add an observation',
+                                    iconSize: 48,
+                                    icon: Icon(Icons.add_circle_outline),
+                                    onPressed: () async {
+                                      await _pickImage(ImageSource.camera);
 
-                                // Extract exif data from image file
-                                PhotoMeta photoMeta =
-                                    await extractLocationAndTime(
-                                        _imageFile! as File);
+                                      // Extract exif data from image file
+                                      PhotoMeta photoMeta =
+                                          await extractLocationAndTime(
+                                              _imageFile! as File);
 
-                                if (_imageFile != null) {
-                                  // Get observation from ObservationPage
-                                  result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ObservationPage(
-                                              file: _imageFile!,
-                                              mode: 'session',
-                                              photoMeta: photoMeta,
-                                              index: observationList.length)));
-                                  setState(() {
-                                    observationList.add(result[0]);
-                                    imageList.add(result[1]);
-                                  });
+                                      if (_imageFile != null) {
+                                        // Get observation from ObservationPage
+                                        result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ObservationStream(
+                                                        file: _imageFile!,
+                                                        mode: 'session',
+                                                        photoMeta: photoMeta,
+                                                        index: observationList
+                                                            .length)));
+                                        setState(() {
+                                          observationList.add(result[0]);
+                                          imageList.add(result[1]);
+                                        });
 
-                                  // Add observation to local directory
+                                        // Add observation to local directory
 
-                                }
-                              })
-                          : IconButton(
-                              icon: imageList[index],
-                              onPressed: () => print('Touch ${index}'),
-                            )
-                      : IconButton(
-                          icon: Icon(Icons.cancel),
-                          onPressed: () {
-                            print('Press start');
-                          },
-                        );
-                }),
-          ),
-        ],
+                                      }
+                                    })
+                                : IconButton(
+                                    tooltip:
+                                        'Start recording to add an observation',
+                                    iconSize: 48,
+                                    icon: imageList[index],
+                                    onPressed: () => print('Touch ${index}'),
+                                  )
+                            : IconButton(
+                                tooltip:
+                                    'Start recording to add an observation',
+                                iconSize: 48,
+                                icon: Icon(Icons.cancel),
+                                onPressed: () {
+                                  print('Press start');
+                                },
+                              );
+                      }),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

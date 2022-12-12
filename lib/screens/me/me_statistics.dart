@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/me/me_histogram.dart';
 import 'package:ocean_view/services/database.dart';
-import 'package:ocean_view/shared/loading.dart';
+import 'package:ocean_view/shared/constants.dart';
+import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:provider/provider.dart';
 
 class MeStatistics extends StatefulWidget {
@@ -17,7 +18,6 @@ class MeStatistics extends StatefulWidget {
 }
 
 class _MeStatisticsState extends State<MeStatistics> {
-
   late Map<String, List<double>> mapValues;
   bool loading = true;
 
@@ -62,30 +62,33 @@ class _MeStatisticsState extends State<MeStatistics> {
   Widget build(BuildContext context) {
     print('In MeStatistics: ${widget.observation.name}');
 
-    return StreamProvider<List<Observation>?>.value (
+    return StreamProvider<List<Observation>?>.value(
       value: DatabaseService(
-          uid: widget.user!.uid,
-          observation: widget.observation
-      ).statisticsObs,
+              uid: widget.user!.uid, observation: widget.observation)
+          .statisticsObs,
       initialData: null,
       child: Scaffold(
-        backgroundColor: Colors.brown[50],
+        //backgroundColor: Colors.brown[50],
         appBar: AppBar(
           title: Text(widget.observation.name!),
           centerTitle: true,
-          backgroundColor: Colors.brown[400],
+          backgroundColor: topBarColor,
           elevation: 0.0,
         ),
-        body: Column(
-          // Add two histograms
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            MeHistogram(field: 'length', curObs: widget.observation),
-            MeHistogram(field: 'weight', curObs: widget.observation),
-          ]
+        body: Container(
+          decoration: blueBoxDecoration,
+          child: Stack(children: [
+            CustomPainterWidgets.buildTopShape(),
+            Column(
+                // Add two histograms
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  MeHistogram(field: 'length', curObs: widget.observation),
+                  MeHistogram(field: 'weight', curObs: widget.observation),
+                ]),
+          ]),
         ),
       ),
     );
   }
-
 }
