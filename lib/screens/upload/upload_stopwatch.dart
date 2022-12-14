@@ -11,17 +11,15 @@ import 'package:flutter/material.dart';
  */
 
 class UploadStopwatch extends StatefulWidget {
-
   final Function() startCallback;
   final Function(DateTime, Duration) stopCallback;
-  UploadStopwatch ({required this.startCallback, required this.stopCallback});
+  UploadStopwatch({required this.startCallback, required this.stopCallback});
 
   @override
   _UploadStopwatchState createState() => _UploadStopwatchState();
 }
 
 class _UploadStopwatchState extends State<UploadStopwatch> {
-
   bool isRecording = false;
   Stream<int>? timerStream;
   StreamSubscription<int>? timerSubscription;
@@ -72,7 +70,7 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
   @override
   void dispose() {
     super.dispose();
-    if (timerSubscription!=null){
+    if (timerSubscription != null) {
       timerSubscription!.cancel();
     }
   }
@@ -83,6 +81,8 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         IconButton(
+          tooltip: 'Start recording',
+          iconSize: 48,
           onPressed: () {
             if (!isRecording) {
               widget.startCallback();
@@ -93,15 +93,12 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
                       .floor()
                       .toString()
                       .padLeft(2, '0');
-                  minutesStr = ((newTick / 60) % 60)
-                      .floor()
-                      .toString()
-                      .padLeft(2, '0');
+                  minutesStr =
+                      ((newTick / 60) % 60).floor().toString().padLeft(2, '0');
                   secondsStr =
                       (newTick % 60).floor().toString().padLeft(2, '0');
                 });
               });
-
             }
           },
           icon: Icon(Icons.not_started_rounded),
@@ -113,14 +110,14 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
           ),
         ),
         IconButton(
+          tooltip: 'Stop recording',
+          iconSize: 48,
           onPressed: () {
-            if (isRecording){
-
+            if (isRecording) {
               var duration = Duration(
-                hours: int.parse(hoursStr),
-                minutes: int.parse(minutesStr),
-                seconds: int.parse(secondsStr)
-              );
+                  hours: int.parse(hoursStr),
+                  minutes: int.parse(minutesStr),
+                  seconds: int.parse(secondsStr));
               widget.stopCallback(_startTime, duration);
 
               timerSubscription!.cancel();
@@ -130,7 +127,6 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
                 minutesStr = '00';
                 secondsStr = '00';
               });
-
             }
           },
           icon: Icon(Icons.stop_circle_sharp),

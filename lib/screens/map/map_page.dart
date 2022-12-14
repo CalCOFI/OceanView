@@ -54,9 +54,9 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> getCurrentLocation() async {
-    // Request permission
-    await Geolocator.checkPermission();
-    await Geolocator.requestPermission();
+    // Request permission ()
+    // await Geolocator.checkPermission();
+    // await Geolocator.requestPermission();
 
     final position = await Geolocator.getCurrentPosition();
     print(position);

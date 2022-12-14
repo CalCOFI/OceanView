@@ -1,9 +1,10 @@
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/models/observation.dart';
+import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/shared/constants.dart';
 
 import 'local_store.dart';
@@ -16,12 +17,28 @@ import 'local_store.dart';
 class DatabaseService {
   String uid;
   Observation? observation;
-  DatabaseService({required this.uid, this.observation});
+  UserStats? stats;
+  DatabaseService({required this.uid, this.observation, this.stats});
 
-  // collection reference
+  // collection references
   final CollectionReference observationCollection =
-  FirebaseFirestore.instance.collection('observations');
+      FirebaseFirestore.instance.collection('observations');
+  final CollectionReference userstatsCollection =
+      FirebaseFirestore.instance.collection('userstats');
   final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // Create map from user stats
+  Map<String, dynamic> _getMapFromUserStats(UserStats stats) {
+    Map<String, dynamic> statMap = Map<String, dynamic>();
+    statMap['uid'] = stats.uid ?? uid;
+    statMap['name'] = stats.name ?? '';
+    statMap['email'] = stats.email ?? '';
+    statMap['share'] = stats.share ?? 'Y';
+    statMap['numobs'] = stats.numobs ?? 0;
+    statMap['firsttime'] = stats.firsttime ?? true;
+
+    return statMap;
+  }
 
   // Create map from observation
   Map<String, dynamic> _getMapFromObs(Observation observation) {
@@ -29,26 +46,32 @@ class DatabaseService {
 
     // Check for each field in observation
     obsMap['uid'] = observation.uid ?? uid;
-    obsMap['name'] = observation.name ?? 'None';
-    obsMap['latinName'] = observation.latinName ?? 'None';
-    obsMap['length'] = observation.length ?? 0.0;
-    obsMap['weight'] = observation.weight ?? 0.0;
-    obsMap['time'] = observation.time ?? 'None';
+    obsMap['name'] = observation.name ?? NAME;
+    obsMap['latinName'] = observation.latinName ?? LATINNAME;
+    obsMap['length'] = observation.length ?? LENGTH;
+    obsMap['weight'] = observation.weight ?? WEIGHT;
+    obsMap['time'] = observation.time ?? TIME;
     if (observation.location != null) {
       obsMap['location'] = GeoPoint(
           observation.location!.latitude, observation.location!.longitude);
+    } else {
+      obsMap['location'] = GeoPoint(LATITUDE, LONGITUDE);
     }
     obsMap['status'] = observation.status ?? STATUS;
     obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
-    obsMap['url'] = observation.url ?? 'None';
+    obsMap['url'] = observation.url ?? URL;
     obsMap['stopwatchStart'] = observation.stopwatchStart ?? STOPWATCHSTART;
 
     return obsMap;
   }
 
+  Future<void> updateUserStats(UserStats stats) async {
+    return await userstatsCollection.doc(uid).set(_getMapFromUserStats(stats));
+  }
+
   // Upload image to Firebase Storage
-  Future<List<dynamic>> _uploadImage(File file) async {
+  Future<List<dynamic>> _uploadImage(io.File file) async {
     String filePath = 'images/${uid}/${DateTime.now()}.png';
 
     // Upload image to Storage
@@ -59,7 +82,8 @@ class DatabaseService {
   }
 
   // Add single new observation
-  Future<TaskState> addObservation(Observation observation, File file) async {
+  Future<TaskState> addObservation(
+      Observation observation, io.File file) async {
     List<dynamic> messages = await _uploadImage(file);
 
     if (messages[0] == TaskState.success) {
@@ -81,7 +105,7 @@ class DatabaseService {
     final WriteBatch writeBatch = FirebaseFirestore.instance.batch();
     List<dynamic> messages;
     List<TaskState> states = [];
-    File file;
+    io.File file;
     DocumentReference documentReference;
 
     // Loop over each observations
@@ -110,7 +134,6 @@ class DatabaseService {
 
   // Update existing observation
   Future<String> updateObservation(Observation observation) async {
-
     Map<String, dynamic> obsMap = _getMapFromObs(observation);
     String state = 'fail';
 
@@ -118,12 +141,11 @@ class DatabaseService {
     await observationCollection
         .doc(observation.documentID)
         .update(obsMap)
-        .then((_) => state='success')
-        .catchError((error) => state='fail');;
+        .then((_) => state = 'success')
+        .catchError((error) => state = 'fail');
 
     return state;
   }
-
 
   // Delete observation
   Future<String> deleteObservation(Observation observation) async {
@@ -138,30 +160,30 @@ class DatabaseService {
     return state;
   }
 
-
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
+      print(doc.get('time').seconds);
       return Observation(
         documentID: doc.id,
         uid: doc.get('uid'),
         name: doc.get('name'),
-        latinName: doc.get('latinName') ?? 'Unknown',
+        latinName: doc.get('latinName') ?? LATINNAME,
         length: doc.get('length'),
         weight: doc.get('weight'),
-        time: (doc.get('time') != null)
+        time: (doc.get('time') != null && doc.get('time') != TIME)
             ? DateTime.fromMillisecondsSinceEpoch(
             doc.get('time').seconds * 1000)
-            : 'None',
+            : TIME,
         location: (doc.get('location')!=null)?
         LatLng(doc.get('location').latitude, doc.get('location').longitude):
-        LatLng(0,0),
+        LatLng(LATITUDE, LONGITUDE),
         status: doc.get('status') ?? STATUS,
         confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
         confidence: doc.get('confidence') ?? CONFIDENCE,
         url: doc.get('url'),
-        // stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
-        stopwatchStart: (doc.get('stopwatchStart') != null)
+        stopwatchStart: (doc.get('stopwatchStart') != null &&
+            doc.get('stopwatchStart') != STOPWATCHSTART)
             ? DateTime.fromMillisecondsSinceEpoch(
             doc.get('stopwatchStart').seconds * 1000)
             : STOPWATCHSTART,
@@ -169,10 +191,31 @@ class DatabaseService {
     }).toList();
   }
 
+  UserStats _userstatsFromSnapshots(DocumentSnapshot snapshot) {
+    Map data = snapshot.data() as Map;
+    return UserStats(
+        documentID: snapshot.id,
+        uid: data['uid'],
+        name: data['name'],
+        email: data['email'],
+        share: data['share'],
+        numobs: data['numobs'],
+        firsttime: data['firsttime']);
+  }
+
   // Query current users' observations
   Stream<List<Observation>> get meObs {
-    return observationCollection.where('uid', isEqualTo: this.uid)
-        .snapshots().map(_observationsFromSnapshots);
+    return observationCollection
+        .where('uid', isEqualTo: this.uid)
+        .snapshots()
+        .map(_observationsFromSnapshots);
+  }
+
+  Stream<UserStats> get meStats {
+    return userstatsCollection
+        .doc(uid)
+        .snapshots()
+        .map(_userstatsFromSnapshots);
   }
 
   // Query related observations for statistics
@@ -180,6 +223,7 @@ class DatabaseService {
     return observationCollection
         .where('name', isEqualTo: this.observation!.name)
         .where('confidentiality', isEqualTo: CONFIDENTIALITY)
-        .snapshots().map(_observationsFromSnapshots);
+        .snapshots()
+        .map(_observationsFromSnapshots);
   }
 }

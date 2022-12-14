@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 /*
   File for saving constants that will be used in different files
@@ -9,11 +10,17 @@ const textInputDecoration = InputDecoration(
   fillColor: Colors.white,
   filled: true,
   enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.white, width: 2.0)
-  ),
+      borderSide: BorderSide(color: Colors.white, width: 2.0)),
   focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.pink, width: 2.0)
-  ),
+      borderSide: BorderSide(color: Colors.pink, width: 2.0)),
+);
+
+const topBarColor = Colors.lightBlueAccent;
+Color bottomBarColor = Colors.teal.shade100;
+
+BoxDecoration blueBoxDecoration = BoxDecoration(
+  gradient: LinearGradient(
+      colors: [Colors.blue.shade100, Colors.teal.shade50, Colors.blue.shade50]),
 );
 
 // Color for regions of MPA on GoogleMap, which is according to color on CDFW
@@ -72,20 +79,25 @@ Map<String, List<Image>> MPA_type_icon = {
 };
 
 // Default value of properties of observations
-String STATUS = 'Observe';
-String CONFIDENTIALITY = 'Share with community';
-int CONFIDENCE = 2;
-String STOPWATCHSTART = 'None';
-Map<int,String> CONFIDENCE_MAP = {
+const String NAME = 'None';
+const String LATINNAME = 'Unknown';
+const String STATUS = 'Observe';
+const double LENGTH = 0.0;
+const double WEIGHT = 0.0;
+const String TIME = 'None';
+const double LATITUDE = 0;
+const double LONGITUDE = 0;
+const String CONFIDENTIALITY = 'Share with community';
+const int CONFIDENCE = 2;
+const String URL = 'None';
+const String STOPWATCHSTART = 'None';
+Map<int, String> CONFIDENCE_MAP = {
   1: 'Low',
   2: 'Medium',
   3: 'High',
 };
 
-Map<String, String> descriptionMap = {
-  'length': 'longer',
-  'weight': 'heavier'
-};
+Map<String, String> descriptionMap = {'length': 'longer', 'weight': 'heavier'};
 
 // Theme for all pages
 Map<String, Color> themeMap = {
