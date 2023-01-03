@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import './providers/pictures.dart';
-import 'notification_library.dart' as notification;
 
 import 'dart:io';
 
@@ -20,7 +19,6 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 Future<void> main() async {
-  notification.initializeNotification();
   HttpOverrides.global = new MyHttpOverrides();
   // Initialize firebase
   WidgetsFlutterBinding.ensureInitialized();

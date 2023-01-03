@@ -1,79 +1,31 @@
-// @ dart=2.9
 import 'dart:math';
-import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:ocean_view/screens/map/regulation_page.dart';
 import 'package:ocean_view/shared/constants.dart';
 
 import 'package:ocean_view/src/mpa.dart' as mpa;
-import 'package:geofencing/geofencing.dart';
 import 'package:ocean_view/src/pin_information.dart';
-import '../../notification_library.dart' as notification;
 
 /*
   Map page showing GoogleMap with MPA regions and unfinished Geofence
   User can click on any MAP regions to show the brief description of that
   MPA and link to complete regulation for it.
  */
-class MapPage extends StatelessWidget{
+
+class MapPage extends StatefulWidget{
 
   const MapPage({required Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
-    print("Build MapPage");
-    return MaterialApp(
-      initialRoute: notification.initialRoute,
-      routes: <String, WidgetBuilder>{
-        HomePage.routeName: (_) => HomePage(notification.notificationAppLaunchDetails),
-        SecondPage.routeName: (_) => SecondPage(notification.selectedNotificationPayload)
-      },
-    );
-  }
+  _MapPageState createState() => _MapPageState();
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage(
-      this.notificationAppLaunchDetails, {
-        Key? key,
-      }) : super(key: key);
-
-  static const String routeName = '/homePage';
-
-  final NotificationAppLaunchDetails? notificationAppLaunchDetails;
-
-  bool get didNotificationLaunchApp =>
-      notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-
-  // Geofencing members
-  String geofenceState = 'N/A';
-  List<String> registeredGeofences = [];
-  ReceivePort port = ReceivePort();
-  final List<GeofenceEvent> triggers = <GeofenceEvent>[
-    GeofenceEvent.enter,
-    GeofenceEvent.dwell,
-    GeofenceEvent.exit
-  ];
-  final AndroidGeofencingSettings androidSettings = AndroidGeofencingSettings(
-      initialTrigger: <GeofenceEvent>[
-        GeofenceEvent.enter,
-        GeofenceEvent.exit,
-        GeofenceEvent.dwell
-      ],
-      loiteringDelay: 1000 * 60);
+class _MapPageState extends State<MapPage> {
 
   // Google map members
   late GoogleMapController? mapController;
@@ -97,12 +49,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    notification.dispose();
     mapController = null;
     super.dispose();
   }
 
   Future<void> getCurrentLocation() async {
+    // Request permission ()
+    // await Geolocator.checkPermission();
+    // await Geolocator.requestPermission();
+
     final position = await Geolocator.getCurrentPosition();
     print(position);
     _location = LatLng(position.latitude,position.longitude);
@@ -296,14 +251,6 @@ class _HomePageState extends State<HomePage> {
                                   child: IconButton(
                                     icon: Icon(Icons.arrow_forward_ios),
                                     onPressed: () async {
-                                      /*
-                                      print('Go to exceptions');
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) =>
-                                              RegulationPage(pinInformation: pinInformation)
-                                          )
-                                      );
-                                       */
                                       const String url = 'https://wildlife.ca.gov/Conservation/Marine/MPAs';
                                       if (!await launch(url, forceWebView: true, enableJavaScript: true))
                                         throw 'Could not launch $url';
@@ -320,138 +267,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  /*
-  // --- Geofence code (Unfinished) ---
-
-  @override
-  void initState(){
-    super.initState();
-
-    notification.requestPermissions();
-    notification.configureDidReceiveLocalNotificationSubject(context);
-    notification.configureSelectNotificationSubject(context);
-
-    IsolateNameServer.registerPortWithName(
-        port.sendPort, 'geofencing_send_port');
-    port.listen((dynamic data) {
-      print('Event: $data');
-      setState(() {
-        geofenceState = data;
-      });
-    });
-    //initPlatformState();
-  }
-
-  // Callback for entering or leaving geofence
-  static void callback(List<String> ids, Location l, GeofenceEvent e) async {
-    print('Fences: $ids Location $l Event: $e');
-    final send =
-    IsolateNameServer.lookupPortByName('geofencing_send_port');
-    send!.send(e.toString());
-
-    if (e==GeofenceEvent.enter) {
-      print('Enter $ids');
-      await notification.showNotification('enter', ids);
-    }
-    /*
-    else {
-      print('Leave $ids');
-      await _showNotification('leave', ids);
-    }
-     */
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-
-    //_status = await Permission.location.request();
-    //print('Location permission status: $_status');
-    print('Initializing...');
-    await GeofencingManager.initialize();
-    print('Initialization done');
-  }
-
-  Future<void> _registerGeofences() async {
-    // Build geofences for 5 near MPAs
-    _names.sort((a,b) => _distances[a]!.toDouble().compareTo(_distances[b]!));
-    // print('Permission status: $_status');
-
-    for (var i = 0; i < 3; i++) {
-      var name = _names[i];
-      var center = _centers[name];
-      var radius = _radiuses[name];
-
-      await GeofencingManager.registerGeofence(
-          GeofenceRegion(
-              name, center!.latitude, center.longitude, radius, triggers,
-              androidSettings: androidSettings),
-          callback).then((_) {
-        GeofencingManager.getRegisteredGeofenceIds().then((value) {
-          setState(() {
-            registeredGeofences = value;
-          });
-        });
-      });
-
-      // Add circles
-      final circle = Circle(
-          circleId: CircleId(name),
-          center: center,
-          radius: radius!,
-          fillColor: Colors.red.withOpacity(0.5),
-          strokeWidth: 1,
-          strokeColor: Colors.red.withOpacity(0.5)
-      );
-      _circles[name] = circle;
-
-      print('Add Geofence of $name, '
-          '(${center.latitude},${center.longitude}), radius: $radius');
-    }
-
-    setState(() {
-      print('Add circles to google map.');
-    });
-  }
-   */
-
-}
-
-// --- Second page for notification (Unfinished) ---
-class SecondPage extends StatefulWidget {
-  const SecondPage(
-      this.payload, {
-        Key? key,
-      }) : super(key: key);
-
-  static const String routeName = '/secondPage';
-
-  final String? payload;
-
-  @override
-  State<StatefulWidget> createState() => SecondPageState();
-}
-
-class SecondPageState extends State<SecondPage> {
-  String? _payload;
-  @override
-  void initState() {
-    super.initState();
-    _payload = widget.payload;
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text('Second Screen with payload: ${_payload ?? ''}'),
-    ),
-    body: Center(
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: const Text('Go back!'),
-      ),
-    ),
-  );
 }

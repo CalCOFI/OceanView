@@ -1,4 +1,3 @@
-//import 'dart:html';
 import 'dart:io' as io;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -47,19 +46,21 @@ class DatabaseService {
 
     // Check for each field in observation
     obsMap['uid'] = observation.uid ?? uid;
-    obsMap['name'] = observation.name ?? 'None';
-    obsMap['latinName'] = observation.latinName ?? 'None';
-    obsMap['length'] = observation.length ?? 0.0;
-    obsMap['weight'] = observation.weight ?? 0.0;
-    obsMap['time'] = observation.time ?? 'None';
+    obsMap['name'] = observation.name ?? NAME;
+    obsMap['latinName'] = observation.latinName ?? LATINNAME;
+    obsMap['length'] = observation.length ?? LENGTH;
+    obsMap['weight'] = observation.weight ?? WEIGHT;
+    obsMap['time'] = observation.time ?? TIME;
     if (observation.location != null) {
       obsMap['location'] = GeoPoint(
           observation.location!.latitude, observation.location!.longitude);
+    } else {
+      obsMap['location'] = GeoPoint(LATITUDE, LONGITUDE);
     }
     obsMap['status'] = observation.status ?? STATUS;
     obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
-    obsMap['url'] = observation.url ?? 'None';
+    obsMap['url'] = observation.url ?? URL;
     obsMap['stopwatchStart'] = observation.stopwatchStart ?? STOPWATCHSTART;
 
     return obsMap;
@@ -142,7 +143,6 @@ class DatabaseService {
         .update(obsMap)
         .then((_) => state = 'success')
         .catchError((error) => state = 'fail');
-    ;
 
     return state;
   }
@@ -163,31 +163,29 @@ class DatabaseService {
   // observation list from snapshots
   List<Observation> _observationsFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
-      dynamic thisDoc = doc.data();
+      print(doc.get('time').seconds);
       return Observation(
         documentID: doc.id,
-        uid: thisDoc['uid'],
-        name: thisDoc['name'],
-        latinName: thisDoc['latinName'] ?? 'Unknown',
-        length: thisDoc['length'],
-        weight: thisDoc['weight'],
-        time: (thisDoc['time'] != null)
+        uid: doc.get('uid'),
+        name: doc.get('name'),
+        latinName: doc.get('latinName') ?? LATINNAME,
+        length: doc.get('length'),
+        weight: doc.get('weight'),
+        time: (doc.get('time') != null && doc.get('time') != TIME)
             ? DateTime.fromMillisecondsSinceEpoch(
-                thisDoc['time'].seconds * 1000)
-            : 'None',
-        location: (thisDoc['location'] != null)
-            ? LatLng(
-                thisDoc['location'].latitude, thisDoc['location'].longitude)
-            : LatLng(0, 0),
-        status: thisDoc['status'] ?? STATUS,
-        confidentiality: thisDoc['confidentiality'] ?? CONFIDENTIALITY,
-        confidence: thisDoc['confidence'] ?? CONFIDENCE,
-        url: thisDoc['url'],
-        // stopwatchStart: doc.data()['stopwatchStart'] ?? STOPWATCHSTART,
-        stopwatchStart: ((thisDoc['stopwatchStart'] != null) &&
-                (thisDoc['stopwatchStart'] != 'None'))
+            doc.get('time').seconds * 1000)
+            : TIME,
+        location: (doc.get('location')!=null)?
+        LatLng(doc.get('location').latitude, doc.get('location').longitude):
+        LatLng(LATITUDE, LONGITUDE),
+        status: doc.get('status') ?? STATUS,
+        confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
+        confidence: doc.get('confidence') ?? CONFIDENCE,
+        url: doc.get('url'),
+        stopwatchStart: (doc.get('stopwatchStart') != null &&
+            doc.get('stopwatchStart') != STOPWATCHSTART)
             ? DateTime.fromMillisecondsSinceEpoch(
-                thisDoc['stopwatchStart'].seconds * 1000)
+            doc.get('stopwatchStart').seconds * 1000)
             : STOPWATCHSTART,
       );
     }).toList();

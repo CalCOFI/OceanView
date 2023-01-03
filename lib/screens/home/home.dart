@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:ocean_view/models/userstats.dart';
 
 import 'package:ocean_view/screens/map/map_page.dart';
@@ -11,7 +12,6 @@ import 'package:ocean_view/screens/me/user_page.dart';
 import 'package:ocean_view/services/auth.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/services/database.dart';
-import 'package:ocean_view/models/userstats.dart';
 import 'package:ocean_view/shared/loading.dart';
 import '../authenticate/verify.dart';
 
@@ -40,10 +40,19 @@ class _HomeState extends State<Home> {
     MePage(key: UniqueKey()),
   ];
 
+  Future requestLocationPermission() async {
+    // Request permission
+    await Geolocator.checkPermission();
+    await Geolocator.requestPermission();
+  }
+
   @override
   void initState() {
     super.initState();
     isEmailVerified = AuthService().currentUser!.emailVerified;
+    if (isEmailVerified) {
+      requestLocationPermission();
+    }
   }
 
   void verifyEmail() {

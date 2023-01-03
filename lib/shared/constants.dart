@@ -79,10 +79,18 @@ Map<String, List<Image>> MPA_type_icon = {
 };
 
 // Default value of properties of observations
-String STATUS = 'Observe';
-String CONFIDENTIALITY = 'Share with community';
-int CONFIDENCE = 2;
-String STOPWATCHSTART = 'None';
+const String NAME = 'None';
+const String LATINNAME = 'Unknown';
+const String STATUS = 'Observe';
+const double LENGTH = 0.0;
+const double WEIGHT = 0.0;
+const String TIME = 'None';
+const double LATITUDE = 0;
+const double LONGITUDE = 0;
+const String CONFIDENTIALITY = 'Share with community';
+const int CONFIDENCE = 2;
+const String URL = 'None';
+const String STOPWATCHSTART = 'None';
 Map<int, String> CONFIDENCE_MAP = {
   1: 'Low',
   2: 'Medium',

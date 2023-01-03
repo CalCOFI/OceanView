@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ocean_view/src/pin_information.dart';
 
-/*
+/* 10/11
+  Currently abandoned since Wildlife would like to let user know updated info
   Regulation page showing complete regulation of one MPA
  */
 class RegulationPage extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
@@ -86,6 +87,11 @@ class _ObservationPageState extends State<ObservationPage> {
   UserStats? uStats;
   DateTime? selectedDate;
   int index = 0;
+
+  Future<LatLng> _getCurrentLocation() async {
+    final position = await Geolocator.getCurrentPosition();
+    return LatLng(position.latitude,position.longitude);
+  }
 
   @override
   void initState() {
