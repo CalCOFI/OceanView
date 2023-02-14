@@ -81,8 +81,6 @@ class _ObservationPageState extends State<ObservationPage> {
 
   String _statusValue = STATUS;
   int _confidence = CONFIDENCE;
-  String _confidentialityValue = CONFIDENTIALITY;
-  String _imageListText = "What did you see?";
   Observation? observation;
   UserStats? uStats;
   DateTime? selectedDate;
@@ -91,6 +89,14 @@ class _ObservationPageState extends State<ObservationPage> {
   Future<LatLng> _getCurrentLocation() async {
     final position = await Geolocator.getCurrentPosition();
     return LatLng(position.latitude,position.longitude);
+  }
+
+  Future<void> _loadMetaData() async {
+    if (widget.photoMeta == null || widget.photoMeta!.location == 0) {
+      this.observation!.location = await _getCurrentLocation();
+    } else {
+      this.observation!.location = widget.photoMeta!.location.getLatLng();
+    }
   }
 
   @override
@@ -152,16 +158,11 @@ class _ObservationPageState extends State<ObservationPage> {
         this.observation!.time = selectedDate;
       }
 
-      if (widget.photoMeta == null || widget.photoMeta!.location == 0) {
-        this.observation!.location = LatLng(0, 0);
-      } else {
-        this.observation!.location = widget.photoMeta!.location.getLatLng();
-      }
+      _loadMetaData();
     } else {
       selectedDate = this.observation!.time;
       _confidence = this.observation!.confidence as int;
       _statusValue = this.observation!.status as String;
-      _confidentialityValue = this.observation!.confidentiality as String;
     }
   }
 
@@ -184,10 +185,14 @@ class _ObservationPageState extends State<ObservationPage> {
   }
 
   // print location
-  String _printLocation(LatLng position) {
-    String lat = position.latitude.toStringAsFixed(2);
-    String lng = position.longitude.toStringAsFixed(2);
-    return "(${lat},${lng})";
+  String _printLocation(LatLng? position) {
+    if (position == null) {
+      return "(0,0)";
+    } else {
+      String lat = position.latitude.toStringAsFixed(6);
+      String lng = position.longitude.toStringAsFixed(6);
+      return "(${lat},${lng})";
+    }
   }
 
   @override
@@ -202,6 +207,9 @@ class _ObservationPageState extends State<ObservationPage> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     final userSt = Provider.of<UserStats>(context);
+    this.observation!.confidentiality = (userSt.share == 'Y')
+        ? 'Share with community'
+        : 'Do not share';
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -375,7 +383,7 @@ class _ObservationPageState extends State<ObservationPage> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            _printLocation(this.observation!.location!),
+                            _printLocation(this.observation!.location),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -505,9 +513,7 @@ class _ObservationPageState extends State<ObservationPage> {
                             Container(
                               alignment: Alignment.center,
                               child: Text(
-                                userSt.share == 'Y'
-                                    ? 'Share with community'
-                                    : 'Do not share',
+                                this.observation!.confidentiality!,
                                 style:
                                     const TextStyle(color: Colors.deepPurple),
                               ),
