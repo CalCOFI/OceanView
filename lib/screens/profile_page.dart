@@ -7,6 +7,7 @@ import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/shared/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:ocean_view/services/database.dart';
+import 'package:ocean_view/services/auth.dart';
 
 class sharingForm extends StatefulWidget {
   User? thisUser;
@@ -191,6 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     final uStats = Provider.of<UserStats>(context);
+    final AuthService _auth = AuthService();
     String? u_email = currentUser == null ? '' : currentUser?.email;
     String? u_date = currentUser == null
         ? ''
@@ -203,6 +205,14 @@ class _ProfilePageState extends State<ProfilePage> {
           centerTitle: true,
           backgroundColor: topBarColor,
           elevation: 0.0,
+          actions: <Widget>[
+            TextButton.icon(
+                onPressed: () async {
+                  await _auth.signOut();
+                },
+                icon: Icon(Icons.person),
+                label: Text('Log out'))
+          ],
         ),
         body: Container(
           //SingleChildScrollView(
