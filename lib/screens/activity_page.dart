@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ocean_view/services/auth.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -16,7 +15,6 @@ class ActivityPage extends StatefulWidget {
 }
 
 class _ActivityPageState extends State<ActivityPage> {
-  //final AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {

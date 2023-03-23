@@ -78,12 +78,13 @@ Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
   // Key: GPS GPSLongitudeRef, Value: E
   // Key: GPS GPSAltitudeRef, Value: 0
 
+  Location location = Location.empty();
+  DateTime dateTime = DateTime(0);
+
   if (data!.isEmpty) {
     print("No EXIF information found");
-    return PhotoMeta(0,0);
+    return PhotoMeta(location, dateTime);
   } else {
-
-    Location location = Location.empty();
     // Extract location from GPS
     try {
       location = Location(
@@ -97,7 +98,6 @@ Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
     }
 
     // Extract time
-    DateTime dateTime = DateTime(0);
     String time = data['Image DateTime']!.printable ?? 'None';
     if (time!='None') {
       // 2015:10:24 10:02:25 -> 2015-10-24 10:02:25

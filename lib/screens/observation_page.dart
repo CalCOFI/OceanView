@@ -85,14 +85,12 @@ class _ObservationPageState extends State<ObservationPage> {
   DateTime? selectedDate;
   int index = 0;
 
-  Future<LatLng> _getCurrentLocation() async {
-    final position = await Geolocator.getCurrentPosition();
-    return LatLng(position.latitude,position.longitude);
-  }
-
   Future<void> _loadMetaData() async {
-    if (widget.photoMeta == null || widget.photoMeta!.location == 0) {
-      this.observation!.location = await _getCurrentLocation();
+    if (widget.photoMeta == null || widget.photoMeta!.location.latLng == LatLng(0, 0)) {
+      final position = await Geolocator.getCurrentPosition();
+      setState(() {
+        this.observation!.location = LatLng(position.latitude,position.longitude);
+      });
     } else {
       this.observation!.location = widget.photoMeta!.location.getLatLng();
     }
@@ -156,7 +154,7 @@ class _ObservationPageState extends State<ObservationPage> {
         selectedDate = widget.photoMeta!.time;
         this.observation!.time = selectedDate;
       }
-
+      print('Going to _loadMetaData');
       _loadMetaData();
     } else {
       selectedDate = this.observation!.time;
@@ -186,7 +184,7 @@ class _ObservationPageState extends State<ObservationPage> {
   // print location
   String _printLocation(LatLng? position) {
     if (position == null) {
-      return "(0,0)";
+      return "(1,1)";
     } else {
       String lat = position.latitude.toStringAsFixed(6);
       String lng = position.longitude.toStringAsFixed(6);
