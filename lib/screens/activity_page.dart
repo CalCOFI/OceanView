@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ocean_view/services/auth.dart';
 import 'package:ocean_view/shared/constants.dart';
 import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -16,24 +15,16 @@ class ActivityPage extends StatefulWidget {
 }
 
 class _ActivityPageState extends State<ActivityPage> {
-  final AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Welcome'),
-          centerTitle: true,
-          backgroundColor: themeMap['scaffold_appBar_color'],
-          elevation: 0.0,
-          actions: <Widget>[
-            TextButton.icon(
-                onPressed: () async {
-                  await _auth.signOut();
-                },
-                icon: Icon(Icons.person),
-                label: Text('Log out'))
-          ]),
+        title: Text('Welcome'),
+        centerTitle: true,
+        backgroundColor: themeMap['scaffold_appBar_color'],
+        elevation: 0.0,
+      ),
       body: Container(
         child: Stack(children: [
           CustomPainterWidgets.buildTopShape(),
