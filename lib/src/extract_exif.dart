@@ -98,7 +98,7 @@ Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
     }
 
     // Extract time
-    String time = data['Image DateTime']!.printable ?? 'None';
+    String time = data['Image DateTime']?.printable ?? 'None';
     if (time!='None') {
       // 2015:10:24 10:02:25 -> 2015-10-24 10:02:25
       List<String> list = time.split(':');
