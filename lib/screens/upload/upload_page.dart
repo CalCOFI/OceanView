@@ -36,6 +36,8 @@ class _UploadPageState extends State<UploadPage> {
 
     if (tempFile != null) {
       _imageFile = File(tempFile.path);
+    } else {  // Set imageFile to null if user pressed cancel in camera
+      _imageFile = null;
     }
   }
 
@@ -47,7 +49,6 @@ class _UploadPageState extends State<UploadPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = Provider.of<User?>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Upload'),
