@@ -154,7 +154,6 @@ class _ObservationPageState extends State<ObservationPage> {
         selectedDate = widget.photoMeta!.time;
         this.observation!.time = selectedDate;
       }
-      print('Going to _loadMetaData');
       _loadMetaData();
     } else {
       selectedDate = this.observation!.time;
@@ -314,9 +313,6 @@ class _ObservationPageState extends State<ObservationPage> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: TextFormField(
-                                  // initialValue: (this.observation!.latinName==null)
-                                  //     ? ''
-                                  //     : this.observation!.latinName,
                                   controller: _latinNameController,
                                   textAlign: TextAlign.center,
                                   enabled: false,

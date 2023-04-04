@@ -34,9 +34,8 @@ class _UploadPageState extends State<UploadPage> {
     final ImagePicker _picker = ImagePicker();
     XFile? tempFile = await _picker.pickImage(source: source);
 
-    if (tempFile != null) {
-      _imageFile = File(tempFile.path);
-    }
+    // Set imageFile to null if user pressed cancel in camera
+    _imageFile = (tempFile != null)? File(tempFile.path): null;
   }
 
   @override
@@ -47,7 +46,6 @@ class _UploadPageState extends State<UploadPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = Provider.of<User?>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Upload'),
