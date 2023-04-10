@@ -29,8 +29,8 @@ class Result {
 
   factory Result.fromJson(Map<String, dynamic> json) {
     return Result(
-      taxon: Taxon.fromJson(json['taxon'] as Map<String,dynamic>),
-      visuallySimilar: json['visually_similar'] as bool,
+      taxon: Taxon.fromJson(json['taxon'] ?? '' as Map<String, dynamic>),
+      visuallySimilar: json['visually_similar'] ?? '' as bool,
     );
   }
 }
@@ -48,9 +48,9 @@ class Taxon {
 
   factory Taxon.fromJson(Map<String, dynamic> json) {
     return Taxon(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      preferredCommonName: json['preferred_common_name'] as String,
+      id: json['id'] ?? 0 as int,
+      name: json['name'] ?? '' as String,
+      preferredCommonName: json['preferred_common_name'] ?? '' as String,
     );
   }
 }

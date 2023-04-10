@@ -1,3 +1,4 @@
+import 'dart:async';
 import "dart:convert";
 import 'package:http/http.dart' as http;
 
@@ -27,10 +28,10 @@ class AphiaRecord {
       this.vname = ''});
 
   AphiaRecord.fromJson(Map<String, dynamic> json) {
-    scientificName = json['valid_name'];
-    aphiaID = json['valid_AphiaID'];
-    taxonClass = json['class'];
-    taxonKingdom = json['kingdom'];
+    scientificName = json['valid_name'] ?? '';
+    aphiaID = json['valid_AphiaID'] ?? 0;
+    taxonClass = json['class'] ?? '';
+    taxonKingdom = json['kingdom'] ?? '';
     langCode = ' ';
     vname = ' ';
   }
@@ -46,8 +47,8 @@ class AphiaVernacular {
   });
 
   AphiaVernacular.fromJson(Map<String, dynamic> json) {
-    vname = json['vernacular'];
-    langCode = json['language_code'];
+    vname = json['vernacular'] ?? '';
+    langCode = json['language_code'] ?? '';
   }
 }
 
@@ -61,16 +62,26 @@ class AphiaSearch {
     String searchURL = '';
     String vsearchURL = '';
     String _kingdom = 'Animalia';
-    AphiaRecord goodv = AphiaRecord();
+    bool timedout = false;
+    AphiaRecord nullv = AphiaRecord();
+    nullv.vname = 'Not found';
+    nullv.scientificName = 'Not found';
+    nullv.langCode = 'eng';
+    nullv.taxonClass = 'Not found';
+    nullv.taxonKingdom = 'Not found';
+    List<AphiaRecord> nullvlist = List.filled(1, nullv);
     searchURL = _baseURL + svalue + _endURL;
     _kingdom = which == Kingdoms.Plantae ? 'Plantae' : 'Animalia';
     print('Searching for ' + _kingdom);
     try {
       print('###' + searchURL);
-      final response = await http.get(Uri.parse(searchURL));
+      final response = await http
+          .get(Uri.parse(searchURL))
+          .timeout(const Duration(seconds: 30));
       if (200 == response.statusCode) {
         print('*** Got a response for record ***');
         final List<AphiaRecord> record = AphiaFromJson(response.body);
+        print(response.body.toString());
         // Now we have a list of records.  Let's loop through it to get vernacular names
         for (var ii = 0; ii < record.length; ii++) {
           print('####### Kingdom is ' + record[ii].taxonKingdom);
@@ -80,7 +91,9 @@ class AphiaSearch {
           }
           vsearchURL = _vernacURL + record[ii].aphiaID.toString();
           print('??? ' + vsearchURL);
-          final response_v = await http.get(Uri.parse(vsearchURL));
+          final response_v = await http
+              .get(Uri.parse(vsearchURL))
+              .timeout(const Duration(seconds: 30));
           if (200 == response_v.statusCode) {
             final List<AphiaVernacular> vrecord =
                 VernacularFromJson(response_v.body);
@@ -99,6 +112,8 @@ class AphiaSearch {
                         element.vname.toLowerCase().contains(svalue),
                     orElse: () => AphiaVernacular())
                 .vname;
+          } else {
+            return nullvlist;
           }
         }
         return record
@@ -111,9 +126,9 @@ class AphiaSearch {
         print('Got bad response');
         return List<AphiaRecord>.empty();
       }
-    } catch (e) {
-      print('Something went wrong $e');
-      return List<AphiaRecord>.empty();
+    } on TimeoutException {
+      nullvlist[0].vname = 'Text Search timed out';
+      return nullvlist;
     }
   }
 
