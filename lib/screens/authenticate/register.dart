@@ -26,6 +26,39 @@ class _RegisterState extends State<Register> {
   String password = '';
   String error = '';
 
+  // Validate and return all errors as a List
+  //
+  // Here are the patterns and what it means:
+  // r'^
+  //   (?=.*?[A-Z])      // should contain at least one upper case
+  //   (?=.*?[a-z])      // should contain at least one lower case
+  //   (?=.*?[0-9])      // should contain at least one digit
+  //   (?=.*?[!@#\$&*~]) // should contain at least one Special character
+  //   .{8,}             // Must be at least 8 characters in length
+  // $
+  //
+  // Source: https://stackoverflow.com/questions/56253787/how-to-handle-textfield-validation-in-password-in-flutter
+  List<PasswordError> passwordValidator(String password) {
+    List<PasswordError> errors = [];
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      errors.add(PasswordError.upperCase);
+    }
+    if (!RegExp(r'[a-z]').hasMatch(password)) {
+      errors.add(PasswordError.lowerCase);
+    }
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      errors.add(PasswordError.digit);
+    }
+    if (!RegExp(r'[!@#\$&*~]').hasMatch(password)) {
+      errors.add(PasswordError.specialCharacter);
+    }
+    if (!RegExp(r'.{8,}').hasMatch(password)) {
+      errors.add(PasswordError.eigthCharacter);
+    }
+
+    return errors;
+  }
+
   @override
   Widget build(BuildContext context) {
     return loading
@@ -77,9 +110,24 @@ class _RegisterState extends State<Register> {
                             TextFormField(
                               decoration: textInputDecoration.copyWith(
                                   hintText: 'Password'),
-                              validator: (val) => val!.length < 6
-                                  ? 'Enter a password 6+ long'
-                                  : null,
+                              // validator: (val) => val!.length < 6
+                              //     ? 'Enter a password 6+ long'
+                              //     : null,
+                              validator: (password) {
+                                if (password != null) {
+                                  // Get all errors
+                                  final validators = passwordValidator(password);
+
+                                  // Returns null if password is valid
+                                  if (validators.isEmpty) return null;
+
+                                  // Join all errors that start with "-"
+                                  return validators
+                                      .map((e) => '- ${e.message}')
+                                      .join('\n');
+                                }
+                                return null;
+                              },
                               obscureText: true,
                               onChanged: (val) {
                                 setState(() => password = val);
@@ -89,7 +137,7 @@ class _RegisterState extends State<Register> {
                             ElevatedButton(
                               child: Text('Register'),
                               style: ElevatedButton.styleFrom(
-                                primary: topBarColor,
+                                backgroundColor: topBarColor,
                                 textStyle: TextStyle(color: Colors.white),
                               ),
                               onPressed: () async {

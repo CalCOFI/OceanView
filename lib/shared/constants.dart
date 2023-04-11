@@ -104,3 +104,16 @@ Map<String, Color> themeMap = {
   'scaffold_appBar_color': Colors.lightBlueAccent,
   'elevated_button_color': Colors.lightBlueAccent,
 };
+
+// Create an enum containing warning information, you can modify your warning here
+enum PasswordError {
+  upperCase('Must contain at least one uppercase'),
+  lowerCase('Must contain at least one lowercase'),
+  digit('Must contain at least one digit'),
+  eigthCharacter('Must be at least 8 characters in length'),
+  specialCharacter('Contain at least one special character: !@#\\\$&*~');
+
+  final String message;
+
+  const PasswordError(this.message);
+}
