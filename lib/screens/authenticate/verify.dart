@@ -56,10 +56,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
         title: Text('Resend email'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            print('Click back');
-            Navigator.popUntil(context, ModalRoute.withName('/'));
-          }
+          onPressed: () => _auth.signOut(),
         ),
         centerTitle: true,
       ),
