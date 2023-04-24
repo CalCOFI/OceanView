@@ -32,7 +32,7 @@ class AphiaRecord {
     aphiaID = json['valid_AphiaID'] ?? 0;
     taxonClass = json['class'] ?? '';
     taxonKingdom = json['kingdom'] ?? '';
-    langCode = ' ';
+    langCode = '';
     vname = ' ';
   }
 }
@@ -81,7 +81,7 @@ class AphiaSearch {
       if (200 == response.statusCode) {
         print('*** Got a response for record ***');
         final List<AphiaRecord> record = AphiaFromJson(response.body);
-        print(response.body.toString());
+        //print(response.body.toString());
         // Now we have a list of records.  Let's loop through it to get vernacular names
         for (var ii = 0; ii < record.length; ii++) {
           print('####### Kingdom is ' + record[ii].taxonKingdom);
@@ -95,25 +95,28 @@ class AphiaSearch {
               .get(Uri.parse(vsearchURL))
               .timeout(const Duration(seconds: 30));
           if (200 == response_v.statusCode) {
+            print('Got good response');
             final List<AphiaVernacular> vrecord =
                 VernacularFromJson(response_v.body);
             // Find first english vernacular containing search string
             record[ii].langCode = vrecord
                 .firstWhere(
                     (element) =>
-                        element.langCode == 'eng' &&
+                        (element.langCode == 'eng') &&
                         element.vname.toLowerCase().contains(svalue),
                     orElse: () => AphiaVernacular())
                 .langCode;
             record[ii].vname = vrecord
                 .firstWhere(
                     (element) =>
-                        element.langCode == 'eng' &&
+                        (element.langCode == 'eng') &&
                         element.vname.toLowerCase().contains(svalue),
                     orElse: () => AphiaVernacular())
                 .vname;
           } else {
-            return nullvlist;
+            print('&&&&&& Bad status code ' + response_v.statusCode.toString());
+            record[ii].vname = '';
+            record[ii].langCode = '';
           }
         }
         return record
