@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -47,14 +48,29 @@ class _UploadClassificationState extends State<UploadClassification> {
         contentType: MediaType.parse("multipart/form-data"));
 
     request.files.add(multipartFile);
-    var response = await request.send();
-    print(response.statusCode);
 
     String jsonText = '';
-
-    await response.stream.transform(utf8.decoder).listen((value) {
-      jsonText = value;
-    });
+    try {
+      var response = await request.send().timeout(const Duration(seconds: 30));
+      print(response.statusCode);
+      await response.stream.transform(utf8.decoder).listen((value) {
+        jsonText = value;
+      });
+    } on TimeoutException {
+      print('Handling timeout request');
+      jsonText = json.encode({
+        'results': [
+          {
+            'taxon': {
+              'id': 0,
+              'name': 'Request timed out',
+              'preferred_common_name': ' ',
+            },
+            'visually_similar': false
+          }
+        ]
+      });
+    }
 
     setState(() {
       _prediction = Prediction.fromJson(json.decode(jsonText));
