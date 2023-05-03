@@ -646,8 +646,10 @@ class _ObservationPageState extends State<ObservationPage> {
           ),
         ));
     setState(() {
-      _nameController.text = result.vname;
-      _latinNameController.text = result.scientificName;
+      if (result != null) {
+        _nameController.text = result.vname;
+        _latinNameController.text = result.scientificName;
+      }
     });
   }
 }
