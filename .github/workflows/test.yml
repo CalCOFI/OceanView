@@ -1,0 +1,33 @@
+name: Tests
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  unit-test:
+    name: Unit tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      # Set up Flutter
+      - name: Clone Flutter repository with master channel
+        uses: subosito/flutter-action@v1
+        with:
+          channel: master
+      - run: flutter doctor -v
+
+      # Checkout out repository under $GITHUB-WORKSPACE and get packages
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - run: flutter pub get
+
+      # Analyze, check formatting, and run unit tests
+      - run: flutter analyze
+      - name: Ensure the Dart code is formatted correctly
+        run: dart format --set-exit-if-changed
+      - name: RUn Flutter unit tests
+        run: flutter test
