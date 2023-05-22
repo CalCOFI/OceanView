@@ -35,7 +35,7 @@ class _UploadPageState extends State<UploadPage> {
     XFile? tempFile = await _picker.pickImage(source: source);
 
     // Set imageFile to null if user pressed cancel in camera
-    _imageFile = (tempFile != null)? File(tempFile.path): null;
+    _imageFile = (tempFile != null) ? File(tempFile.path) : null;
   }
 
   @override

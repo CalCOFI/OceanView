@@ -173,19 +173,20 @@ class DatabaseService {
         weight: doc.get('weight'),
         time: (doc.get('time') != null && doc.get('time') != TIME)
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.get('time').seconds * 1000)
+                doc.get('time').seconds * 1000)
             : TIME,
-        location: (doc.get('location')!=null)?
-        LatLng(doc.get('location').latitude, doc.get('location').longitude):
-        LatLng(LATITUDE, LONGITUDE),
+        location: (doc.get('location') != null)
+            ? LatLng(
+                doc.get('location').latitude, doc.get('location').longitude)
+            : LatLng(LATITUDE, LONGITUDE),
         status: doc.get('status') ?? STATUS,
         confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
         confidence: doc.get('confidence') ?? CONFIDENCE,
         url: doc.get('url'),
         stopwatchStart: (doc.get('stopwatchStart') != null &&
-            doc.get('stopwatchStart') != STOPWATCHSTART)
+                doc.get('stopwatchStart') != STOPWATCHSTART)
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.get('stopwatchStart').seconds * 1000)
+                doc.get('stopwatchStart').seconds * 1000)
             : STOPWATCHSTART,
       );
     }).toList();

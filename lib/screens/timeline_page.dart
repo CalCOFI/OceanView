@@ -164,7 +164,8 @@ class _TimelinePageState extends State<TimelinePage> {
                                       builder: (context) => ObservationStream(
                                           file: imageFile,
                                           mode: widget.mode,
-                                          observation: widget.observationList[i],
+                                          observation:
+                                              widget.observationList[i],
                                           index: i)))
                               : await Navigator.push(
                                   context,
@@ -177,7 +178,8 @@ class _TimelinePageState extends State<TimelinePage> {
                           // Remove observation if it is deleted
                           setState(() {
                             if (result != null &&
-                                result[0] is String && result[0] == 'Delete') {
+                                result[0] is String &&
+                                result[0] == 'Delete') {
                               widget.observationList.removeAt(i);
                             }
                           });

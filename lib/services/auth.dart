@@ -19,14 +19,13 @@ class AuthService {
   // create user stats object based on signed-in user
   UserStats? _userFromFirebaseUser(User? user) {
     return user != null
-      ? UserStats(
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          share: ' ',
-          numobs: 0
-        )
-      : null;
+        ? UserStats(
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName,
+            share: ' ',
+            numobs: 0)
+        : null;
   }
 
   // auth change user screen

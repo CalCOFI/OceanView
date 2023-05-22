@@ -86,10 +86,12 @@ class _ObservationPageState extends State<ObservationPage> {
   int index = 0;
 
   Future<void> _loadMetaData() async {
-    if (widget.photoMeta == null || widget.photoMeta!.location.latLng == LatLng(0, 0)) {
+    if (widget.photoMeta == null ||
+        widget.photoMeta!.location.latLng == LatLng(0, 0)) {
       final position = await Geolocator.getCurrentPosition();
       setState(() {
-        this.observation!.location = LatLng(position.latitude,position.longitude);
+        this.observation!.location =
+            LatLng(position.latitude, position.longitude);
       });
     } else {
       this.observation!.location = widget.photoMeta!.location.getLatLng();
@@ -203,9 +205,8 @@ class _ObservationPageState extends State<ObservationPage> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     final userSt = Provider.of<UserStats>(context);
-    this.observation!.confidentiality = (userSt.share == 'Y')
-        ? 'Share with community'
-        : 'Do not share';
+    this.observation!.confidentiality =
+        (userSt.share == 'Y') ? 'Share with community' : 'Do not share';
 
     Future<bool> onWillPop() async {
       final shouldPop = await showDialog(
@@ -296,8 +297,8 @@ class _ObservationPageState extends State<ObservationPage> {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) =>
-                                        _buildPopupDialog(
-                                            context, 'Search Options', namehelp),
+                                        _buildPopupDialog(context,
+                                            'Search Options', namehelp),
                                   );
                                 },
                                 icon: Icon(Icons.help_rounded)),
@@ -334,8 +335,9 @@ class _ObservationPageState extends State<ObservationPage> {
                                   ? ''
                                   : this.observation!.length.toString(),
                               textAlign: TextAlign.center,
-                              onChanged: (String value) =>
-                                  this.observation!.length = double.parse(value),
+                              onChanged: (String value) => this
+                                  .observation!
+                                  .length = double.parse(value),
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(
@@ -354,8 +356,9 @@ class _ObservationPageState extends State<ObservationPage> {
                                   ? ''
                                   : this.observation!.weight.toString(),
                               textAlign: TextAlign.center,
-                              onChanged: (String value) =>
-                                  this.observation!.weight = double.parse(value),
+                              onChanged: (String value) => this
+                                  .observation!
+                                  .weight = double.parse(value),
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(
@@ -489,8 +492,8 @@ class _ObservationPageState extends State<ObservationPage> {
                                     icon: const Icon(Icons.arrow_downward),
                                     iconSize: 24,
                                     elevation: 16,
-                                    style:
-                                        const TextStyle(color: Colors.deepPurple),
+                                    style: const TextStyle(
+                                        color: Colors.deepPurple),
                                     underline: Container(
                                       height: 2,
                                       color: Colors.black26,
@@ -501,9 +504,12 @@ class _ObservationPageState extends State<ObservationPage> {
                                         this.observation!.status = _statusValue;
                                       });
                                     },
-                                    items: <String>['Observe', 'Release', 'Catch']
-                                        .map<DropdownMenuItem<String>>(
-                                            (String value) {
+                                    items: <String>[
+                                      'Observe',
+                                      'Release',
+                                      'Catch'
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
                                         child: Text(value),
@@ -541,10 +547,10 @@ class _ObservationPageState extends State<ObservationPage> {
                             this.observation!.latinName =
                                 _latinNameController.text;
                             if (this.mode == 'single') {
-                              TaskState state = await DatabaseService(
-                                      uid: user.uid)
-                                  .addObservation(
-                                      this.observation!, File(widget.file.path));
+                              TaskState state =
+                                  await DatabaseService(uid: user.uid)
+                                      .addObservation(this.observation!,
+                                          File(widget.file.path));
 
                               if (state == TaskState.success) {
                                 userSt.numobs = userSt.numobs! + 1;
@@ -582,8 +588,9 @@ class _ObservationPageState extends State<ObservationPage> {
                                   context, [this.observation, this._image]);
                             } else if (this.mode == 'me') {
                               print('Update');
-                              String state = await DatabaseService(uid: user.uid)
-                                  .updateObservation(this.observation!);
+                              String state =
+                                  await DatabaseService(uid: user.uid)
+                                      .updateObservation(this.observation!);
 
                               if (state == "success") {
                                 final snackBar =
@@ -601,7 +608,8 @@ class _ObservationPageState extends State<ObservationPage> {
                               // second previous page would fetch new observation
                               // from cloud and get updated information
                               int count = 0;
-                              Navigator.of(context).popUntil((_) => count++ >= 2);
+                              Navigator.of(context)
+                                  .popUntil((_) => count++ >= 2);
                               // Navigator.pop(context);
                             }
                           }),
