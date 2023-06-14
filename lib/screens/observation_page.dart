@@ -149,7 +149,7 @@ class _ObservationPageState extends State<ObservationPage> {
 
     // Only load meta data when adding observation
     if (this.mode == 'single' || this.mode == 'session') {
-      if (widget.photoMeta == null || widget.photoMeta!.time == 0) {
+      if (widget.photoMeta == null || widget.photoMeta!.time == DateTime(0)) {
         selectedDate = DateTime.now();
         this.observation!.time = selectedDate;
       } else {
@@ -367,14 +367,14 @@ class _ObservationPageState extends State<ObservationPage> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Text("lb"),
+                          const Text('lb'),
                         ]),
                       ),
                       Padding(
                         padding: EdgeInsets.all(4),
                         child: Row(children: <Widget>[
                           //Row for Time entry
-                          const Text("Time: "),
+                          const Text('Time: '),
                           const SizedBox(
                             width: 10.0,
                           ),
