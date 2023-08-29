@@ -1,15 +1,13 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:ocean_view/shared/constants.dart';
 
 import 'package:ocean_view/src/mpa.dart' as mpa;
 import 'package:ocean_view/src/pin_information.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 /*
   Map page showing GoogleMap with MPA regions and unfinished Geofence
@@ -28,7 +26,9 @@ class _MapPageState extends State<MapPage> {
   // Google map members
   late GoogleMapController? mapController;
 
-  final LatLng _center = LatLng(32.832809, -117.271271);
+  // center of California
+  final LatLng _center = LatLng(36.735201, -119.790656);
+  final double _zoom = 6.0;
   LatLng _location = LatLng(0.0, 0.0);
 
   final Map<String, Marker> _markers = {};
@@ -139,8 +139,7 @@ class _MapPageState extends State<MapPage> {
         _markers[name] = Marker(
             markerId: MarkerId(name),
             position: center,
-            alpha: 0.5,
-            infoWindow: InfoWindow(title: name, snippet: type),
+            alpha: 0.0,
             onTap: () {
               print('Tap ' + name);
               setState(() {
@@ -179,6 +178,7 @@ class _MapPageState extends State<MapPage> {
               mapType: MapType.normal,
               initialCameraPosition: CameraPosition(
                 target: _center,
+                zoom: _zoom,
               ),
               polygons: _polygons.values.toSet(),
               circles: _circles.values.toSet(),
@@ -241,9 +241,7 @@ class _MapPageState extends State<MapPage> {
                                 onPressed: () async {
                                   const String url =
                                       'https://wildlife.ca.gov/Conservation/Marine/MPAs';
-                                  if (!await launch(url,
-                                      forceWebView: true,
-                                      enableJavaScript: true))
+                                  if (!await launchUrlString(url))
                                     throw 'Could not launch $url';
                                 },
                               ),
