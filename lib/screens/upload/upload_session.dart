@@ -156,7 +156,6 @@ class _UploadSessionState extends State<UploadSession> {
                                           });
 
                                           // Add observation to local directory
-
                                         }
                                       })
                                   : IconButton(

@@ -54,7 +54,7 @@ Geometry _$GeometryFromJson(Map<String, dynamic> json) {
 
 @JsonSerializable()
 class Geometry {
-  Geometry ({
+  Geometry({
     required this.type,
     required this.coordinates,
   });
@@ -110,15 +110,15 @@ class MPAs {
 }
 
 Future<MPAs> getMPAs() async {
-  final jsonText = await rootBundle
-      .loadString('assets/jsons/California_Marine_Protected_Areas_[ds582].geojson');
+  final jsonText = await rootBundle.loadString(
+      'assets/jsons/California_Marine_Protected_Areas_[ds582].geojson');
 
   return MPAs.fromJson(json.decode(jsonText));
 }
 
 Future<Map<String, dynamic>> getMPARegulations() async {
-  final jsonText = await rootBundle
-      .loadString('assets/jsons/mpa_regulations.json');
+  final jsonText =
+      await rootBundle.loadString('assets/jsons/mpa_regulations.json');
 
   Map<String, dynamic> regulations = jsonDecode(jsonText);
 

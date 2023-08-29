@@ -40,7 +40,6 @@ class _VerifyScreenState extends State<VerifyScreen> {
     });
   }
 
-
   @override
   void dispose() {
     _timerVerify?.cancel();
@@ -65,24 +64,22 @@ class _VerifyScreenState extends State<VerifyScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'An email has been sent to ${_auth.currentUser?.email}\n please verify.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
-          ),
+              'An email has been sent to ${_auth.currentUser?.email}\n please verify.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ElevatedButton(
             onPressed: () {
-              if (_buttonEnabled){
+              if (_buttonEnabled) {
                 setState(() {
                   _buttonEnabled = false;
                   _countdown = 60;
                 });
                 _startTimerResend();
                 _auth.currentUser?.sendEmailVerification();
-              };
+              }
+              ;
             },
-            child: Text(
-              _buttonEnabled? "Resend" : "Resend ($_countdown)"
-            ),
+            child: Text(_buttonEnabled ? "Resend" : "Resend ($_countdown)"),
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: _buttonEnabled ? Colors.blue : Colors.grey,

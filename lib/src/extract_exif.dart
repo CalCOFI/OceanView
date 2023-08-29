@@ -14,19 +14,27 @@ class Location {
   // Positive for N and E, Negative for S and W
   double longitude = 0;
   double latitude = 0;
-  LatLng latLng = LatLng(0,0);
+  LatLng latLng = LatLng(0, 0);
 
-  Location(List<dynamic> longitude, List<dynamic> longRef, List<dynamic> latitude, List<dynamic> latRef) {
-    this.longitude = toDouble(longitude[0]) + toDouble(longitude[1])/60 + toDouble(longitude[2])/3600;
-    this.longitude = String.fromCharCode(longRef[0])=='E' ? this.longitude : -this.longitude;
+  Location(List<dynamic> longitude, List<dynamic> longRef,
+      List<dynamic> latitude, List<dynamic> latRef) {
+    this.longitude = toDouble(longitude[0]) +
+        toDouble(longitude[1]) / 60 +
+        toDouble(longitude[2]) / 3600;
+    this.longitude = String.fromCharCode(longRef[0]) == 'E'
+        ? this.longitude
+        : -this.longitude;
 
-    this.latitude = toDouble(latitude[0]) + toDouble(latitude[1])/60 + toDouble(latitude[2])/3600;
-    this.latitude = String.fromCharCode(latRef[0])=='N' ? this.latitude : -this.latitude;
+    this.latitude = toDouble(latitude[0]) +
+        toDouble(latitude[1]) / 60 +
+        toDouble(latitude[2]) / 3600;
+    this.latitude =
+        String.fromCharCode(latRef[0]) == 'N' ? this.latitude : -this.latitude;
   }
 
-  Location.empty() { }
+  Location.empty() {}
 
-  double toDouble(Ratio ratio) => ratio.numerator/ratio.denominator;
+  double toDouble(Ratio ratio) => ratio.numerator / ratio.denominator;
 
   LatLng getLatLng() {
     return LatLng(this.latitude, this.longitude);
@@ -34,8 +42,8 @@ class Location {
 
   @override
   String toString() {
-    String latSymbol = (this.latitude>=0)? 'N' : 'S';
-    String longSymbol = (this.longitude>=0)? 'E' : 'W';
+    String latSymbol = (this.latitude >= 0) ? 'N' : 'S';
+    String longSymbol = (this.longitude >= 0) ? 'E' : 'W';
     return '( ${this.latitude.abs().toStringAsFixed(2) + latSymbol} , ${this.longitude.abs().toStringAsFixed(2) + longSymbol} )';
   }
 }
@@ -63,7 +71,6 @@ class PhotoMeta<T1, T2> {
 // }
 
 Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
-
   // Read data from imageFile
   final fileBytes = imageFile.readAsBytesSync();
   final data = await readExifFromBytes(fileBytes);
@@ -91,18 +98,18 @@ Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
           [data['GPS GPSLongitude']!.values!],
           [data['GPS GPSLongitudeRef']!.values!],
           [data['GPS GPSLatitude']!.values!],
-          [data['GPS GPSLatitudeRef']!.values!]
-      );
+          [data['GPS GPSLatitudeRef']!.values!]);
     } catch (e) {
       print(e);
     }
 
     // Extract time
     String time = data['Image DateTime']?.printable ?? 'None';
-    if (time!='None') {
+    if (time != 'None') {
       // 2015:10:24 10:02:25 -> 2015-10-24 10:02:25
       List<String> list = time.split(':');
-      dateTime = DateTime.parse('${list[0]}-${list[1]}-${list[2]}:${list[3]}:${list[4]}');
+      dateTime = DateTime.parse(
+          '${list[0]}-${list[1]}-${list[2]}:${list[3]}:${list[4]}');
     }
 
     return PhotoMeta(location, dateTime);

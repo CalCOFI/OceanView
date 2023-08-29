@@ -116,7 +116,8 @@ class _RegisterState extends State<Register> {
                               validator: (password) {
                                 if (password != null) {
                                   // Get all errors
-                                  final validators = passwordValidator(password);
+                                  final validators =
+                                      passwordValidator(password);
 
                                   // Returns null if password is valid
                                   if (validators.isEmpty) return null;

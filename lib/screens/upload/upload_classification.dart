@@ -15,6 +15,7 @@ import 'package:path/path.dart' as path;
 
 class UploadClassification extends StatefulWidget {
   final File imageFile;
+
   const UploadClassification({required Key key, required this.imageFile})
       : super(key: key);
 

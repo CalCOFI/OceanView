@@ -15,7 +15,6 @@ class ActivityPage extends StatefulWidget {
 }
 
 class _ActivityPageState extends State<ActivityPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

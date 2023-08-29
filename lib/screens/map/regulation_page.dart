@@ -6,7 +6,6 @@ import 'package:ocean_view/src/pin_information.dart';
   Regulation page showing complete regulation of one MPA
  */
 class RegulationPage extends StatelessWidget {
-
   final PinInformation pinInformation;
 
   RegulationPage({required this.pinInformation});
@@ -14,15 +13,12 @@ class RegulationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: FittedBox(
+        appBar: AppBar(
+            title: FittedBox(
           fit: BoxFit.fitWidth,
           child: Text(pinInformation.locationName),
-        )
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children:[
+        )),
+        body: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Padding(
             padding: EdgeInsets.all(10),
             child: Text(
@@ -39,18 +35,17 @@ class RegulationPage extends StatelessWidget {
           ),
           Divider(),
           Padding(
-            padding: EdgeInsets.all(10),
-            child: FittedBox(
-              fit: BoxFit.fitWidth,
-              child: Text(
-                "Exceptions in ${pinInformation.locationName}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
+              padding: EdgeInsets.all(10),
+              child: FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Text(
+                  "Exceptions in ${pinInformation.locationName}",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-            )
-          ),
+              )),
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.all(10),
@@ -58,17 +53,15 @@ class RegulationPage extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   child: Text(
-                    "${index+1}. ${pinInformation.exceptions[index]}",
+                    "${index + 1}. ${pinInformation.exceptions[index]}",
                     style: const TextStyle(fontSize: 16),
                   ),
                 );
               },
-              separatorBuilder: (BuildContext context, int index) => const Divider(),
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
             ),
           )
-        ]
-      )
-
-    );
+        ]));
   }
 }
