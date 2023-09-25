@@ -45,6 +45,8 @@
 	<string>Get access to microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Get access to camera roll</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
