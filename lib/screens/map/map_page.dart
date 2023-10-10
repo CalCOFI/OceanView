@@ -165,6 +165,19 @@ class _MapPageState extends State<MapPage> {
         print('$num. Add $name, Type: $type, Radius: $radius');
         num++;
       }
+
+      // add marker for CalCOFI (32.865003202144884, -117.25420953232023)
+      _markers[HQ_NAME] = Marker(
+          markerId: MarkerId(HQ_NAME),
+          position: LatLng(HQ_LOCATION[0], HQ_LOCATION[1]),
+          alpha: 0.5,
+          onTap: () {
+            setState(() {
+              _pinPillPosition = 100;
+              pinInformation =
+                  PinInformation(HQ_NAME, 'None', ['None'], 'None');
+            });
+          });
     });
   }
 
@@ -185,6 +198,7 @@ class _MapPageState extends State<MapPage> {
                 target: _center,
                 zoom: _zoom,
               ),
+              markers: _markers.values.toSet(),
               polygons: _polygons.values.toSet(),
               circles: _circles.values.toSet(),
               // markers: _markers.values.toSet(),
@@ -244,8 +258,10 @@ class _MapPageState extends State<MapPage> {
                               child: IconButton(
                                 icon: Icon(Icons.arrow_forward_ios),
                                 onPressed: () async {
-                                  const String url =
-                                      'https://wildlife.ca.gov/Conservation/Marine/MPAs';
+                                  String url =
+                                      (pinInformation.locationName == HQ_NAME)
+                                          ? HQ_URL
+                                          : MPA_URL;
                                   if (!await launchUrlString(url))
                                     throw 'Could not launch $url';
                                 },

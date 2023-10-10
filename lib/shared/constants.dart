@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 /*
   File for saving constants that will be used in different files
@@ -77,6 +76,13 @@ Map<String, List<Image>> MPA_type_icon = {
     get_mpa_image('assets/images/No_Collecting.png'),
   ],
 };
+const String MPA_URL = 'https://wildlife.ca.gov/Conservation/Marine/MPAs';
+
+// CALCOFI info
+const String HQ_NAME = 'CALCOFI';
+const List<double> HQ_LOCATION = [32.865003202144884, -117.25420953232023];
+const String HQ_URL =
+    'https://calcofi.com/index.php?option=com_content&view=category&layout=blog&id=135&Itemid=845';
 
 // Default value of properties of observations
 const String NAME = 'None';
