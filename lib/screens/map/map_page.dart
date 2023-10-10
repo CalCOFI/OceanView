@@ -34,7 +34,6 @@ class _MapPageState extends State<MapPage> {
   final Map<String, Marker> _markers = {};
   final Map<String, Polygon> _polygons = {};
   final Map<String, Circle> _circles = {};
-  Set<Polygon> _polygonsSet = Set();
 
   // MPA members
   final List<String> _names = <String>[];
@@ -55,29 +54,6 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    _addPolygons();
-  }
-
-  void _addPolygons() {
-    // Define your polygon(s) with coordinates and other options
-    final Polygon polygon = Polygon(
-      polygonId: PolygonId('uniquePolygonId'),
-      points: [
-        LatLng(37.42796133580664, -122.085749655962),
-        LatLng(37.42795933580664, -122.087749655962),
-        LatLng(37.42595933580664, -122.087749655962),
-        LatLng(37.42595933580664, -122.085749655962),
-      ],
-      onTap: () {
-        // Handle the onTap event for this polygon
-        // You can do whatever you want here
-        print("Polygon tapped!");
-      },
-    );
-
-    setState(() {
-      _polygonsSet.add(polygon);
-    });
   }
 
   Future<void> getCurrentLocation() async {
@@ -152,9 +128,8 @@ class _MapPageState extends State<MapPage> {
             fillColor: MPA_type_color[type]!.withOpacity(0.5),
             strokeWidth: 1,
             strokeColor: MPA_type_color[type]!.withOpacity(0.5),
+            consumeTapEvents: true,
             onTap: () {
-              print('Tap polygon ' + name);
-
               setState(() {
                 _pinPillPosition = 100;
                 pinInformation = PinInformation(name, type,
@@ -174,17 +149,10 @@ class _MapPageState extends State<MapPage> {
 
         // Add markers
         _markers[name] = Marker(
-            markerId: MarkerId(name),
-            position: center,
-            alpha: 0.0,
-            onTap: () {
-              print('Tap ' + name);
-              // setState(() {
-              //   _pinPillPosition = 100;
-              //   pinInformation = PinInformation(name, type,
-              //       mpaRegulations[name] ?? ['None'], generalRegulation);
-              // });
-            });
+          markerId: MarkerId(name),
+          position: center,
+          alpha: 0.0,
+        );
 
         // Store names, centers, radius and distances from current location
         _names.add(name);
@@ -219,7 +187,7 @@ class _MapPageState extends State<MapPage> {
               ),
               polygons: _polygons.values.toSet(),
               circles: _circles.values.toSet(),
-              markers: _markers.values.toSet(),
+              // markers: _markers.values.toSet(),
               myLocationEnabled: true,
             ),
             AnimatedPositioned(
@@ -289,64 +257,3 @@ class _MapPageState extends State<MapPage> {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-// class MapPage extends StatefulWidget {
-//   const MapPage({required Key key}) : super(key: key);
-//   @override
-//   _MapScreenState createState() => _MapScreenState();
-// }
-
-// class _MapScreenState extends State<MapPage> {
-//   GoogleMapController? _controller;
-//   Set<Polygon> _polygons = Set();
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _addPolygons();
-//   }
-
-//   void _addPolygons() {
-//     // Define your polygon(s) with coordinates and other options
-//     final Polygon polygon = Polygon(
-//       polygonId: PolygonId('uniquePolygonId'),
-//       points: [
-//         LatLng(37.42796133580664, -122.085749655962),
-//         LatLng(37.42795933580664, -122.087749655962),
-//         LatLng(37.42595933580664, -122.087749655962),
-//         LatLng(37.42595933580664, -122.085749655962),
-//       ],
-//       onTap: () {
-//         // Handle the onTap event for this polygon
-//         // You can do whatever you want here
-//         print("Polygon tapped!");
-//       },
-//     );
-
-//     setState(() {
-//       _polygons.add(polygon);
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Google Maps Polygons onTap'),
-//       ),
-//       body: GoogleMap(
-//         onMapCreated: (GoogleMapController controller) {
-//           _controller = controller;
-//         },
-//         initialCameraPosition: CameraPosition(
-//           target: LatLng(37.42796133580664, -122.085749655962),
-//           zoom: 15.0,
-//         ),
-//         polygons: _polygons,
-//       ),
-//     );
-//   }
-// }
