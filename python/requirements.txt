@@ -1,0 +1,5 @@
+geojson
+pandas
+numpy
+firebase-admin
+ipykernel
