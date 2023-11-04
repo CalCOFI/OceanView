@@ -13,7 +13,7 @@ import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart' as DP;
 
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/models/observation.dart';
@@ -22,6 +22,15 @@ import 'package:ocean_view/services/database.dart';
 
 String namehelp =
     'If you think you have a clear, identifiable image of your observation, use image search.  Otherwise, you can type in your guess for a full or partial name and use text search.  This will perform a search of the World Register of Marine Species (https://www.marinespecies.org) database and display a list of possible matches.';
+
+String confhelp =
+    'You can change the confidentiality of your observations by navigating to your user profile page, clicking "Update Profile", and choosing Yes or No for the Share option.  Changes to this setting are not retroactive. Previously stored observations will retain the setting they were originally shared with.';
+
+String snamehelp =
+    'Please specify a common name for the observed species before saving your observation.  You may do this by using the image search, or by typing a guess into the "Name" field and doing a text search.  If you do not wish to do a search, or if your search returns no results, you may still save the observation with your guess; however, the species name will not be filled in, and the confidence level for your search will automatically be set to Null.';
+
+String specieshelp =
+    'You have not specified the latin Species Name for your observation.  You may do this You may do this by using the image search, or by typing a guess into the "Name" field and doing a text search.  If you do not wish to do a search, or if your search returns no results, you may still save the observation with your guess; however, the species name will not be filled in, and the confidence level for your search will automatically be set to Null.  Do you wish to continue without searching?';
 
 // Define the help dialog popup
 Widget _buildPopupDialog(BuildContext context, String wtitle, String msg) {
@@ -45,6 +54,36 @@ Widget _buildPopupDialog(BuildContext context, String wtitle, String msg) {
   );
 }
 
+Widget _twoOptionsDialog(BuildContext context, String wtitle, String msg,
+    _ObservationPageState mystate) {
+  return new AlertDialog(
+    title: Text(wtitle),
+    content: new Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(msg),
+      ],
+    ),
+    actions: <Widget>[
+      new ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Text('No'),
+      ),
+      new ElevatedButton(
+        onPressed: () {
+          mystate._confidence = 0;
+          mystate.doSave = true;
+          Navigator.of(context).pop();
+        },
+        child: const Text('Yes'),
+      ),
+    ],
+  );
+}
+
 // Define a custom Form widget.
 
 class ObservationPage extends StatefulWidget {
@@ -53,12 +92,13 @@ class ObservationPage extends StatefulWidget {
   Observation? observation;
   PhotoMeta? photoMeta;
   int? index; // Index for observation in session
-  ObservationPage(
-      {required this.file,
-      required this.mode,
-      this.observation,
-      this.photoMeta,
-      this.index});
+  ObservationPage({
+    required this.file,
+    required this.mode,
+    this.observation,
+    this.photoMeta,
+    this.index,
+  });
 
   @override
   _ObservationPageState createState() => _ObservationPageState();
@@ -84,12 +124,15 @@ class _ObservationPageState extends State<ObservationPage> {
   UserStats? uStats;
   DateTime? selectedDate;
   int index = 0;
+  bool doSave = true;
 
   Future<void> _loadMetaData() async {
-    if (widget.photoMeta == null || widget.photoMeta!.location.latLng == LatLng(0, 0)) {
+    if (widget.photoMeta == null ||
+        widget.photoMeta!.location.latLng == LatLng(0, 0)) {
       final position = await Geolocator.getCurrentPosition();
       setState(() {
-        this.observation!.location = LatLng(position.latitude,position.longitude);
+        this.observation!.location =
+            LatLng(position.latitude, position.longitude);
       });
     } else {
       this.observation!.location = widget.photoMeta!.location.getLatLng();
@@ -164,14 +207,14 @@ class _ObservationPageState extends State<ObservationPage> {
 
   // Select date
   Future<Null> _selectDate(BuildContext context) async {
-    final DateTime? picked = await DatePicker.showDateTimePicker(context,
+    final DateTime? picked = await DP.DatePicker.showDateTimePicker(context,
         showTitleActions: true,
         minTime: DateTime(2000, 1, 1),
         maxTime: DateTime.now(), onChanged: (date) {
       print('change $date');
     }, onConfirm: (date) {
       print('confirm $date');
-    }, currentTime: selectedDate!, locale: LocaleType.en);
+    }, currentTime: selectedDate!, locale: DP.LocaleType.en);
     if (picked != null) {
       setState(() {
         selectedDate = picked;
@@ -203,9 +246,8 @@ class _ObservationPageState extends State<ObservationPage> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     final userSt = Provider.of<UserStats>(context);
-    this.observation!.confidentiality = (userSt.share == 'Y')
-        ? 'Share with community'
-        : 'Do not share';
+    this.observation!.confidentiality =
+        (userSt.share == 'Y') ? 'Share with community' : 'Do not share';
 
     Future<bool> onWillPop() async {
       final shouldPop = await showDialog(
@@ -271,6 +313,9 @@ class _ObservationPageState extends State<ObservationPage> {
                                             }),
                                   ),
                                   textAlign: TextAlign.center,
+                                  onFieldSubmitted: (String value) => {
+                                        _nameController.text = value,
+                                      },
                                   onChanged: (String value) => {
                                         this.observation!.name = value,
                                         _latinNameController.clear(),
@@ -296,8 +341,8 @@ class _ObservationPageState extends State<ObservationPage> {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) =>
-                                        _buildPopupDialog(
-                                            context, 'Search Options', namehelp),
+                                        _buildPopupDialog(context,
+                                            'Search Options', namehelp),
                                   );
                                 },
                                 icon: Icon(Icons.help_rounded)),
@@ -334,8 +379,9 @@ class _ObservationPageState extends State<ObservationPage> {
                                   ? ''
                                   : this.observation!.length.toString(),
                               textAlign: TextAlign.center,
-                              onChanged: (String value) =>
-                                  this.observation!.length = double.parse(value),
+                              onChanged: (String value) => this
+                                  .observation!
+                                  .length = double.parse(value),
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(
@@ -354,8 +400,9 @@ class _ObservationPageState extends State<ObservationPage> {
                                   ? ''
                                   : this.observation!.weight.toString(),
                               textAlign: TextAlign.center,
-                              onChanged: (String value) =>
-                                  this.observation!.weight = double.parse(value),
+                              onChanged: (String value) => this
+                                  .observation!
+                                  .weight = double.parse(value),
                               keyboardType: TextInputType.number,
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.allow(
@@ -489,8 +536,8 @@ class _ObservationPageState extends State<ObservationPage> {
                                     icon: const Icon(Icons.arrow_downward),
                                     iconSize: 24,
                                     elevation: 16,
-                                    style:
-                                        const TextStyle(color: Colors.deepPurple),
+                                    style: const TextStyle(
+                                        color: Colors.deepPurple),
                                     underline: Container(
                                       height: 2,
                                       color: Colors.black26,
@@ -498,12 +545,20 @@ class _ObservationPageState extends State<ObservationPage> {
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         _statusValue = newValue!;
-                                        this.observation!.status = _statusValue;
+                                        //this.observation!.status = _statusValue;
+                                        this.observation!.status =
+                                            STATUS_MAP.keys.firstWhere(
+                                                (s) =>
+                                                    STATUS_MAP[s] == newValue,
+                                                orElse: () => 0);
                                       });
                                     },
-                                    items: <String>['Observe', 'Release', 'Catch']
-                                        .map<DropdownMenuItem<String>>(
-                                            (String value) {
+                                    items: <String>[
+                                      'Observed',
+                                      'Released',
+                                      'Caught'
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
                                         child: Text(value),
@@ -523,6 +578,19 @@ class _ObservationPageState extends State<ObservationPage> {
                               const SizedBox(
                                 width: 10.0,
                               ),
+                              IconButton(
+                                  iconSize: 20,
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _buildPopupDialog(
+                                              context,
+                                              'Confidentiality Options',
+                                              confhelp),
+                                    );
+                                  },
+                                  icon: Icon(Icons.help_rounded)),
                               Container(
                                 alignment: Alignment.center,
                                 child: Text(
@@ -537,72 +605,101 @@ class _ObservationPageState extends State<ObservationPage> {
                       ElevatedButton(
                           child: Text(this.buttonName),
                           onPressed: () async {
-                            this.observation!.name = _nameController.text;
-                            this.observation!.latinName =
-                                _latinNameController.text;
-                            if (this.mode == 'single') {
-                              TaskState state = await DatabaseService(
-                                      uid: user.uid)
-                                  .addObservation(
-                                      this.observation!, File(widget.file.path));
+                            this.doSave = true;
+                            if (_nameController.text.isEmpty) {
+                              this.doSave = false;
+                              await showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    _buildPopupDialog(
+                                        context, 'Name missing', snamehelp),
+                              );
+                            } else if (_latinNameController.text.isEmpty) {
+                              this.doSave = false;
+                              await showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    _twoOptionsDialog(
+                                        context,
+                                        'Species Name missing',
+                                        specieshelp,
+                                        this),
+                              );
+                            }
+                            if (this.doSave) {
+                              this.observation!.name = _nameController.text;
+                              this.observation!.latinName =
+                                  _latinNameController.text;
+                              this.observation!.confidence = this._confidence;
+                              if (this.mode == 'single') {
+                                TaskState state =
+                                    await DatabaseService(uid: user.uid)
+                                        .addObservation(this.observation!,
+                                            File(widget.file.path));
 
-                              if (state == TaskState.success) {
-                                userSt.numobs = userSt.numobs! + 1;
-                                await DatabaseService(uid: user.uid)
-                                    .updateUserStats(userSt);
-                                final snackBar =
-                                    SnackBar(content: Text('Success'));
-                                //userSt?.numobs = userSt.numobs! + 1;
-                                //DatabaseService(uid: user.uid)
-                                //.updateUserStats(userSt as UserStats);
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              } else {
+                                if (state == TaskState.success) {
+                                  userSt.numobs = userSt.numobs! + 1;
+                                  await DatabaseService(uid: user.uid)
+                                      .updateUserStats(userSt);
+                                  final snackBar =
+                                      SnackBar(content: Text('Success'));
+                                  //userSt?.numobs = userSt.numobs! + 1;
+                                  //DatabaseService(uid: user.uid)
+                                  //.updateUserStats(userSt as UserStats);
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                } else {
+                                  print(
+                                      'Error from image repo ${state.toString()}');
+                                  throw ('This file is not an image');
+                                }
+
+                                // Back to previous page
+                                Navigator.pop(context);
+                              } else if (this.mode == 'session') {
                                 print(
-                                    'Error from image repo ${state.toString()}');
-                                throw ('This file is not an image');
+                                    'Stopwatch: ${this.observation!.stopwatchStart}');
+                                print('Add');
+
+                                // Add image to local directory
+                                await LocalStoreService().saveImage(context,
+                                    File(_imageFile.path), '$index.png');
+
+                                // Add observation to local directory
+                                await LocalStoreService().saveObservation(
+                                    this.observation!, '$index.txt');
+
+                                Navigator.pop(
+                                    context, [this.observation, this._image]);
+                              } else if (this.mode == 'me') {
+                                print('Update');
+                                String state =
+                                    await DatabaseService(uid: user.uid)
+                                        .updateObservation(this.observation!);
+
+                                if (state == "success") {
+                                  final snackBar =
+                                      SnackBar(content: Text('Success'));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                } else {
+                                  print(
+                                      'Error from image repo ${state.toString()}');
+                                  throw ('This file is not an image');
+                                }
+
+                                // Back to two previous pages
+                                // Since previous page won't update the information,
+                                // second previous page would fetch new observation
+                                // from cloud and get updated information
+                                int count = 0;
+                                Navigator.of(context)
+                                    .popUntil((_) => count++ >= 2);
+                                // Navigator.pop(context);
                               }
-
-                              // Back to previous page
-                              Navigator.pop(context);
-                            } else if (this.mode == 'session') {
-                              print(
-                                  'Stopwatch: ${this.observation!.stopwatchStart}');
-                              print('Add');
-
-                              // Add image to local directory
-                              await LocalStoreService().saveImage(
-                                  context, File(_imageFile.path), '$index.png');
-
-                              // Add observation to local directory
-                              await LocalStoreService().saveObservation(
-                                  this.observation!, '$index.txt');
-
-                              Navigator.pop(
-                                  context, [this.observation, this._image]);
-                            } else if (this.mode == 'me') {
-                              print('Update');
-                              String state = await DatabaseService(uid: user.uid)
-                                  .updateObservation(this.observation!);
-
-                              if (state == "success") {
-                                final snackBar =
-                                    SnackBar(content: Text('Success'));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              } else {
-                                print(
-                                    'Error from image repo ${state.toString()}');
-                                throw ('This file is not an image');
-                              }
-
-                              // Back to two previous pages
-                              // Since previous page won't update the information,
-                              // second previous page would fetch new observation
-                              // from cloud and get updated information
-                              int count = 0;
-                              Navigator.of(context).popUntil((_) => count++ >= 2);
-                              // Navigator.pop(context);
+                            } else {
+                              //Navigator.pop(context);
+                              print('Do nothing');
                             }
                           }),
                     ],

@@ -15,10 +15,32 @@ class Loading extends StatelessWidget {
     return Container(
         //color: Colors.brown[100],
         decoration: blueBoxDecoration,
-        child: Center(
-            child: SpinKitChasingDots(
-          color: Colors.blue.shade900,
-          size: 50.0,
-        )));
+        child: Scaffold(
+          appBar: AppBar(
+            elevation: 0.0,
+            backgroundColor: topBarColor,
+            title: Text(
+              'Working...',
+            ),
+            centerTitle: true,
+          ),
+          body: Container(
+              //Center(
+              child: Stack(
+            children: [
+              Center(
+                child: Text(
+                  'Searching...',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SpinKitChasingDots(
+                color: Colors.blue.shade900,
+                size: 50.0,
+              )
+            ],
+          )),
+        ));
   }
 }

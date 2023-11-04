@@ -25,7 +25,7 @@ class MePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text('Me Page: ${user.displayName}'),
+          title: Text('My Observations: ${user.displayName}'),
           centerTitle: true,
           backgroundColor: themeMap['scaffold_appBar_color'],
           elevation: 0.0,

@@ -47,7 +47,7 @@ class MeObservation extends StatelessWidget {
     double length = 0.0;
     double weight = 0.0;
     dynamic time = [];
-    String status = '';
+    String? status = '';
     String confidentiality = '';
     String imageURL = '';
     String? confidence = 'High';
@@ -58,12 +58,14 @@ class MeObservation extends StatelessWidget {
     length = observation.length!;
     weight = observation.weight!;
     time = observation.time!;
-    status = observation.status!;
+    status = (STATUS_MAP.containsKey(observation.status))
+        ? CONFIDENCE_MAP[observation.status]
+        : '';
     confidentiality = observation.confidentiality!;
     imageURL = observation.url!;
     confidence = (CONFIDENCE_MAP.containsKey(observation.confidence))
         ? CONFIDENCE_MAP[observation.confidence]
-        : 'Unknown';
+        : 'Null';
 
     print('documentID: ${observation.documentID}');
 
@@ -102,7 +104,7 @@ class MeObservation extends StatelessWidget {
                     style: TextStyle(fontSize: 16),
                   ),
                   style: TextButton.styleFrom(
-                    primary: Colors.white,
+                    foregroundColor: Colors.white,
                   ),
                   onPressed: () async {
                     File _imageFile = await urlToFile(imageURL);
@@ -122,7 +124,7 @@ class MeObservation extends StatelessWidget {
                     style: TextStyle(fontSize: 16),
                   ),
                   style: TextButton.styleFrom(
-                    primary: Colors.red,
+                    foregroundColor: Colors.red,
                   ),
                   onPressed: () async {
                     String state = await DatabaseService(uid: user!.uid)
@@ -219,7 +221,8 @@ class MeObservation extends StatelessWidget {
                                           value: confidentiality),
                                       SizedBox(height: 10.0),
                                       FieldWithValue(
-                                          field: 'Status', value: status),
+                                          field: 'Status',
+                                          value: STATUS_MAP[status]!),
                                       SizedBox(height: 10.0),
                                       (this.observation.confidentiality ==
                                               CONFIDENTIALITY)

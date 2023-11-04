@@ -81,7 +81,7 @@ Map<String, List<Image>> MPA_type_icon = {
 // Default value of properties of observations
 const String NAME = 'None';
 const String LATINNAME = 'Unknown';
-const String STATUS = 'Observe';
+const String STATUS = 'Observed';
 const double LENGTH = 0.0;
 const double WEIGHT = 0.0;
 const String TIME = 'None';
@@ -95,6 +95,12 @@ Map<int, String> CONFIDENCE_MAP = {
   1: 'Low',
   2: 'Medium',
   3: 'High',
+};
+
+Map<int, String> STATUS_MAP = {
+  0: 'Observed',
+  1: 'Caught',
+  2: 'Released',
 };
 
 Map<String, String> descriptionMap = {'length': 'longer', 'weight': 'heavier'};

@@ -22,7 +22,7 @@ class DatabaseService {
 
   // collection references
   final CollectionReference observationCollection =
-      FirebaseFirestore.instance.collection('observations');
+      FirebaseFirestore.instance.collection('test_observations');
   final CollectionReference userstatsCollection =
       FirebaseFirestore.instance.collection('userstats');
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -57,7 +57,7 @@ class DatabaseService {
     } else {
       obsMap['location'] = GeoPoint(LATITUDE, LONGITUDE);
     }
-    obsMap['status'] = observation.status ?? STATUS;
+    obsMap['status'] = observation.status ?? STATUS_MAP[STATUS];
     obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
     obsMap['url'] = observation.url ?? URL;
@@ -173,19 +173,20 @@ class DatabaseService {
         weight: doc.get('weight'),
         time: (doc.get('time') != null && doc.get('time') != TIME)
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.get('time').seconds * 1000)
+                doc.get('time').seconds * 1000)
             : TIME,
-        location: (doc.get('location')!=null)?
-        LatLng(doc.get('location').latitude, doc.get('location').longitude):
-        LatLng(LATITUDE, LONGITUDE),
-        status: doc.get('status') ?? STATUS,
+        location: (doc.get('location') != null)
+            ? LatLng(
+                doc.get('location').latitude, doc.get('location').longitude)
+            : LatLng(LATITUDE, LONGITUDE),
+        status: doc.get('status') == 'Observe' ? STATUS : doc.get('status'),
         confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
         confidence: doc.get('confidence') ?? CONFIDENCE,
         url: doc.get('url'),
         stopwatchStart: (doc.get('stopwatchStart') != null &&
-            doc.get('stopwatchStart') != STOPWATCHSTART)
+                doc.get('stopwatchStart') != STOPWATCHSTART)
             ? DateTime.fromMillisecondsSinceEpoch(
-            doc.get('stopwatchStart').seconds * 1000)
+                doc.get('stopwatchStart').seconds * 1000)
             : STOPWATCHSTART,
       );
     }).toList();
