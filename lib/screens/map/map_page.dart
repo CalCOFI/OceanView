@@ -135,6 +135,7 @@ class _MapPageState extends State<MapPage> {
                 pinInformation = PinInformation(name, type,
                     mpaRegulations[name] ?? ['None'], generalRegulation);
               });
+              print('Tap polygon $name');
             });
         _polygons[name] = polygon;
 
@@ -172,6 +173,7 @@ class _MapPageState extends State<MapPage> {
           position: LatLng(HQ_LOCATION[0], HQ_LOCATION[1]),
           alpha: 0.5,
           onTap: () {
+            print('Tap HQ');
             setState(() {
               _pinPillPosition = 100;
               pinInformation =
