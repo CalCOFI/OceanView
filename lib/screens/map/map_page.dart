@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ocean_view/shared/constants.dart';
 
@@ -29,17 +28,10 @@ class _MapPageState extends State<MapPage> {
   // center of California
   final LatLng _center = LatLng(36.735201, -119.790656);
   final double _zoom = 6.0;
-  LatLng _location = LatLng(0.0, 0.0);
 
   final Map<String, Marker> _markers = {};
   final Map<String, Polygon> _polygons = {};
   final Map<String, Circle> _circles = {};
-
-  // MPA members
-  final List<String> _names = <String>[];
-  final Map<String, LatLng> _centers = {};
-  final Map<String, double> _radiuses = {};
-  final Map<String, double> _distances = {};
 
   // Pin for showing MPA information
   double _pinPillPosition = -100;
@@ -56,20 +48,9 @@ class _MapPageState extends State<MapPage> {
     super.initState();
   }
 
-  Future<void> getCurrentLocation() async {
-    // Request permission ()
-    // await Geolocator.checkPermission();
-    // await Geolocator.requestPermission();
-
-    final position = await Geolocator.getCurrentPosition();
-    print(position);
-    _location = LatLng(position.latitude, position.longitude);
-  }
-
   Future<void> _onMapCreated(GoogleMapController controller) async {
     // Controller moves with current location
     mapController = controller;
-    await getCurrentLocation();
 
     // Load MPAs
     final MPAs = await mpa.getMPAs();
@@ -83,7 +64,6 @@ class _MapPageState extends State<MapPage> {
       _polygons.clear();
       _circles.clear();
 
-      var num = 1;
       for (final MPA in MPAs.features) {
         var name = MPA.properties.FULLNAME;
         var type = MPA.properties.Type;
@@ -135,7 +115,6 @@ class _MapPageState extends State<MapPage> {
                 pinInformation = PinInformation(name, type,
                     mpaRegulations[name] ?? ['None'], generalRegulation);
               });
-              print('Tap polygon $name');
             });
         _polygons[name] = polygon;
 
@@ -147,24 +126,6 @@ class _MapPageState extends State<MapPage> {
         } else {
           generalRegulation = 'None';
         }
-
-        // Add markers
-        _markers[name] = Marker(
-          markerId: MarkerId(name),
-          position: center,
-          alpha: 0.0,
-        );
-
-        // Store names, centers, radius and distances from current location
-        _names.add(name);
-        _centers[name] = center;
-        _radiuses[name] = radius;
-        _distances[name] = sqrt(pow(_location.latitude - center.latitude, 2) +
-                pow(_location.longitude - center.longitude, 2)) *
-            111000;
-
-        print('$num. Add $name, Type: $type, Radius: $radius');
-        num++;
       }
 
       // add marker for CalCOFI (32.865003202144884, -117.25420953232023)
@@ -173,7 +134,6 @@ class _MapPageState extends State<MapPage> {
           position: LatLng(HQ_LOCATION[0], HQ_LOCATION[1]),
           alpha: 0.5,
           onTap: () {
-            print('Tap HQ');
             setState(() {
               _pinPillPosition = 100;
               pinInformation =
@@ -203,7 +163,6 @@ class _MapPageState extends State<MapPage> {
               markers: _markers.values.toSet(),
               polygons: _polygons.values.toSet(),
               circles: _circles.values.toSet(),
-              // markers: _markers.values.toSet(),
               myLocationEnabled: true,
             ),
             AnimatedPositioned(
