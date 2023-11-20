@@ -9,7 +9,6 @@ import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/me/me_observation.dart';
 
 import '../../shared/constants.dart';
-import '../timeline_page.dart';
 
 /*
   A page showing user's past observations with only images organized

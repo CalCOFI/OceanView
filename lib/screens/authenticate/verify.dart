@@ -79,7 +79,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
               }
               ;
             },
-            child: Text(_buttonEnabled ? "Resend" : "Resend ($_countdown)"),
+            child: Text(_buttonEnabled ? 'Resend' : 'Resend ($_countdown)'),
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: _buttonEnabled ? Colors.blue : Colors.grey,
