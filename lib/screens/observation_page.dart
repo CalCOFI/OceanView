@@ -13,7 +13,6 @@ import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
-// import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
 
@@ -86,6 +85,7 @@ class _ObservationPageState extends State<ObservationPage> {
   UserStats? uStats;
   DateTime? selectedDate;
   int index = 0;
+  bool _isButtonActive = false;  // active when name field is not empty
 
   Future<void> _loadMetaData() async {
     if (widget.photoMeta == null ||
@@ -117,6 +117,10 @@ class _ObservationPageState extends State<ObservationPage> {
     this._nameController = (this.observation!.name != null)
         ? TextEditingController(text: this.observation!.name)
         : TextEditingController(text: '');
+    this._nameController.addListener(() {
+      final isButtonActive = this._nameController.text.isNotEmpty;
+      setState(() => this._isButtonActive = isButtonActive);
+    });
     this._latinNameController = (this.observation!.latinName != null)
         ? TextEditingController(text: this.observation!.latinName)
         : TextEditingController(text: '');
@@ -187,11 +191,11 @@ class _ObservationPageState extends State<ObservationPage> {
   // print location
   String _printLocation(LatLng? position) {
     if (position == null) {
-      return "(1,1)";
+      return '(1,1)';
     } else {
       String lat = position.latitude.toStringAsFixed(6);
       String lng = position.longitude.toStringAsFixed(6);
-      return "(${lat},${lng})";
+      return '(${lat},${lng})';
     }
   }
 
@@ -483,7 +487,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           child: Row(
                             // Row for Status Entry
                             children: [
-                              const Text("Status: "),
+                              const Text('Status: '),
                               const SizedBox(
                                 width: 10.0,
                               ),
@@ -527,7 +531,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           padding: EdgeInsets.all(4),
                           child: Row(
                             children: [
-                              const Text("Confidentiality: "),
+                              const Text('Confidentiality: '),
                               const SizedBox(
                                 width: 10.0,
                               ),
@@ -544,7 +548,9 @@ class _ObservationPageState extends State<ObservationPage> {
                       const SizedBox(height: 10),
                       ElevatedButton(
                           child: Text(this.buttonName),
-                          onPressed: () async {
+                          onPressed: _isButtonActive
+                          ? () async {
+                            setState(() => _isButtonActive = false);
                             this.observation!.name = _nameController.text;
                             this.observation!.latinName =
                                 _latinNameController.text;
@@ -560,9 +566,6 @@ class _ObservationPageState extends State<ObservationPage> {
                                     .updateUserStats(userSt);
                                 final snackBar =
                                     SnackBar(content: Text('Success'));
-                                //userSt?.numobs = userSt.numobs! + 1;
-                                //DatabaseService(uid: user.uid)
-                                //.updateUserStats(userSt as UserStats);
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(snackBar);
                               } else {
@@ -594,7 +597,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                   await DatabaseService(uid: user.uid)
                                       .updateObservation(this.observation!);
 
-                              if (state == "success") {
+                              if (state == 'success') {
                                 final snackBar =
                                     SnackBar(content: Text('Success'));
                                 ScaffoldMessenger.of(context)
@@ -614,7 +617,8 @@ class _ObservationPageState extends State<ObservationPage> {
                                   .popUntil((_) => count++ >= 2);
                               // Navigator.pop(context);
                             }
-                          }),
+                          }
+                          : null),
                     ],
                   )),
             ],
