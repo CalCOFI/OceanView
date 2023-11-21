@@ -135,7 +135,8 @@ class _UploadSessionState extends State<UploadSession> {
 
                                         // Extract exif data from image file
                                         PhotoMeta photoMeta =
-                                            await extractLocationAndTime(_imageFile!);
+                                            await extractLocationAndTime(
+                                                _imageFile!);
 
                                         if (_imageFile != null) {
                                           // Get observation from ObservationPage
