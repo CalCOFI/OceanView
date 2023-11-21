@@ -106,7 +106,7 @@ class _HomeState extends State<Home> {
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(Icons.verified_user),
-                        label: 'Me',
+                        label: 'MyObs',
                       ),
                     ],
                     currentIndex: _currentIndex,
