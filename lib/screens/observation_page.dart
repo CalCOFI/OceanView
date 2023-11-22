@@ -15,7 +15,6 @@ import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
-
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/upload/upload_classification.dart';
@@ -85,7 +84,7 @@ class _ObservationPageState extends State<ObservationPage> {
   UserStats? uStats;
   DateTime? selectedDate;
   int index = 0;
-  bool _isButtonActive = false;  // active when name field is not empty
+  bool _isButtonActive = false; // active when name field is not empty
 
   Future<void> _loadMetaData() async {
     if (widget.photoMeta == null ||
@@ -352,7 +351,7 @@ class _ObservationPageState extends State<ObservationPage> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Text("inches"),
+                          const Text('inches'),
                           SizedBox(width: 10),
                           const Text('Weight: '),
                           const SizedBox(width: 10),
@@ -549,76 +548,76 @@ class _ObservationPageState extends State<ObservationPage> {
                       ElevatedButton(
                           child: Text(this.buttonName),
                           onPressed: _isButtonActive
-                          ? () async {
-                            setState(() => _isButtonActive = false);
-                            this.observation!.name = _nameController.text;
-                            this.observation!.latinName =
-                                _latinNameController.text;
-                            if (this.mode == 'single') {
-                              TaskState state =
-                                  await DatabaseService(uid: user.uid)
-                                      .addObservation(this.observation!,
-                                          File(widget.file.path));
+                              ? () async {
+                                  setState(() => _isButtonActive = false);
+                                  this.observation!.name = _nameController.text;
+                                  this.observation!.latinName =
+                                      _latinNameController.text;
+                                  if (this.mode == 'single') {
+                                    TaskState state =
+                                        await DatabaseService(uid: user.uid)
+                                            .addObservation(this.observation!,
+                                                File(widget.file.path));
 
-                              if (state == TaskState.success) {
-                                userSt.numobs = userSt.numobs! + 1;
-                                await DatabaseService(uid: user.uid)
-                                    .updateUserStats(userSt);
-                                final snackBar =
-                                    SnackBar(content: Text('Success'));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              } else {
-                                print(
-                                    'Error from image repo ${state.toString()}');
-                                throw ('This file is not an image');
-                              }
+                                    if (state == TaskState.success) {
+                                      userSt.numobs = userSt.numobs! + 1;
+                                      await DatabaseService(uid: user.uid)
+                                          .updateUserStats(userSt);
+                                      final snackBar =
+                                          SnackBar(content: Text('Success'));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    } else {
+                                      print(
+                                          'Error from image repo ${state.toString()}');
+                                      throw ('This file is not an image');
+                                    }
 
-                              // Back to previous page
-                              Navigator.pop(context);
-                            } else if (this.mode == 'session') {
-                              print(
-                                  'Stopwatch: ${this.observation!.stopwatchStart}');
-                              print('Add');
+                                    // Back to previous page
+                                    Navigator.pop(context);
+                                  } else if (this.mode == 'session') {
+                                    print(
+                                        'Stopwatch: ${this.observation!.stopwatchStart}');
+                                    print('Add');
 
-                              // Add image to local directory
-                              await LocalStoreService().saveImage(
-                                  context, File(_imageFile.path), '$index.png');
+                                    // Add image to local directory
+                                    await LocalStoreService().saveImage(context,
+                                        File(_imageFile.path), '$index.png');
 
-                              // Add observation to local directory
-                              await LocalStoreService().saveObservation(
-                                  this.observation!, '$index.txt');
+                                    // Add observation to local directory
+                                    await LocalStoreService().saveObservation(
+                                        this.observation!, '$index.txt');
 
-                              Navigator.pop(
-                                  context, [this.observation, this._image]);
-                            } else if (this.mode == 'me') {
-                              print('Update');
-                              String state =
-                                  await DatabaseService(uid: user.uid)
-                                      .updateObservation(this.observation!);
+                                    Navigator.pop(context,
+                                        [this.observation, this._image]);
+                                  } else if (this.mode == 'me') {
+                                    print('Update');
+                                    String state = await DatabaseService(
+                                            uid: user.uid)
+                                        .updateObservation(this.observation!);
 
-                              if (state == 'success') {
-                                final snackBar =
-                                    SnackBar(content: Text('Success'));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              } else {
-                                print(
-                                    'Error from image repo ${state.toString()}');
-                                throw ('This file is not an image');
-                              }
+                                    if (state == 'success') {
+                                      final snackBar =
+                                          SnackBar(content: Text('Success'));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    } else {
+                                      print(
+                                          'Error from image repo ${state.toString()}');
+                                      throw ('This file is not an image');
+                                    }
 
-                              // Back to two previous pages
-                              // Since previous page won't update the information,
-                              // second previous page would fetch new observation
-                              // from cloud and get updated information
-                              int count = 0;
-                              Navigator.of(context)
-                                  .popUntil((_) => count++ >= 2);
-                              // Navigator.pop(context);
-                            }
-                          }
-                          : null),
+                                    // Back to two previous pages
+                                    // Since previous page won't update the information,
+                                    // second previous page would fetch new observation
+                                    // from cloud and get updated information
+                                    int count = 0;
+                                    Navigator.of(context)
+                                        .popUntil((_) => count++ >= 2);
+                                    // Navigator.pop(context);
+                                  }
+                                }
+                              : null),
                     ],
                   )),
             ],
