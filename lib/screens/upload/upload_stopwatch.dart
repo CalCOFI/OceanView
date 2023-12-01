@@ -104,7 +104,7 @@ class _UploadStopwatchState extends State<UploadStopwatch> {
           icon: Icon(Icons.not_started_rounded),
         ),
         Text(
-          "$hoursStr:$minutesStr:$secondsStr",
+          '$hoursStr:$minutesStr:$secondsStr',
           style: TextStyle(
             fontSize: 25.0,
           ),

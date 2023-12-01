@@ -22,7 +22,7 @@ class RegulationPage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(10),
             child: Text(
-              "${pinInformation.locationType} General Regulations",
+              '${pinInformation.locationType} General Regulations',
               style: const TextStyle(fontSize: 16),
             ),
           ),
@@ -39,7 +39,7 @@ class RegulationPage extends StatelessWidget {
               child: FittedBox(
                 fit: BoxFit.fitWidth,
                 child: Text(
-                  "Exceptions in ${pinInformation.locationName}",
+                  'Exceptions in ${pinInformation.locationName}',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.black,
@@ -53,7 +53,7 @@ class RegulationPage extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   child: Text(
-                    "${index + 1}. ${pinInformation.exceptions[index]}",
+                    '${index + 1}. ${pinInformation.exceptions[index]}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 );

@@ -89,7 +89,7 @@ Future<PhotoMeta> extractLocationAndTime(File imageFile) async {
   DateTime dateTime = DateTime(0);
 
   if (data!.isEmpty) {
-    print("No EXIF information found");
+    print('No EXIF information found');
     return PhotoMeta(location, dateTime);
   } else {
     // Extract location from GPS

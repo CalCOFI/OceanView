@@ -32,21 +32,21 @@ class _UploadClassificationState extends State<UploadClassification> {
     'x-rapidapi-key': '5b2f443d6cmsh9e04ef3014bde3dp176b6ajsnea7f884ff2e9',
     'x-rapidapi-host': 'visionapi.p.rapidapi.com'
   };
-  String apiUrl = "https://visionapi.p.rapidapi.com/v1/rapidapi/score_image";
+  String apiUrl = 'https://visionapi.p.rapidapi.com/v1/rapidapi/score_image';
 
   // Send request to VisionAPI
   uploadToVisionAPI() async {
     var stream = new http.ByteStream(widget.imageFile.openRead().cast());
     var length = await widget.imageFile.length();
     var uri = Uri.parse(apiUrl);
-    var request = new http.MultipartRequest("POST", uri);
+    var request = new http.MultipartRequest('POST', uri);
 
-    Map<String, String> mapContent = {"content-type": "mutipart/form-data"};
+    Map<String, String> mapContent = {'content-type': 'mutipart/form-data'};
     request.headers.addAll(headers);
     request.headers.addAll(mapContent);
     var multipartFile = new http.MultipartFile('image', stream, length,
         filename: path.basename(widget.imageFile.path),
-        contentType: MediaType.parse("multipart/form-data"));
+        contentType: MediaType.parse('multipart/form-data'));
 
     request.files.add(multipartFile);
 
@@ -95,7 +95,7 @@ class _UploadClassificationState extends State<UploadClassification> {
     return Card(
       child: new InkWell(
           onTap: () {
-            print("Tap ${commonName}");
+            print('Tap ${commonName}');
             Navigator.pop(context, model.taxon);
           },
           child: FittedBox(
@@ -129,7 +129,7 @@ class _UploadClassificationState extends State<UploadClassification> {
                 icon: Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.pop(context, null),
               ),
-              title: Text("Species suggestions"),
+              title: Text('Species suggestions'),
             ),
             body: Container(
               child: Column(

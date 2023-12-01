@@ -13,7 +13,7 @@ import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/models/observation.dart';
@@ -185,11 +185,11 @@ class _ObservationPageState extends State<ObservationPage> {
   // print location
   String _printLocation(LatLng? position) {
     if (position == null) {
-      return "(1,1)";
+      return '(1,1)';
     } else {
       String lat = position.latitude.toStringAsFixed(6);
       String lng = position.longitude.toStringAsFixed(6);
-      return "(${lat},${lng})";
+      return '(${lat},${lng})';
     }
   }
 
@@ -346,7 +346,7 @@ class _ObservationPageState extends State<ObservationPage> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Text("inches"),
+                          const Text('inches'),
                           SizedBox(width: 10),
                           const Text('Weight: '),
                           const SizedBox(width: 10),
@@ -382,7 +382,7 @@ class _ObservationPageState extends State<ObservationPage> {
                               child: Container(
                             alignment: Alignment.center,
                             child: Text(
-                                "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
+                                '${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}'),
                           )),
                           const SizedBox(width: 10.0),
                           ElevatedButton(
@@ -481,7 +481,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           child: Row(
                             // Row for Status Entry
                             children: [
-                              const Text("Status: "),
+                              const Text('Status: '),
                               const SizedBox(
                                 width: 10.0,
                               ),
@@ -525,7 +525,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           padding: EdgeInsets.all(4),
                           child: Row(
                             children: [
-                              const Text("Confidentiality: "),
+                              const Text('Confidentiality: '),
                               const SizedBox(
                                 width: 10.0,
                               ),
@@ -592,7 +592,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                   await DatabaseService(uid: user.uid)
                                       .updateObservation(this.observation!);
 
-                              if (state == "success") {
+                              if (state == 'success') {
                                 final snackBar =
                                     SnackBar(content: Text('Success'));
                                 ScaffoldMessenger.of(context)

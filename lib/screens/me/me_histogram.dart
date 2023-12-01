@@ -84,11 +84,11 @@ class MeHistogram extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Observation> observations =
         Provider.of<List<Observation>?>(context) ?? [];
-    String strObs = "";
+    String strObs = '';
     int index = 0;
     List<double> fieldList = <double>[];
     List<dynamic> result = [];
-    String description = "";
+    String description = '';
 
     print('--- $field ---');
     observations.forEach((observation) {
@@ -105,12 +105,12 @@ class MeHistogram extends StatelessWidget {
     if (fieldList.length == 0) {
       description = 'Loading';
     } else if (fieldList.length == 1) {
-      description = "You are the first one to upload this observation!";
+      description = 'You are the first one to upload this observation!';
     } else {
       print(fieldList);
       result = getHistogram(fieldList);
-      description = "${curObs.map[field]} is ${descriptionMap[field]} than "
-          "${result[1]}% of observations";
+      description = '${curObs.map[field]} is ${descriptionMap[field]} than '
+          '${result[1]}% of observations';
     }
 
     // return Text(field+":\n"+strObs);
@@ -122,7 +122,7 @@ class MeHistogram extends StatelessWidget {
                 child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(children: [
-                      Text("Histogram of ${this.field}",
+                      Text('Histogram of ${this.field}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           )),

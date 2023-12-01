@@ -199,6 +199,5 @@ doc/api/
 # Avoid ipa folder
 export_ipa/
 
-# Avoid private keys
+# Avoid credentials
 private_keys/
-
