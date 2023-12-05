@@ -15,7 +15,7 @@ class Observation {
   dynamic time; // Datetime from the picture (None: not showing)
   LatLng? location; // LatLng from picture (None: not showing)
   int? status; // 0/1/2 = Observe / Release / Catch
-  String? confidentiality; // Share with scientists / Keep private
+  int? confidentiality; // Share with scientists / Keep private / now int
   int? confidence; // 1-3 can also be 0 for no confidence
   String? url; // Url of photo on Firebase, generated when uploading
   dynamic stopwatchStart; // Datetime of stopwatch start

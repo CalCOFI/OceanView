@@ -57,7 +57,7 @@ class DatabaseService {
     } else {
       obsMap['location'] = GeoPoint(LATITUDE, LONGITUDE);
     }
-    obsMap['status'] = observation.status ?? STATUS_MAP[STATUS];
+    obsMap['status'] = observation.status ?? STATUS; //STATUS_MAP[STATUS];
     obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
     obsMap['url'] = observation.url ?? URL;
@@ -179,7 +179,8 @@ class DatabaseService {
             ? LatLng(
                 doc.get('location').latitude, doc.get('location').longitude)
             : LatLng(LATITUDE, LONGITUDE),
-        status: doc.get('status') == 'Observe' ? STATUS : doc.get('status'),
+        status: doc.get('status') ??
+            STATUS, //'Observe' ? STATUS : doc.get('status'),
         confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
         confidence: doc.get('confidence') ?? CONFIDENCE,
         url: doc.get('url'),

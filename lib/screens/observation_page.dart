@@ -119,7 +119,7 @@ class _ObservationPageState extends State<ObservationPage> {
   late String mode; // single, session, me
   late String buttonName; // Upload, Add    , Update
 
-  int _statusValue = STATUS;
+  int _statusValue = STATUS; // Now an integer
   int _confidence = CONFIDENCE;
   Observation? observation;
   UserStats? uStats;
@@ -247,8 +247,12 @@ class _ObservationPageState extends State<ObservationPage> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     final userSt = Provider.of<UserStats>(context);
-    this.observation!.confidentiality =
-        (userSt.share == 'Y') ? 'Share with community' : 'Do not share';
+    this.observation!.confidentiality = (userSt.share == 'Y')
+        ? CONFIDENTIALITY
+        : CONFIDENTIALITY_MAP.keys.firstWhere(
+            (s) => CONFIDENTIALITY_MAP[s] == 'Do not Share',
+            orElse: () => 0);
+    ;
 
     Future<bool> onWillPop() async {
       final shouldPop = await showDialog(
@@ -595,7 +599,8 @@ class _ObservationPageState extends State<ObservationPage> {
                               Container(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  this.observation!.confidentiality!,
+                                  CONFIDENTIALITY_MAP[
+                                      this.observation!.confidentiality]!,
                                   style:
                                       const TextStyle(color: Colors.deepPurple),
                                 ),
