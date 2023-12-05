@@ -13,7 +13,8 @@ import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:ocean_view/src/extract_exif.dart';
 import 'package:ocean_view/src/aphia_parse.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart' as DP;
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
+    as DP;
 
 import 'package:ocean_view/services/local_store.dart';
 import 'package:ocean_view/models/observation.dart';
@@ -118,7 +119,7 @@ class _ObservationPageState extends State<ObservationPage> {
   late String mode; // single, session, me
   late String buttonName; // Upload, Add    , Update
 
-  String _statusValue = STATUS;
+  int _statusValue = STATUS;
   int _confidence = CONFIDENCE;
   Observation? observation;
   UserStats? uStats;
@@ -201,7 +202,7 @@ class _ObservationPageState extends State<ObservationPage> {
     } else {
       selectedDate = this.observation!.time;
       _confidence = this.observation!.confidence as int;
-      _statusValue = this.observation!.status as String;
+      _statusValue = this.observation!.status as int;
     }
   }
 
@@ -532,7 +533,7 @@ class _ObservationPageState extends State<ObservationPage> {
                               Container(
                                   alignment: Alignment.center,
                                   child: DropdownButton<String>(
-                                    value: _statusValue,
+                                    value: STATUS_MAP[_statusValue],
                                     icon: const Icon(Icons.arrow_downward),
                                     iconSize: 24,
                                     elevation: 16,
@@ -544,13 +545,13 @@ class _ObservationPageState extends State<ObservationPage> {
                                     ),
                                     onChanged: (String? newValue) {
                                       setState(() {
-                                        _statusValue = newValue!;
-                                        //this.observation!.status = _statusValue;
-                                        this.observation!.status =
-                                            STATUS_MAP.keys.firstWhere(
+                                        _statusValue = STATUS_MAP.keys
+                                            .firstWhere(
                                                 (s) =>
                                                     STATUS_MAP[s] == newValue,
                                                 orElse: () => 0);
+                                        //this.observation!.status = _statusValue;
+                                        this.observation!.status = _statusValue;
                                       });
                                     },
                                     items: <String>[
