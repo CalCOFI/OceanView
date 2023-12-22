@@ -57,7 +57,7 @@ class DatabaseService {
     } else {
       obsMap['location'] = GeoPoint(LATITUDE, LONGITUDE);
     }
-    obsMap['status'] = observation.status ?? STATUS;
+    obsMap['status'] = observation.status ?? STATUS; //STATUS_MAP[STATUS];
     obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
     obsMap['url'] = observation.url ?? URL;

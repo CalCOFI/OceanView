@@ -87,13 +87,13 @@ const String HQ_URL =
 // Default value of properties of observations
 const String NAME = 'None';
 const String LATINNAME = 'Unknown';
-const String STATUS = 'Observe';
+const int STATUS = 0;
 const double LENGTH = 0.0;
 const double WEIGHT = 0.0;
 const String TIME = 'None';
 const double LATITUDE = 0;
 const double LONGITUDE = 0;
-const String CONFIDENTIALITY = 'Share with community';
+const int CONFIDENTIALITY = 1;
 const int CONFIDENCE = 2;
 const String URL = 'None';
 const String STOPWATCHSTART = 'None';
@@ -101,6 +101,19 @@ Map<int, String> CONFIDENCE_MAP = {
   1: 'Low',
   2: 'Medium',
   3: 'High',
+  0: 'Null',
+};
+
+Map<int, String> STATUS_MAP = {
+  0: 'Observed',
+  1: 'Caught',
+  2: 'Released',
+};
+
+Map<int, String> CONFIDENTIALITY_MAP = {
+  // Used to be string
+  1: 'Share with community',
+  0: 'Do not Share',
 };
 
 Map<String, String> descriptionMap = {'length': 'longer', 'weight': 'heavier'};

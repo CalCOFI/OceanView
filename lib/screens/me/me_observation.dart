@@ -40,15 +40,15 @@ class MeObservation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //Create objects to store detailed information of the observation
-    String speciesName = '';
-    String scientificName = '';
-    double length = 0.0;
-    double weight = 0.0;
-    dynamic time = [];
-    String status = '';
-    String confidentiality = '';
-    String imageURL = '';
-    String? confidence = 'High';
+    String speciesName = NAME;
+    String scientificName = LATINNAME;
+    double length = LENGTH;
+    double weight = WEIGHT;
+    dynamic time = TIME;
+    int? status = STATUS;
+    int? confidentiality = CONFIDENTIALITY;
+    String imageURL = URL;
+    int? confidence = CONFIDENCE;
 
     //Assign values for all objects
     speciesName = observation.name!;
@@ -56,12 +56,10 @@ class MeObservation extends StatelessWidget {
     length = observation.length!;
     weight = observation.weight!;
     time = observation.time!;
-    status = observation.status!;
-    confidentiality = observation.confidentiality!;
+    status = observation.status ?? STATUS;
+    confidentiality = observation.confidentiality!; // now int
     imageURL = observation.url!;
-    confidence = (CONFIDENCE_MAP.containsKey(observation.confidence))
-        ? CONFIDENCE_MAP[observation.confidence]
-        : 'Unknown';
+    confidence = observation.confidence ?? CONFIDENCE;
 
     print('documentID: ${observation.documentID}');
 
@@ -210,14 +208,16 @@ class MeObservation extends StatelessWidget {
                                       SizedBox(height: 10.0),
                                       FieldWithValue(
                                           field: 'Confidence Level',
-                                          value: confidence!),
+                                          value: CONFIDENCE_MAP[confidence]!),
                                       SizedBox(height: 10.0),
                                       FieldWithValue(
                                           field: 'Confidentiality',
-                                          value: confidentiality),
+                                          value: CONFIDENTIALITY_MAP[
+                                              confidentiality]!),
                                       SizedBox(height: 10.0),
                                       FieldWithValue(
-                                          field: 'Status', value: status),
+                                          field: 'Status',
+                                          value: STATUS_MAP[status]!),
                                       SizedBox(height: 10.0),
                                       (this.observation.confidentiality ==
                                               CONFIDENTIALITY)
