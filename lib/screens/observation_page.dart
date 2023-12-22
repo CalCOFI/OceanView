@@ -21,16 +21,16 @@ import 'package:ocean_view/models/observation.dart';
 import 'package:ocean_view/screens/upload/upload_classification.dart';
 import 'package:ocean_view/services/database.dart';
 
-String namehelp =
+String nameHelp =
     'If you think you have a clear, identifiable image of your observation, use image search.  Otherwise, you can type in your guess for a full or partial name and use text search.  This will perform a search of the World Register of Marine Species (https://www.marinespecies.org) database and display a list of possible matches.';
 
-String confhelp =
+String confHelp =
     'You can change the confidentiality of your observations by navigating to your user profile page, clicking "Update Profile", and choosing Yes or No for the Share option.  Changes to this setting are not retroactive. Previously stored observations will retain the setting they were originally shared with.';
 
-String snamehelp =
+String snameHelp =
     'Please specify a common name for the observed species before saving your observation.  You may do this by using the image search, or by typing a guess into the "Name" field and doing a text search.  If you do not wish to do a search, or if your search returns no results, you may still save the observation with your guess; however, the species name will not be filled in, and the confidence level for your search will automatically be set to Null.';
 
-String specieshelp =
+String speciesHelp =
     'You have not specified the latin Species Name for your observation.  You may do this You may do this by using the image search, or by typing a guess into the "Name" field and doing a text search.  If you do not wish to do a search, or if your search returns no results, you may still save the observation with your guess; however, the species name will not be filled in, and the confidence level for your search will automatically be set to Null.  Do you wish to continue without searching?';
 
 // Define the help dialog popup
@@ -55,6 +55,7 @@ Widget _buildPopupDialog(BuildContext context, String wtitle, String msg) {
   );
 }
 
+// dialog is shown when name is empty and upload button is pressed
 Widget _twoOptionsDialog(BuildContext context, String wtitle, String msg,
     _ObservationPageState mystate) {
   return new AlertDialog(
@@ -347,7 +348,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                     context: context,
                                     builder: (BuildContext context) =>
                                         _buildPopupDialog(context,
-                                            'Search Options', namehelp),
+                                            'Search Options', nameHelp),
                                   );
                                 },
                                 icon: Icon(Icons.help_rounded)),
@@ -592,7 +593,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                           _buildPopupDialog(
                                               context,
                                               'Confidentiality Options',
-                                              confhelp),
+                                              confHelp),
                                     );
                                   },
                                   icon: Icon(Icons.help_rounded)),
@@ -618,7 +619,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                 context: context,
                                 builder: (BuildContext context) =>
                                     _buildPopupDialog(
-                                        context, 'Name missing', snamehelp),
+                                        context, 'Name missing', snameHelp),
                               );
                             } else if (_latinNameController.text.isEmpty) {
                               this.doSave = false;
@@ -628,7 +629,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                     _twoOptionsDialog(
                                         context,
                                         'Species Name missing',
-                                        specieshelp,
+                                        speciesHelp,
                                         this),
                               );
                             }
@@ -649,9 +650,6 @@ class _ObservationPageState extends State<ObservationPage> {
                                       .updateUserStats(userSt);
                                   final snackBar =
                                       SnackBar(content: Text('Success'));
-                                  //userSt?.numobs = userSt.numobs! + 1;
-                                  //DatabaseService(uid: user.uid)
-                                  //.updateUserStats(userSt as UserStats);
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(snackBar);
                                 } else {

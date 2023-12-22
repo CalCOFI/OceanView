@@ -179,8 +179,7 @@ class DatabaseService {
             ? LatLng(
                 doc.get('location').latitude, doc.get('location').longitude)
             : LatLng(LATITUDE, LONGITUDE),
-        status: doc.get('status') ??
-            STATUS, //'Observe' ? STATUS : doc.get('status'),
+        status: doc.get('status') ?? STATUS,
         confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
         confidence: doc.get('confidence') ?? CONFIDENCE,
         url: doc.get('url'),

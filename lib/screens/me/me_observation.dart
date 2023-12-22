@@ -42,14 +42,14 @@ class MeObservation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //Create objects to store detailed information of the observation
-    String speciesName = '';
-    String scientificName = '';
-    double length = 0.0;
-    double weight = 0.0;
-    dynamic time = [];
+    String speciesName = NAME;
+    String scientificName = LATINNAME;
+    double length = LENGTH;
+    double weight = WEIGHT;
+    dynamic time = TIME;
     int? status = STATUS;
     int? confidentiality = CONFIDENTIALITY;
-    String imageURL = '';
+    String imageURL = URL;
     int? confidence = CONFIDENCE;
 
     //Assign values for all objects
@@ -58,14 +58,10 @@ class MeObservation extends StatelessWidget {
     length = observation.length!;
     weight = observation.weight!;
     time = observation.time!;
-    status = observation.status ??
-        STATUS; //(STATUS_MAP.containsKey(observation.status))? CONFIDENCE_MAP[observation.status]
+    status = observation.status ?? STATUS;
     confidentiality = observation.confidentiality!; // now int
     imageURL = observation.url!;
-    confidence = observation.confidence ??
-        CONFIDENCE; //(CONFIDENCE_MAP.containsKey(observation.confidence))
-    //? CONFIDENCE_MAP[observation.confidence]
-    //: 'Null';
+    confidence = observation.confidence ?? CONFIDENCE;
 
     print('documentID: ${observation.documentID}');
 
