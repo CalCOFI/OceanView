@@ -483,7 +483,7 @@ class _ObservationPageState extends State<ObservationPage> {
                                         _buildPopupDialog(
                                             context,
                                             'Confidence Level',
-                                            'Specify how confident you are in your identification of this species.  1 is least confident, 3 is most confident.'),
+                                            'Specify how confident you are in your identification of this species.'),
                                   );
                                 },
                                 icon: Icon(Icons.help_rounded)),
