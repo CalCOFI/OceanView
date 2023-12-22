@@ -1,0 +1,2 @@
+- delete image in Firebase Storage after deleting document on CloudStore
+- Hide iOS API on GitHub
