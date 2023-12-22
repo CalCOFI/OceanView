@@ -24,6 +24,9 @@ import 'package:ocean_view/services/database.dart';
 String nameHelp =
     'If you think you have a clear, identifiable image of your observation, use image search.  Otherwise, you can type in your guess for a full or partial name and use text search.  This will perform a search of the World Register of Marine Species (https://www.marinespecies.org) database and display a list of possible matches.';
 
+String confLevelHelp =
+    'Specify how confident you are in your identification of this species.';
+
 String confHelp =
     'You can change the confidentiality of your observations by navigating to your user profile page, clicking "Update Profile", and choosing Yes or No for the Share option.  Changes to this setting are not retroactive. Previously stored observations will retain the setting they were originally shared with.';
 
@@ -480,10 +483,8 @@ class _ObservationPageState extends State<ObservationPage> {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) =>
-                                        _buildPopupDialog(
-                                            context,
-                                            'Confidence Level',
-                                            'Specify how confident you are in your identification of this species.'),
+                                        _buildPopupDialog(context,
+                                            'Confidence Level', confLevelHelp),
                                   );
                                 },
                                 icon: Icon(Icons.help_rounded)),
