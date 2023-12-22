@@ -22,7 +22,7 @@ class DatabaseService {
 
   // collection references
   final CollectionReference observationCollection =
-      FirebaseFirestore.instance.collection('test_observations');
+      FirebaseFirestore.instance.collection('observations');
   final CollectionReference userstatsCollection =
       FirebaseFirestore.instance.collection('userstats');
   final FirebaseStorage _storage = FirebaseStorage.instance;
