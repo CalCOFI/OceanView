@@ -192,7 +192,7 @@ class _ObservationPageState extends State<ObservationPage> {
 
     // Only load meta data when adding observation
     if (this.mode == 'single' || this.mode == 'session') {
-      if (widget.photoMeta == null || widget.photoMeta!.time == 0) {
+      if (widget.photoMeta == null || widget.photoMeta!.time == DateTime(0)) {
         selectedDate = DateTime.now();
         this.observation!.time = selectedDate;
       } else {
@@ -228,11 +228,11 @@ class _ObservationPageState extends State<ObservationPage> {
   // print location
   String _printLocation(LatLng? position) {
     if (position == null) {
-      return "(1,1)";
+      return '(1,1)';
     } else {
       String lat = position.latitude.toStringAsFixed(6);
       String lng = position.longitude.toStringAsFixed(6);
-      return "(${lat},${lng})";
+      return '(${lat},${lng})';
     }
   }
 
@@ -396,7 +396,7 @@ class _ObservationPageState extends State<ObservationPage> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Text("inches"),
+                          const Text('inches'),
                           SizedBox(width: 10),
                           const Text('Weight: '),
                           const SizedBox(width: 10),
@@ -417,14 +417,14 @@ class _ObservationPageState extends State<ObservationPage> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Text("lb"),
+                          const Text('lb'),
                         ]),
                       ),
                       Padding(
                         padding: EdgeInsets.all(4),
                         child: Row(children: <Widget>[
                           //Row for Time entry
-                          const Text("Time: "),
+                          const Text('Time: '),
                           const SizedBox(
                             width: 10.0,
                           ),
@@ -432,7 +432,7 @@ class _ObservationPageState extends State<ObservationPage> {
                               child: Container(
                             alignment: Alignment.center,
                             child: Text(
-                                "${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}"),
+                                '${DateFormat('yyyy-MM-dd kk:mm').format(selectedDate!.toLocal())}'),
                           )),
                           const SizedBox(width: 10.0),
                           ElevatedButton(
@@ -531,7 +531,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           child: Row(
                             // Row for Status Entry
                             children: [
-                              const Text("Status: "),
+                              const Text('Status: '),
                               const SizedBox(
                                 width: 10.0,
                               ),
@@ -580,7 +580,7 @@ class _ObservationPageState extends State<ObservationPage> {
                           padding: EdgeInsets.all(4),
                           child: Row(
                             children: [
-                              const Text("Confidentiality: "),
+                              const Text('Confidentiality: '),
                               const SizedBox(
                                 width: 10.0,
                               ),

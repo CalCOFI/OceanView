@@ -9,25 +9,23 @@ import 'package:provider/provider.dart';
  */
 
 class MeHistogram extends StatelessWidget {
-
   String field;
   Observation curObs;
   MeHistogram({required this.field, required this.curObs});
 
-  List<dynamic> getHistogram(List<double> fieldList){
+  List<dynamic> getHistogram(List<double> fieldList) {
     /* Calculate histogram for given list */
     double targetValue = curObs.map[field];
 
     // Calculate each bar in histogram
     int barNum = 9;
-    double curBar = 0.0,
-        nextBar = 0.0;
-    double minNum = fieldList.reduce(
-            (current, next) => current < next ? current : next
-    ).toDouble();
-    double maxNum = fieldList.reduce(
-            (current, next) => current > next ? current : next
-    ).toDouble();
+    double curBar = 0.0, nextBar = 0.0;
+    double minNum = fieldList
+        .reduce((current, next) => current < next ? current : next)
+        .toDouble();
+    double maxNum = fieldList
+        .reduce((current, next) => current > next ? current : next)
+        .toDouble();
     double stride = (maxNum - minNum) / barNum;
     List<int> counts = [];
     List<String> barLocations = [];
@@ -38,7 +36,7 @@ class MeHistogram extends StatelessWidget {
     for (int i = 0; i < barNum; i++) {
       int count = 0;
       curBar = minNum + i * stride;
-      nextBar = (i == barNum-1)? maxNum+0.1: curBar+stride;
+      nextBar = (i == barNum - 1) ? maxNum + 0.1 : curBar + stride;
       barLocations.add(i.toString());
       for (int j = 0; j < fieldList.length; j++) {
         if (curBar <= fieldList[j] && fieldList[j] < nextBar) {
@@ -50,7 +48,7 @@ class MeHistogram extends StatelessWidget {
       if (curBar <= targetValue && targetValue < nextBar) {
         double totalCounts = 0;
         // Calculate percentage
-        for (int i_count = 0; i_count < counts.length-1; i_count++) {
+        for (int i_count = 0; i_count < counts.length - 1; i_count++) {
           totalCounts += counts[i_count];
         }
         percentage = totalCounts / fieldList.length * 100;
@@ -72,8 +70,7 @@ class MeHistogram extends StatelessWidget {
           colorFn: (OrdinalFields fields, __) => fields.barColor,
           domainFn: (OrdinalFields fields, _) => fields.field,
           measureFn: (OrdinalFields fields, _) => fields.count,
-          data: data
-      )
+          data: data)
     ];
 
     List<dynamic> result = [];
@@ -85,18 +82,20 @@ class MeHistogram extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    List<Observation> observations = Provider.of<List<Observation>?>(context) ?? [];
+    List<Observation> observations =
+        Provider.of<List<Observation>?>(context) ?? [];
     String strObs = '';
     int index = 0;
     List<double> fieldList = <double>[];
     List<dynamic> result = [];
-    String description = "";
+    String description = '';
 
     print('--- $field ---');
     observations.forEach((observation) {
-      print('$index: ${observation.documentID}, ${observation.name}, ${observation.confidentiality}');
-      strObs += '$index: ${observation.documentID}, ${observation.name}, ${observation.confidentiality}\n';
+      print(
+          '$index: ${observation.documentID}, ${observation.name}, ${observation.confidentiality}');
+      strObs +=
+          '$index: ${observation.documentID}, ${observation.name}, ${observation.confidentiality}\n';
       index += 1;
 
       // Add needed field from qualified observations to list
@@ -106,12 +105,12 @@ class MeHistogram extends StatelessWidget {
     if (fieldList.length == 0) {
       description = 'Loading';
     } else if (fieldList.length == 1) {
-      description = "You are the first one to upload this observation!";
+      description = 'You are the first one to upload this observation!';
     } else {
       print(fieldList);
       result = getHistogram(fieldList);
-      description = "${curObs.map[field]} is ${descriptionMap[field]} than "
-          "${result[1]}% of observations";
+      description = '${curObs.map[field]} is ${descriptionMap[field]} than '
+          '${result[1]}% of observations';
     }
 
     // return Text(field+":\n"+strObs);
@@ -122,48 +121,34 @@ class MeHistogram extends StatelessWidget {
             child: Card(
                 child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                        children: [
-                          Text(
-                              "Histogram of ${this.field}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              )
-                          ),
-                          const SizedBox(height: 20),
-                          (fieldList.length>1)
+                    child: Column(children: [
+                      Text('Histogram of ${this.field}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          )),
+                      const SizedBox(height: 20),
+                      (fieldList.length > 1)
                           ? Expanded(
-                            child: SimpleBarChart(seriesList: result[0]),
-                          ): SizedBox(height: 10),
-                          const SizedBox(height: 10),
-                          Text(
-                            description,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                              child: SimpleBarChart(seriesList: result[0]),
                             )
-                          ),
-                        ]
-                    )
-                )
-            )
-        )
-    );
+                          : SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      Text(description,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ])))));
   }
 }
 
 class SimpleBarChart extends StatelessWidget {
-
   final List<charts.Series<OrdinalFields, String>> seriesList;
   final bool animate;
 
-  SimpleBarChart({
-    required this.seriesList,
-    this.animate = false
-  });
+  SimpleBarChart({required this.seriesList, this.animate = false});
 
   @override
   Widget build(BuildContext context) {
-
     return charts.BarChart(
       seriesList,
       animate: animate,

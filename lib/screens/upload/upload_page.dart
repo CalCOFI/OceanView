@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:ocean_view/screens/upload/upload_session.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -35,7 +33,7 @@ class _UploadPageState extends State<UploadPage> {
     XFile? tempFile = await _picker.pickImage(source: source);
 
     // Set imageFile to null if user pressed cancel in camera
-    _imageFile = (tempFile != null)? File(tempFile.path): null;
+    _imageFile = (tempFile != null) ? File(tempFile.path) : null;
   }
 
   @override
@@ -105,8 +103,7 @@ class _UploadPageState extends State<UploadPage> {
                               if (_imageFile != null) {
                                 // Extract exif data from image file
                                 PhotoMeta photoMeta =
-                                    await extractLocationAndTime(
-                                        _imageFile! as File);
+                                    await extractLocationAndTime(_imageFile!);
 
                                 Navigator.push(
                                     context,

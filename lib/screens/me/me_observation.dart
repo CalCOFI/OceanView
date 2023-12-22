@@ -15,8 +15,6 @@ import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../observation_page.dart';
-
 /*
   A page showing one observation
  */
@@ -75,7 +73,7 @@ class MeObservation extends StatelessWidget {
     String _printLocation(LatLng position) {
       String lat = position.latitude.toStringAsFixed(2);
       String lng = position.longitude.toStringAsFixed(2);
-      return "(${lat},${lng})";
+      return '(${lat},${lng})';
     }
 
     //Return the information in an organized layout

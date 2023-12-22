@@ -14,3 +14,15 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Lint Code
+- Please run `dart format .` in the project root folder everytime before pushing commits. 
+It will automatically lint the code to follow Dart guidelines. 
+- Links for linting
+  - Code formatting in IDE: https://docs.flutter.dev/tools/formatting
+  - Code formatting in command line: https://dart.dev/tools/dart-format
+    
+## CI/CD (GitHub Actions)
+### Unit-test when pushing commit in pull-request
+`.github/workflows/test.yml` triggers the following actions to ensure that the code change won't 
+break basic functions and fulfills format requirements. 
