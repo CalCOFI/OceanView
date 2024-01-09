@@ -201,3 +201,6 @@ export_ipa/
 
 # Avoid credentials
 private_keys/
+
+# Avoid python virtual environment
+.venv/

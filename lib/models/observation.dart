@@ -13,9 +13,9 @@ class Observation {
   double? weight; // Weight of species
   dynamic time; // Datetime from the picture (None: not showing)
   LatLng? location; // LatLng from picture (None: not showing)
-  String? status; // Observe / Release / Catch
-  String? confidentiality; // Share with scientists / Keep private
-  int? confidence; // 1-3
+  int? status; // 0/1/2 = Observe / Release / Catch
+  int? confidentiality; // Share with scientists / Keep private / now int
+  int? confidence; // 1-3 can also be 0 for no confidence
   String? url; // Url of photo on Firebase, generated when uploading
   String? imagePath; // image path on Firebase Storage, generated when uploading
   dynamic stopwatchStart; // Datetime of stopwatch start
