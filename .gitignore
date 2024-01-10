@@ -201,6 +201,7 @@ export_ipa/
 
 # Avoid credentials
 private_keys/
+lib/src/api_keys.dart
 
 # Avoid python virtual environment
 .venv/

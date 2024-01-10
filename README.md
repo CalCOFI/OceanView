@@ -15,6 +15,9 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+## Credentials
+1. Vision API headers is stored in `/lib/src/api_keys.dart` which needs to be transferred privately. 
+
 ## Lint Code
 - Please run `dart format .` in the project root folder everytime before pushing commits. 
 It will automatically lint the code to follow Dart guidelines. 
