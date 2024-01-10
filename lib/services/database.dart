@@ -150,15 +150,24 @@ class DatabaseService {
     return state;
   }
 
-  // Delete observation
+  // Delete observation document and image
   Future<String> deleteObservation(Observation observation) async {
     String state = 'Null';
 
+    // delete document
     await observationCollection
         .doc(observation.documentID)
         .delete()
-        .then((value) => state = 'Observation deleted')
-        .catchError((error) => state = 'Unable to delete observation');
+        .then((value) => state = 'Document deleted')
+        .catchError((error) => state = 'Unable to delete document');
+
+    // delete corresponding image
+    await _storage
+        .ref()
+        .child(observation.imagePath ?? IMAGEPATH)
+        .delete()
+        .then((value) => state = 'Image deleted')
+        .catchError((error) => state = 'Unable to delete image');
 
     return state;
   }

@@ -124,16 +124,16 @@ class MeObservation extends StatelessWidget {
                     String state = await DatabaseService(uid: user!.uid)
                         .deleteObservation(this.observation);
 
-                    if (state == 'Observation deleted') {
+                    if (state == 'Unable to delete document') {
+                      state = 'Unable to delete observation';
+                    } else {
+                      state = 'Observation deleted';
                       uStats?.numobs = uStats.numobs! - 1;
                       await DatabaseService(uid: user.uid)
                           .updateUserStats(uStats as UserStats);
-                      final snackBar = SnackBar(content: Text(state));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    } else {
-                      throw (state);
                     }
-
+                    final snackBar = SnackBar(content: Text(state));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     // Back to previous page
                     Navigator.pop(context, ['Delete']);
                   },
