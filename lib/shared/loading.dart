@@ -8,7 +8,9 @@ import 'package:ocean_view/shared/constants.dart';
  */
 
 class Loading extends StatelessWidget {
-  const Loading({Key? key}) : super(key: key);
+  Loading(this.text);
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +27,12 @@ class Loading extends StatelessWidget {
             centerTitle: true,
           ),
           body: Container(
-              //Center(
-              child: Stack(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Center(
                 child: Text(
-                  'Searching...',
+                  text,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
                 ),

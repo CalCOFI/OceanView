@@ -29,8 +29,6 @@ class _AphiaParseDemoState extends State<AphiaParseDemo> {
   var _vernacular = <AphiaVernacular>[];
   bool _loading = true;
 
-  //bool _loading = true;
-
   @override
   void initState() {
     super.initState();
@@ -51,7 +49,7 @@ class _AphiaParseDemoState extends State<AphiaParseDemo> {
   Widget build(BuildContext context) {
     print(widget.svalue);
     return _loading
-        ? Loading()
+        ? Loading('Searching...')
         : Scaffold(
             appBar: AppBar(
               title:

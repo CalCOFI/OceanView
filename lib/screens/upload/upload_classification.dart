@@ -119,7 +119,7 @@ class _UploadClassificationState extends State<UploadClassification> {
   @override
   Widget build(BuildContext context) {
     return loading
-        ? Loading()
+        ? Loading('Searching...')
         : Scaffold(
             appBar: AppBar(
               leading: IconButton(

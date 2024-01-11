@@ -4,17 +4,17 @@ import 'package:ocean_view/shared/custom_widgets.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 /*
-  Page for activity, not finished
+  Initial page when loggining in, it shows introduction of this app and CalCOFI
  */
 
-class ActivityPage extends StatefulWidget {
-  const ActivityPage({required Key key}) : super(key: key);
+class WelcomePage extends StatefulWidget {
+  const WelcomePage({required Key key}) : super(key: key);
 
   @override
-  _ActivityPageState createState() => _ActivityPageState();
+  _WelcomePageState createState() => _WelcomePageState();
 }
 
-class _ActivityPageState extends State<ActivityPage> {
+class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
