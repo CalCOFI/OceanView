@@ -1,4 +1,4 @@
-# ocean_view
+# CalCOFI OceanView
 
 An app that incentivizes ocean goers to report their wild observations.
 
@@ -17,6 +17,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Credentials
 1. Vision API headers is stored in `/lib/src/api_keys.dart` which needs to be transferred privately. 
+2. Google Map API is stored in `/android/local.properties` and `/ios/Runner/APIKey.plist` which need to be transferred privately. 
 
 ## Lint Code
 - Please run `dart format .` in the project root folder everytime before pushing commits. 

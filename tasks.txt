@@ -1,3 +1,0 @@
-x delete image in Firebase Storage after deleting document on CloudStore
-    - imagePath has been added in document of observation, it can be used to remove image in Storage when user deletes observation
-- Hide iOS API on GitHub
