@@ -1,4 +1,4 @@
-# ocean_view
+# CalCOFI OceanView
 
 An app that incentivizes ocean goers to report their wild observations.
 
@@ -14,6 +14,12 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+### API Keys
+Files with API keys are stored [here](https://drive.google.com/drive/folders/1KAYjrNAFgREmylkoRMiw6AwLAyZ0gwQy?usp=sharing). Please follow these steps to set up them accordingly. 
+1. Vision API: `api_keys.dart` needs to be put in `lib/src/api_keys.dart`. 
+2. Google Map API for Android: Copy `MAP_API_KEYS` in `local.properties` and paste it in `/android/local.properties`.
+3. Google Map API for iOS: `APIKey.plist` needs to be put in `/ios/Runner/APIKey.plist`.
 
 ## Lint Code
 - Please run `dart format .` in the project root folder everytime before pushing commits. 

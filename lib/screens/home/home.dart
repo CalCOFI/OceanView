@@ -4,7 +4,7 @@ import 'package:ocean_view/models/userstats.dart';
 
 import 'package:ocean_view/screens/map/map_page.dart';
 import 'package:ocean_view/screens/upload/upload_page.dart';
-import 'package:ocean_view/screens/activity_page.dart';
+import 'package:ocean_view/screens/welcome_page.dart';
 import 'package:ocean_view/screens/me/me_page.dart';
 import 'package:ocean_view/screens/me/user_page.dart';
 import 'package:ocean_view/services/auth.dart';
@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
   List<Widget> _widgetOptions = <Widget>[
     MapPage(key: UniqueKey()),
     UploadPage(key: UniqueKey()),
-    ActivityPage(key: UniqueKey()),
+    WelcomePage(key: UniqueKey()),
     UserPage(key: UniqueKey()),
     MePage(key: UniqueKey()),
   ];
@@ -115,7 +115,7 @@ class _HomeState extends State<Home> {
                   ), // This trailing comma makes auto-formatting nicer for build methods.
                 );
               } else {
-                return Loading();
+                return Loading('Fetching user info...');
               }
             });
   }

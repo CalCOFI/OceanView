@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:ocean_view/shared/loading.dart';
+import 'package:ocean_view/src/api_keys.dart';
 import 'package:ocean_view/src/prediction.dart';
 import 'package:path/path.dart' as path;
 
@@ -28,10 +29,6 @@ class _UploadClassificationState extends State<UploadClassification> {
   late List<Result> _results;
   bool loading = true;
 
-  Map<String, String> headers = {
-    'x-rapidapi-key': '5b2f443d6cmsh9e04ef3014bde3dp176b6ajsnea7f884ff2e9',
-    'x-rapidapi-host': 'visionapi.p.rapidapi.com'
-  };
   String apiUrl = 'https://visionapi.p.rapidapi.com/v1/rapidapi/score_image';
 
   // Send request to VisionAPI
@@ -42,7 +39,7 @@ class _UploadClassificationState extends State<UploadClassification> {
     var request = new http.MultipartRequest('POST', uri);
 
     Map<String, String> mapContent = {'content-type': 'mutipart/form-data'};
-    request.headers.addAll(headers);
+    request.headers.addAll(VISION_API_HEADER);
     request.headers.addAll(mapContent);
     var multipartFile = new http.MultipartFile('image', stream, length,
         filename: path.basename(widget.imageFile.path),
@@ -122,7 +119,7 @@ class _UploadClassificationState extends State<UploadClassification> {
   @override
   Widget build(BuildContext context) {
     return loading
-        ? Loading()
+        ? Loading('Searching...')
         : Scaffold(
             appBar: AppBar(
               leading: IconButton(

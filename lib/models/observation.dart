@@ -17,6 +17,7 @@ class Observation {
   int? confidentiality; // Share with scientists / Keep private / now int
   int? confidence; // 1-3 can also be 0 for no confidence
   String? url; // Url of photo on Firebase, generated when uploading
+  String? imagePath; // image path on Firebase Storage, generated when uploading
   dynamic stopwatchStart; // Datetime of stopwatch start
 
   Observation(
@@ -31,6 +32,7 @@ class Observation {
       this.confidence,
       this.status,
       this.url,
+      this.imagePath,
       this.stopwatchStart,
       this.confidentiality});
 

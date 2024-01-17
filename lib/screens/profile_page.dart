@@ -126,7 +126,7 @@ class _sharingFormState extends State<sharingForm> {
               ]),
             );
           } else {
-            return Loading();
+            return Loading('Fetching user info...');
           }
         });
   }

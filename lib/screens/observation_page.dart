@@ -58,7 +58,7 @@ Widget _buildPopupDialog(BuildContext context, String wtitle, String msg) {
   );
 }
 
-// dialog is shown when name is empty and upload button is pressed
+// dialog is shown when latin name is empty and upload button is pressed
 Widget _twoOptionsDialog(BuildContext context, String wtitle, String msg,
     _ObservationPageState mystate) {
   return new AlertDialog(
@@ -129,6 +129,8 @@ class _ObservationPageState extends State<ObservationPage> {
   UserStats? uStats;
   DateTime? selectedDate;
   int index = 0;
+  bool _isButtonActive =
+      false; // upload button is not active when name field is empty and observation is uploading
   bool doSave = true;
 
   Future<void> _loadMetaData() async {
@@ -161,6 +163,10 @@ class _ObservationPageState extends State<ObservationPage> {
     this._nameController = (this.observation!.name != null)
         ? TextEditingController(text: this.observation!.name)
         : TextEditingController(text: '');
+    this._nameController.addListener(() {
+      final isButtonActive = this._nameController.text.isNotEmpty;
+      setState(() => this._isButtonActive = isButtonActive);
+    });
     this._latinNameController = (this.observation!.latinName != null)
         ? TextEditingController(text: this.observation!.latinName)
         : TextEditingController(text: '');
@@ -612,101 +618,111 @@ class _ObservationPageState extends State<ObservationPage> {
                       const SizedBox(height: 10),
                       ElevatedButton(
                           child: Text(this.buttonName),
-                          onPressed: () async {
-                            this.doSave = true;
-                            if (_nameController.text.isEmpty) {
-                              this.doSave = false;
-                              await showDialog(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    _buildPopupDialog(
-                                        context, 'Name missing', snameHelp),
-                              );
-                            } else if (_latinNameController.text.isEmpty) {
-                              this.doSave = false;
-                              await showDialog(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    _twoOptionsDialog(
-                                        context,
-                                        'Species Name missing',
-                                        speciesHelp,
-                                        this),
-                              );
-                            }
-                            if (this.doSave) {
-                              this.observation!.name = _nameController.text;
-                              this.observation!.latinName =
-                                  _latinNameController.text;
-                              this.observation!.confidence = this._confidence;
-                              if (this.mode == 'single') {
-                                TaskState state =
-                                    await DatabaseService(uid: user.uid)
-                                        .addObservation(this.observation!,
-                                            File(widget.file.path));
+                          onPressed: _isButtonActive
+                              ? () async {
+                                  // show prompt to user when name or latin name field is empty
+                                  this.doSave = true;
+                                  if (_nameController.text.isEmpty) {
+                                    this.doSave = false;
+                                    await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _buildPopupDialog(context,
+                                              'Name missing', snameHelp),
+                                    );
+                                  } else if (_latinNameController
+                                      .text.isEmpty) {
+                                    this.doSave = false;
+                                    await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _twoOptionsDialog(
+                                              context,
+                                              'Species Name missing',
+                                              speciesHelp,
+                                              this),
+                                    );
+                                  }
+                                  // continue uploading if name fields are not empty or user chooses not to fill latin name
+                                  if (this.doSave) {
+                                    setState(() => _isButtonActive = false);
+                                    this.observation!.name =
+                                        _nameController.text;
+                                    this.observation!.latinName =
+                                        _latinNameController.text;
+                                    this.observation!.confidence =
+                                        this._confidence;
+                                    if (this.mode == 'single') {
+                                      TaskState state =
+                                          await DatabaseService(uid: user.uid)
+                                              .addObservation(this.observation!,
+                                                  File(widget.file.path));
 
-                                if (state == TaskState.success) {
-                                  userSt.numobs = userSt.numobs! + 1;
-                                  await DatabaseService(uid: user.uid)
-                                      .updateUserStats(userSt);
-                                  final snackBar =
-                                      SnackBar(content: Text('Success'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-                                } else {
-                                  print(
-                                      'Error from image repo ${state.toString()}');
-                                  throw ('This file is not an image');
+                                      if (state == TaskState.success) {
+                                        userSt.numobs = userSt.numobs! + 1;
+                                        await DatabaseService(uid: user.uid)
+                                            .updateUserStats(userSt);
+                                        final snackBar =
+                                            SnackBar(content: Text('Success'));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      } else {
+                                        print(
+                                            'Error from image repo ${state.toString()}');
+                                        throw ('This file is not an image');
+                                      }
+
+                                      // Back to previous page
+                                      Navigator.pop(context);
+                                    } else if (this.mode == 'session') {
+                                      print(
+                                          'Stopwatch: ${this.observation!.stopwatchStart}');
+                                      print('Add');
+
+                                      // Add image to local directory
+                                      await LocalStoreService().saveImage(
+                                          context,
+                                          File(_imageFile.path),
+                                          '$index.png');
+
+                                      // Add observation to local directory
+                                      await LocalStoreService().saveObservation(
+                                          this.observation!, '$index.txt');
+
+                                      Navigator.pop(context,
+                                          [this.observation, this._image]);
+                                    } else if (this.mode == 'me') {
+                                      print('Update');
+                                      String state = await DatabaseService(
+                                              uid: user.uid)
+                                          .updateObservation(this.observation!);
+
+                                      if (state == 'success') {
+                                        final snackBar =
+                                            SnackBar(content: Text('Success'));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      } else {
+                                        print(
+                                            'Error from image repo ${state.toString()}');
+                                        throw ('This file is not an image');
+                                      }
+
+                                      // Back to two previous pages
+                                      // Since previous page won't update the information,
+                                      // second previous page would fetch new observation
+                                      // from cloud and get updated information
+                                      int count = 0;
+                                      Navigator.of(context)
+                                          .popUntil((_) => count++ >= 2);
+                                      // Navigator.pop(context);
+                                    }
+                                  } else {
+                                    //Navigator.pop(context);
+                                    print('Do nothing');
+                                  }
                                 }
-
-                                // Back to previous page
-                                Navigator.pop(context);
-                              } else if (this.mode == 'session') {
-                                print(
-                                    'Stopwatch: ${this.observation!.stopwatchStart}');
-                                print('Add');
-
-                                // Add image to local directory
-                                await LocalStoreService().saveImage(context,
-                                    File(_imageFile.path), '$index.png');
-
-                                // Add observation to local directory
-                                await LocalStoreService().saveObservation(
-                                    this.observation!, '$index.txt');
-
-                                Navigator.pop(
-                                    context, [this.observation, this._image]);
-                              } else if (this.mode == 'me') {
-                                print('Update');
-                                String state =
-                                    await DatabaseService(uid: user.uid)
-                                        .updateObservation(this.observation!);
-
-                                if (state == "success") {
-                                  final snackBar =
-                                      SnackBar(content: Text('Success'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-                                } else {
-                                  print(
-                                      'Error from image repo ${state.toString()}');
-                                  throw ('This file is not an image');
-                                }
-
-                                // Back to two previous pages
-                                // Since previous page won't update the information,
-                                // second previous page would fetch new observation
-                                // from cloud and get updated information
-                                int count = 0;
-                                Navigator.of(context)
-                                    .popUntil((_) => count++ >= 2);
-                                // Navigator.pop(context);
-                              }
-                            } else {
-                              //Navigator.pop(context);
-                              print('Do nothing');
-                            }
-                          }),
+                              : null),
                     ],
                   )),
             ],

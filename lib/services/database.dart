@@ -61,6 +61,7 @@ class DatabaseService {
     obsMap['confidentiality'] = observation.confidentiality ?? CONFIDENTIALITY;
     obsMap['confidence'] = observation.confidence ?? CONFIDENCE;
     obsMap['url'] = observation.url ?? URL;
+    obsMap['imagePath'] = observation.imagePath ?? IMAGEPATH;
     obsMap['stopwatchStart'] = observation.stopwatchStart ?? STOPWATCHSTART;
 
     return obsMap;
@@ -71,9 +72,7 @@ class DatabaseService {
   }
 
   // Upload image to Firebase Storage
-  Future<List<dynamic>> _uploadImage(io.File file) async {
-    String filePath = 'images/${uid}/${DateTime.now()}.png';
-
+  Future<List<dynamic>> _uploadImage(io.File file, String filePath) async {
     // Upload image to Storage
     TaskSnapshot snapshot = await _storage.ref().child(filePath).putFile(file);
     final String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -84,11 +83,13 @@ class DatabaseService {
   // Add single new observation
   Future<TaskState> addObservation(
       Observation observation, io.File file) async {
-    List<dynamic> messages = await _uploadImage(file);
+    String imagePath = 'images/${uid}/${DateTime.now()}.png';
+    List<dynamic> messages = await _uploadImage(file, imagePath);
 
     if (messages[0] == TaskState.success) {
       observation.uid = uid;
       observation.url = messages[1];
+      observation.imagePath = imagePath;
 
       Map<String, dynamic> obsMap = _getMapFromObs(observation);
 
@@ -111,13 +112,15 @@ class DatabaseService {
     // Loop over each observations
     for (int i = 0; i < observations.length; i++) {
       // Upload image to storage
+      String imagePath = 'images/${uid}/${DateTime.now()}.png';
       file = await LocalStoreService().loadImage('$i.png');
-      messages = await _uploadImage(file);
+      messages = await _uploadImage(file, imagePath);
 
       // Only upload observation if image is successfully uploaded
       if (messages[0] == TaskState.success) {
         observations[i].uid = uid;
         observations[i].url = messages[1];
+        observations[i].imagePath = imagePath;
 
         documentReference = observationCollection.doc();
         writeBatch.set(documentReference, _getMapFromObs(observations[i]));
@@ -147,15 +150,24 @@ class DatabaseService {
     return state;
   }
 
-  // Delete observation
+  // Delete observation document and image
   Future<String> deleteObservation(Observation observation) async {
     String state = 'Null';
 
+    // delete document
     await observationCollection
         .doc(observation.documentID)
         .delete()
-        .then((value) => state = 'Observation deleted')
-        .catchError((error) => state = 'Unable to delete observation');
+        .then((value) => state = 'Document deleted')
+        .catchError((error) => state = 'Unable to delete document');
+
+    // delete corresponding image
+    await _storage
+        .ref()
+        .child(observation.imagePath ?? IMAGEPATH)
+        .delete()
+        .then((value) => state = 'Image deleted')
+        .catchError((error) => state = 'Unable to delete image');
 
     return state;
   }
@@ -164,29 +176,29 @@ class DatabaseService {
   List<Observation> _observationsFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       print(doc.get('time').seconds);
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       return Observation(
         documentID: doc.id,
-        uid: doc.get('uid'),
-        name: doc.get('name'),
-        latinName: doc.get('latinName') ?? LATINNAME,
-        length: doc.get('length'),
-        weight: doc.get('weight'),
-        time: (doc.get('time') != null && doc.get('time') != TIME)
-            ? DateTime.fromMillisecondsSinceEpoch(
-                doc.get('time').seconds * 1000)
+        uid: data['uid'],
+        name: data['name'],
+        latinName: data['latinName'] ?? LATINNAME,
+        length: data['length'],
+        weight: data['weight'],
+        time: (data['time'] != null && data['time'] != TIME)
+            ? DateTime.fromMillisecondsSinceEpoch(data['time'].seconds * 1000)
             : TIME,
-        location: (doc.get('location') != null)
-            ? LatLng(
-                doc.get('location').latitude, doc.get('location').longitude)
+        location: (data['location'] != null)
+            ? LatLng(data['location'].latitude, data['location'].longitude)
             : LatLng(LATITUDE, LONGITUDE),
-        status: doc.get('status') ?? STATUS,
-        confidentiality: doc.get('confidentiality') ?? CONFIDENTIALITY,
-        confidence: doc.get('confidence') ?? CONFIDENCE,
-        url: doc.get('url'),
-        stopwatchStart: (doc.get('stopwatchStart') != null &&
-                doc.get('stopwatchStart') != STOPWATCHSTART)
+        status: data['status'] ?? STATUS,
+        confidentiality: data['confidentiality'] ?? CONFIDENTIALITY,
+        confidence: data['confidence'] ?? CONFIDENCE,
+        url: data['url'] ?? URL,
+        imagePath: data['imagePath'] ?? IMAGEPATH,
+        stopwatchStart: (data['stopwatchStart'] != null &&
+                data['stopwatchStart'] != STOPWATCHSTART)
             ? DateTime.fromMillisecondsSinceEpoch(
-                doc.get('stopwatchStart').seconds * 1000)
+                data['stopwatchStart'].seconds * 1000)
             : STOPWATCHSTART,
       );
     }).toList();

@@ -96,6 +96,7 @@ const double LONGITUDE = 0;
 const int CONFIDENTIALITY = 1;
 const int CONFIDENCE = 2;
 const String URL = 'None';
+const String IMAGEPATH = 'None';
 const String STOPWATCHSTART = 'None';
 Map<int, String> CONFIDENCE_MAP = {
   1: 'Low',
