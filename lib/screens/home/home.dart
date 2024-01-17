@@ -33,8 +33,7 @@ class _HomeState extends State<Home> {
   List<Widget> _widgetOptions = <Widget>[
     MapPage(key: UniqueKey()),
     UploadPage(key: UniqueKey()),
-    // WelcomePage(key: UniqueKey()),
-    Loading('Testing...'),
+    WelcomePage(key: UniqueKey()),
     UserPage(key: UniqueKey()),
     MePage(key: UniqueKey()),
   ];
